@@ -2,6 +2,11 @@
 .DS_Store
 
 
+### Microsoft Office ###
+# Temporary files
+~\$*
+
+
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
