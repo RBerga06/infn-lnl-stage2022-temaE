@@ -22,7 +22,7 @@ class Areas(Scene):
         BASELINE_COLOR = RED_C
         RECT_COLOR_POS = GREEN
         RECT_COLOR_NEG = YELLOW
-        d = data(str(Path(__file__).parent.parent.parent/"data"/"fondo_0.root"), 3)
+        d = data(str(Path(__file__).parent.parent/"fondo.root"), 3)
         _BL = sum(d[:17])/17
         BL1 = _BL/100 - 131.5
         baseline = DashedLine(
