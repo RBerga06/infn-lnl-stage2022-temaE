@@ -1,57 +1,116 @@
-# Per comprendere il funzionamento delle classi
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""Per comprendere il funzionamento delle classi."""
+
+from __future__ import annotations
+
 
 class Rettangolo:
-    def __init__(self, a, b):
+    a: float
+    b: float
+
+    def __init__(self, a: float, b: float) -> None:
         self.a = a
         self.b = b
-    def area(self):
+
+    @property
+    def area(self) -> float:
         return self.a * self.b
-    def perimetro(self):
+
+    @property
+    def perimetro(self) -> float:
         return (self.a + self.b) * 2
-    def __mul__(self, i):
+
+    def __mul__(self, i: int | float) -> Rettangolo:
         if not isinstance(i, (int, float)):
             return NotImplemented
         return Rettangolo(self.a * i, self.b * i)
-    def __repr__(self):
+
+    def __repr__(self) -> str:
         return f"<Rettangolo {self.a} x {self.b}>"
 
 
 class Quadrato(Rettangolo):
-    def __init__(self, lato):
+    """Sottoclasse di `Rettangolo`: eredita da essa tutti i metodi e gli attributi e ne (ri)definisce alcuni."""
+
+    def __init__(self, lato: float) -> None:
+        # Un quadrato è un rettangolo con i lati uguali
         super().__init__(lato, lato)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Quadrato di lato {self.lato}>"
 
-    def __mul__(self, i):
+    def __mul__(self, i: int | float) -> Quadrato:
+        # Va ridefinito perché deve ritornare un `Quadrato`, non un `Rettangolo`.
         return Quadrato(self.lato * i)
 
     @property
     def lato(self):
-        return self.a # o self.b, è indifferente
+        return self.a  # o `self.b`, in realtà è indifferente
 
 
 class Account:
-    def __init__(self):
-        self.__money = 200
+    """Una classe per dimostrare l'utilizzo di `@property` e le variabili “private”."""
+    __money: float
+
+    def __init__(self) -> None:
+        # Inizializza la variabile privata `__money` con €200
+        self.__money = 200.0
+
     @property
     def money(self):
+        """Permette all'utente di visualizzare il valore della variabile privata `__money`, ma non di modificarlo."""
         return self.__money
-    def pay(self, price):
+
+    def pay(self, price: float) -> None:
+        """Paga (= rimuovi dal conto) €`price`."""
+        # Senza `abs(...)` un prezzo negativo aumenterebbe i soldi sul conto. Così, il segno viene semplicemente ignorato.
         self.__money -= abs(price)
 
-a = Quadrato(3)
-print(f"{a.lato=}")
-print(f"{a.perimetro()=}")
-print(f"{a.area()=}")
+    def __repr__(self) -> str:
+        return f"<Account bancario con €{self.money:.2f} di credito residuo>"
 
-b = Quadrato(5)
-print(f"{b.lato=}")
-print(f"{b.perimetro()=}")
-print(f"{b.area()=}")
 
-print(f"{Quadrato(10).area()=}")
 
-print(Quadrato(10))
-print(Quadrato(10)*2)
-print(Quadrato(10)/Quadrato(2))
+def privatevar_example():
+    """Dimostrazione delle variabili private in Python."""
+    # print(f"{x:.2f}") -> stampa a schermo `x` con 2 cifre decimali
+    a = Account()
+    print(f"€{a.money:.2f}")  # €200.00
+    a.pay(3.14)
+    print(f"€{a.money:.2f}")  # €196.86
+    #print(a.__money)         # AttributeError!
+    #a.__money += 100         # ValueError!
+    # Purtroppo, però, in Python le variabili “private” non sono veramente private...
+    #  per accedervi, utilizzare <oggetto>._<nome classe>__<nome privato>:
+    print(f"€{a._Account__money:.2f}") # €196.86
+    a._Account__money += 100  # Modifico la variabile “privata”
+    print(f"€{a.money:.2f}")           # €296.86
+
+
+
+def inheritance_example():
+    a = Quadrato(3)
+    print(f"{a.lato=}")
+    print(f"{a.perimetro=}")
+    print(f"{a.area=}")
+
+    b = Quadrato(5)
+    print(f"{b.lato=}")
+    print(f"{b.perimetro=}")
+    print(f"{b.area=}")
+
+    print(f"{Quadrato(10).area=}")
+
+    print(Quadrato(10))
+    print(Quadrato(10)*2)
+    print(Quadrato(10)*Quadrato(10))
+
+
+if __name__ == "__main__":
+    print("~~~ classe.py ~~~")
+    # # # # # # # # # # # # # # # # # # # # # # #
+    # Decommenta la riga di interesse qua sotto #
+    # # # # # # # # # # # # # # # # # # # # # # #
+    #privatevar_example()
+    #inheritance_example()
