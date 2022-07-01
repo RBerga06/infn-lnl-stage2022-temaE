@@ -4,6 +4,10 @@ from ROOT import TFile  # type: ignore
 
 # Generatore di numeri casuali che sfrutta la casualità dei dati del file "data.root"
 class TrueRandomGenerator:
+    """Un vero generatore di numeri casuali."""
+    deltaT:         list[float]
+    randomBits:     list[int]
+    randomNumbers:  list[int]
 
     # Metodo di inizializzazione: crea numeri casuali e li salva nel vettore "bytes"
     def __init__(self, file = "data.root", bug = False):
@@ -22,36 +26,36 @@ class TrueRandomGenerator:
             self.deltaT.append(temp_deltaT)        # Salva la differenza nel vettore "self.deltaT"
 
         # Applicazione della funzione "_rand" alle differenze dei tempi e salvataggio nel vettore "self.bits"
-        self.bits = list(map(self._rand, self.deltaT))
+        self.randomBits = list(map(self._rand, self.deltaT))
 
         # Generazione di bytes
-        self.randNumbers = []
-        randNumbers_b = []
+        self.randomNumbers = []
+        randomNumbers_b = []
         # -------------------- Metodo 1 --------------------
-        nBytesPossibili = len(self.bits)//8        # Numero di bytes possibili = divisione intera tra totale di bits e 8
+        nBytesPossibili = len(self.randomBits)//8       # Numero di bytes possibili = divisione intera tra totale di bits e 8
         for i in range(nBytesPossibili):
-            temp_byte = [0]*8                      # Dichiarazione di un vettore di lunghezza 8
+            temp_byte = [0]*8                           # Dichiarazione di un vettore di lunghezza 8
             for j in range(8):
-                temp_byte[j] = self.bits[i*8 + j]  # Si prendono 8 elementi da "self.bits" e si salvano su "temp_byte"
+                temp_byte[j] = self.randomBits[i*8 + j] # Si prendono 8 elementi da "self.bits" e si salvano su "temp_byte"
             
             # Conversione tramite la funzione "_conv" di "temp_byte" e salvataggio in "self.randNumbers"
-            self.randNumbers.append(self._conv(temp_byte))
+            self.randomNumbers.append(self._conv(temp_byte))
             if bug:
-                randNumbers_b.append(self._conv2(temp_byte))
+                randomNumbers_b.append(self._conv2(temp_byte))
 
         if bug:
-            self.randNumbers += randNumbers_b
+            self.randomNumbers += randomNumbers_b
 
         # -------------------- Metodo 2 --------------------
         #temp_byte = [0]*8
-        #for i in len(self.bits):
-        #    temp_byte[i%8] = self.bits[i]         # Associazione dell'i-esimo bit all'(i mod 8)-esima cella di "temp_byte"
+        #for i in len(self.randomBits):
+        #    temp_byte[i%8] = self.randomBits[i]        # Associazione dell'i-esimo bit all'(i mod 8)-esima cella di "temp_byte"
         #    if i%8 == 7:
-        #        self.randNumbers.append(self._conv(temp_byte))
+        #        self.randomNumbers.append(self._conv(temp_byte))
         #    if bug:
-        #        randNumbers_b.append(self._conv2(temp_byte))
+        #        randomNumbers_B.append(self._conv2(temp_byte))
         #if bug:
-        #    self.randNumbers += randNumbers_b
+        #    self.randNumbers += randomNumbers_B
 
         # Dichiarazione variabile d'istanza
         self._i = 0
@@ -79,9 +83,9 @@ class TrueRandomGenerator:
 
     # Metodo: restituisce un numero casuale
     def random_number(self):
-        n = self.randNumbers[self._i]
+        n = self.randomNumbers[self._i]
         # Incremento dell'indice, torna a 0 se si raggiunge l'ultimo numero casuale disponibile
-        self._i = (self._i + 1) % len(self.randNumbers)
+        self._i = (self._i + 1) % len(self.randomNumbers)
         return n
 
 
@@ -124,7 +128,7 @@ def test():
     #plt.title("Bits distribution")
 
     # Numeri casuali
-    plt.hist(gen.bytes, bins = 256)
+    plt.hist(gen.randomNumbers, bins = 256)
     plt.yscale("log")
     plt.xlabel("Bytes")
     plt.ylabel("Counts")

@@ -43,7 +43,7 @@ def main ():
 
     # Inizializzazione
     TRG = TrueRandomGenerator(bug=BUG)  # Generatore
-    LEN = len(TRG.bytes)                # Numero di valori casuali disponibili
+    LEN = len(TRG.randomNumbers)                # Numero di valori casuali disponibili
     N_in = 0        # Numero di coordinate casuali all'interno del cerchio
     x_in = []       # Lista delle coordinate x all'interno del cerchio
     y_in = []       # Lista delle coordinate y all'interno del cerchio
@@ -109,7 +109,7 @@ def main ():
 
     # ------------ Metodo 3: tutte le coordinate possibili, O(n^2) ------------
     elif _mode == 2:
-        bytes = [b**2 for b in TRG.bytes]   # Pre-calcolo dei quadrati, per ottimizzazione
+        bytes = [b**2 for b in TRG.randomNumbers]   # Pre-calcolo dei quadrati, per ottimizzazione
 
         for i, x in enumerate(bytes):       # "x" scorre vettore "bytes", "i" l'indice
             for y in bytes:                 # "y" scorre vettore "bytes"
