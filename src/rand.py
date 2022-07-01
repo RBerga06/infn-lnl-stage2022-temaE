@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from ROOT import TFile
+from ROOT import TFile  # type: ignore
 
 
 # Generatore di numeri casuali che sfrutta la casualità dei dati del file "data.root"
