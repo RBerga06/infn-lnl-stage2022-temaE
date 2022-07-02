@@ -67,8 +67,9 @@ Giusto qualche dritta per installare Ubuntu su Windows (il procedimento è più 
 
 Potete fare riferimento a questi video:
 
-    * [Ubuntu su Windows 11](https://youtu.be/v1JVqd8M3Yc)
-    * [Ubuntu su Windows 10](https://youtu.be/x5MhydijWmc)
+   * [Ubuntu su Windows 11](https://youtu.be/v1JVqd8M3Yc)
+   * [Ubuntu su Windows 10](https://youtu.be/x5MhydijWmc)
+
 
 > **Warning**
 > VirtualBox chiama “MB” i “MiB” – Cerca di non dare di matto
