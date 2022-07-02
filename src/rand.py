@@ -10,7 +10,7 @@ class TrueRandomGenerator:
     randomNumbers:  list[int]
 
     # Metodo di inizializzazione: crea numeri casuali e li salva nel vettore "bytes"
-    def __init__(self, file = "data.root", bug = False):
+    def __init__(self, file = "src/data.root", bug = False):
         f = TFile(file)      # Apre il file
         t = f.Get("Data_R")  # Prende i dati dal file
 
