@@ -21,7 +21,7 @@ conda install -c conda-forge root matplotlib
 
 (non essendo `PyROOT` disponibile su PyPI, non esiste un comando analogo per `pip`)
 
-> **NOTE**
+> **Note**
 > Per gli utenti Windows, è necessario compilare ROOT dal codice sorgente, [come illustrato nella documentazione](https://root.cern/install/#build-from-source) (in effetti esiste ROOT per Windows precompilato, ma PyROOT non è incluso).
 >
 > L'alternativa è utilizzare una macchina virtuale Unix, come descritto in seguito.
@@ -62,11 +62,14 @@ Le estensioni di Visual Studio Code consigliate sono:
 
 #### Setup di una macchina virtuale con Ubuntu
 
-> **WARNING**
+> **Warning**
 > Se qualcosa dovesse andare storto, **non** create una `issue` (o una discussione) in questa `repo` di GitHub – gli ex-stagisti del tema E *non* si impegnano a risolvere problemi del genere.
 > Tuttavia, in questi casi [Google](https://www.google.com) si può rivelare uno strumento particolarmente utile, e se neanche così risolvete il vostro problema, potete sempre appellarvi a un forum.
 
-> **WARNING**
+> **Note**
+> [Questo video](https://youtu.be/x5MhydijWmc) potrebbe esserti utile
+
+> **Warning**
 > VirtualBox chiama “MB” i “MiB” – Cerca di non dare di matto
 > Per chi non sapesse cosa sono MB e MiB, collegarsi urgentemente a [Wikipedia](https://it.wikipedia.org/wiki/Bit), che fornisce una tabella molto utile
 
