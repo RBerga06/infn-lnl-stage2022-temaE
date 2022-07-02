@@ -36,13 +36,13 @@ Digita i seguenti comandi, uno alla volta, nel tuo terminale:
 
 ```bash
 # 1. Installa il gestore di pacchetti e di ambienti Python `mamba`
-brew install mambaforge || { { wget -O Mambaforge.sh "https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-$(uname)-$(uname -m).sh" || curl -fsSLo Mambaforge.sh "https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-MacOSX-$(uname -m).sh" ; } && bash Mambaforge.sh -b; }
-# 2. Attiva `mamba`
+brew install mambaforge || { { wget -O Mambaforge.sh "https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-$(uname)-$(uname -m).sh" || curl -fsSLo Mambaforge.sh "https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-MacOSX-$(uname -m).sh" ; } && bash Mambaforge.sh -b && export PATH="$HOME/mambaforge/bin:$PATH"; }
+# 2. Attiva `mamba`
 mamba init "$(basename "${SHELL}")"
 # 3. Riavvia la shell
 exec "$SHELL"
 # 4. Crea un ambiente virtuale (qui chiamato `iLoveTemaE` - per scegliere un altro nome, semplicemente digitarlo al posto di `iLoveTemaE`)
-mamba create -n iLoveTemaE python root matplotlib
+mamba create -c conda-forge -n iLoveTemaE python root matplotlib
 # 5. Attiva l'ambiente virtuale
 mamba activate iLoveTemaE
 # 6. Clona questa repository
