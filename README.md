@@ -42,7 +42,7 @@ mamba init "$(basename "${SHELL}")"
 # 3. Riavvia la shell
 exec "$SHELL"
 # 4. Crea un ambiente virtuale (qui chiamato `iLoveTemaE` - per scegliere un altro nome, semplicemente digitarlo al posto di `iLoveTemaE`)
-mamba create -c conda-forge -n iLoveTemaE python root matplotlib
+mamba create -y -c conda-forge -n iLoveTemaE python root matplotlib
 # 5. Attiva l'ambiente virtuale
 mamba activate iLoveTemaE
 # 6. Clona questa repository
