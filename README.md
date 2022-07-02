@@ -22,6 +22,7 @@ conda install -c conda-forge root matplotlib
 (non essendo `PyROOT` disponibile su PyPI, non esiste un comando analogo per `pip`)
 
 > **Note**
+>
 > Per gli utenti Windows, è necessario compilare ROOT dal codice sorgente, [come illustrato nella documentazione](https://root.cern/install/#build-from-source) (in effetti esiste ROOT per Windows precompilato, ma PyROOT non è incluso).
 >
 > L'alternativa è utilizzare una macchina virtuale Unix, come descritto in seguito.
