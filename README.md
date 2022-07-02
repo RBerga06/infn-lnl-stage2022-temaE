@@ -63,53 +63,17 @@ Le estensioni di Visual Studio Code consigliate sono:
 
 #### Setup di una macchina virtuale con Ubuntu
 
-> **Warning**
-> Se qualcosa dovesse andare storto, **non** create una `issue` (o una discussione) in questa `repo` di GitHub – gli ex-stagisti del tema E *non* si impegnano a risolvere problemi del genere.
-> Tuttavia, in questi casi [Google](https://www.google.com) si può rivelare uno strumento particolarmente utile, e se neanche così risolvete il vostro problema, potete sempre appellarvi a un forum.
+Giusto qualche dritta per installare Ubuntu su Windows (il procedimento è più o meno lo stesso anche su UNIX).
 
-> **Note**
-> [Questo video](https://youtu.be/x5MhydijWmc) potrebbe esserti utile
+Potete fare riferimento a questi video:
+    * [Ubuntu su Windows 11](https://youtu.be/v1JVqd8M3Yc)
+    * [Ubuntu su Windows 10](https://youtu.be/x5MhydijWmc)
 
 > **Warning**
 > VirtualBox chiama “MB” i “MiB” – Cerca di non dare di matto
 > Per chi non sapesse cosa sono MB e MiB, collegarsi urgentemente a [Wikipedia](https://it.wikipedia.org/wiki/Bit), che fornisce una tabella molto utile
 
-1. Scarica il sitema operativo Ubuntu come `.iso`:
-    1. Vai alla [pagina ufficiale di download di Ubuntu in italiano](https://www.ubuntu-it.org/download)
-    2. Seleziona la versione di interesse (consigliata: `22.04.4 LTS`)
-    3. Seleziona il pacchetto corretto:
-        * Se sei qui solo perché usi Windows, seleziona `Desktop`
-        * Se sei qui perché ami UNIX e il terminale, anche `Server` va bene
-    4. Clicca il pulsante `Avvia il download` e attendi che il file venga scaricato.
-
-2. Scarica e installa VirtualBox (se non lo hai già):
-    1. Vai alla [pagina ufficiale di download di VirtualBox](https://www.virtualbox.org/wiki/Downloads)
-    2. Clicca il link di download adeguato alla tua piattaforma (preferibilmente nel primo paragrafo del tipo `VirtualBox 6.<qualcosa> platform packages`)
-    3. È consigliabile anche scaricare l'extension pack, nel paragrafo immediatamente successivo
-    4. Apri il primo file scaricato e lancia l'installer di VirtualBox
-    5. Segui le istruzioni sullo schermo
-    6. Su macOS, se e quando proposto da una finestra di dialogo, apri Preferenze di Sistema, sbloccalo cliccando sul lucchetto in basso a sinistra e inserendo la tua password (o usando TouchID) e clicca su `Consenti` nella scheda `Generale` del pannello `Sicurezza e Privacy` per abilitare l'estensione di sistema firmata `Orcale Inc.`
-    7. Riavvia il computer quando richiesto
-    8. Torna nella cartella dei download e lancia il file dell'estensione scaricato in precedenza: dovrebbe aprirsi VirtualBox.
-    9. Segui le istruzioni sullo schermo
-
-3. Crea una macchina virtuale con Ubuntu:
-    1. Se necessario, apri VirtualBox
-    2. Clicca sul pulsante `Nuova` per creare una macchina virtuale
-    3. Assegnale un nome a piacimento (ad esempio `Ubuntu for Tema E`)
-    4. Seleziona il sistema operativo `Ubuntu (64-bit)` nella categoria `Linux`
-    5. Assegna alla macchina virtuale *almeno* 2GiB (= 2048 MiB) di RAM
-    6. Segui le istruzioni a schermo – puoi lasciare gli altri parametri con i loro valori di default
-
-4. Correggi le impostazioni della macchina virtuale con Ubuntu:
-    1. Seleziona la macchina virtuale e clicca sul pulsante `Impostazioni`
-    2. Seleziona il gruppo `Memoria` nella scheda `Sistema` e assegna alla VM *almeno* 2 core di CPU
-
-5. Avvia la macchina virtuale:
-    1. Seleziona la macchina virtuale e clicca sul pulsante `Avvia`
-    2. Nella finestra di dialogo, clicca su `Sfoglia...` e seleziona il file `.iso` di Ubuntu.
-    3. Clicca su `Avvia`
-
-6. Una volta avviatosi l'installer del sistema, seleziona `Installa Ubuntu` e segui i passaggi visualizzati sullo schermo
-
-7. Ora il tuo sistema è pronto: segui i passaggi descritti sopra per effettuare il setup dell'ambiente di sviluppo.
+> **Warning**
+> **Disclaimer**
+> Se qualcosa dovesse andare storto, **non** create una `issue` (o una discussione) in questa `repo` di GitHub – gli ex-stagisti del tema E *non* si impegnano a risolvere problemi del genere.
+> Tuttavia, in questi casi [Google](https://www.google.com) si può rivelare uno strumento particolarmente utile, e se neanche così risolvete il vostro problema, potete sempre appellarvi a un forum.
