@@ -70,7 +70,7 @@ Potete fare riferimento a questi video:
 * [Ubuntu su Windows 10](https://youtu.be/x5MhydijWmc)
 
 > **Warning**
-> VirtualBox chiama “MB” i MiB – Cercate di non frustrarvi troppo.
+> VirtualBox chiama “MB” i MiB – cercate di non frustrarvi troppo.
 > Per chi non conoscesse la differenza tra MB e MiB, collegarsi urgentemente a [Wikipedia](https://it.wikipedia.org/wiki/Bit), che include una tabella molto chiara.
 
 > **Warning**
