@@ -46,7 +46,7 @@ mamba create -y -c conda-forge -n iLoveTemaE python root matplotlib
 # 5. Attiva l'ambiente virtuale
 mamba activate iLoveTemaE
 # 6. Clona questa repository
-gh repo clone RBerga06/infn-lnl-stage2022-temaE || https://github.com/RBerga06/infn-lnl-stage2022-temaE.git
+gh repo clone RBerga06/infn-lnl-stage2022-temaE || git clone https://github.com/RBerga06/infn-lnl-stage2022-temaE.git
 # 7. Entra nella repository
 cd infn-lnl-stage2022-temaE
 # 8. Esegui un file Python, in questo caso `stagisti.py`
