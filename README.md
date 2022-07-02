@@ -66,6 +66,7 @@ Le estensioni di Visual Studio Code consigliate sono:
 Giusto qualche dritta per installare Ubuntu su Windows (il procedimento è più o meno lo stesso anche su UNIX).
 
 Potete fare riferimento a questi video:
+
     * [Ubuntu su Windows 11](https://youtu.be/v1JVqd8M3Yc)
     * [Ubuntu su Windows 10](https://youtu.be/x5MhydijWmc)
 
