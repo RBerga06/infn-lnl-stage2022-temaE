@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
 """Questo modulo contiene un generatore di numeri veramente casuali (TRNG)."""
-from ROOT import TFile
+from typing import NamedTuple
+import root
+
+
+class Event(NamedTuple):
+    """Questa classe rappresenta un evento."""
+    # Sono specificati soltanto gli attributi che ci interessano
+    Timestamp: int
 
 
 # Generatore di numeri casuali che sfrutta la casualità dei dati del file "data.root"
@@ -13,8 +20,8 @@ class TrueRandomGenerator:
 
     # Metodo di inizializzazione: crea numeri casuali e li salva nel vettore "randomNumbers"
     def __init__(self, file: str = "src/data.root", bug: bool = False) -> None:
-        f = TFile(file)      # Apre il file
-        t = f.Get("Data_R")  # Prende i dati dal file
+        # Apri il file `file` e leggi la tabella "Data_R", salvando i dati come lista di eventi (oggeti di tipo `Event`)
+        t = root.read(file, "Data_R", cls=Event)
 
         # Salvataggio dei tempi degli eventi nel vettore "tempi"
         tempi = []

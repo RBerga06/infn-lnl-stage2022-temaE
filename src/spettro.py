@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 from __future__ import annotations
+from typing import NamedTuple
 import matplotlib.pyplot as plt
-from ROOT import *  # type: ignore
+import root
 
 
 # --- Costanti ---
@@ -9,6 +10,14 @@ from ROOT import *  # type: ignore
 T: float = 4e-6  # 4µs
 # Numero di samples da prendere per calcolare la baseline
 BASELINE_CALC_N: int = 60  # 17 per il file 'fondo.root'
+
+
+# --- Modelli ----
+
+class Event(NamedTuple):
+    """Questa classe rappresenta un evento."""
+    # Sono specificati soltanto gli attributi che ci interessano
+    Samples: list[int]
 
 
 
@@ -27,7 +36,7 @@ def aree(t, BASELINE, max_area=None, min_samples=0, max_samples=None):
     aree = []
     for event in t:
         # Estrazione dei samples dell'evento tra "min_samples" e "max_samples"
-        samples = [*event.Samples][min_samples:max_samples]
+        samples = event.Samples[min_samples:max_samples]
 
         # Calcolo dell'area:
         #    area = ((numero di samples · baseline) - somma dei samples) · distanza temporale
@@ -51,9 +60,7 @@ def main():
         print("START")
 
     # ----------------------------- Apertura file -----------------------------
-    print("--> open file")
-    f = TFile("data.root")  # Apre file "data.root"
-    t = f.Get("Data_R")     # Prende dati "Data_R" dal file
+    t = root.read("src/data.fondo", "Data_R", cls=Event)
 
     # ------------------------ Calcolo della baseline -------------------------
     if __debug__:
@@ -62,7 +69,7 @@ def main():
     for event in t:
         # Calcola della media dei primi `BASELINE_CALC_N` samples richiamando la funzione "mean"
         # Salva la media nel vettore "medie"
-        medie.append(mean([*event.Samples][:BASELINE_CALC_N]))
+        medie.append(mean(event.Samples[:BASELINE_CALC_N]))
     # Salva la media del vettore "medie" come "BASELINE"
     if __debug__:
         print("    done.")
