@@ -28,13 +28,15 @@ class TrueRandomGenerator:
         for i in range (1, len(tempi)):
             temp_deltaT = tempi[i] - tempi[i-1]    # Differenza tra il tempo "i" e il tempo "i-1"
             self.deltaT.append(temp_deltaT)        # Salva la differenza nel vettore "self.deltaT"
-        print("    done.")
+        if __debug__:
+            print("    done.")
 
         if __debug__:
             print("--> generating random bits")
         # Applicazione della funzione "_rand" alle differenze dei tempi e salvataggio nel vettore "self.bits"
         self.randomBits = list(map(self._rand, self.deltaT))
-        print("    done.")
+        if __debug__:
+            print("    done.")
 
         if __debug__:
             print("--> generating random numbers")
@@ -55,7 +57,8 @@ class TrueRandomGenerator:
 
         if bug:
             self.randomNumbers += randomNumbers_b
-        print("    done.")
+        if __debug__:
+            print("    done.")
 
         self.nRandomNumbers = len(self.randomNumbers)
 
