@@ -46,6 +46,7 @@ def read(
     cls_name: str = "Data"
 ) -> list[_T]:
     """Legge la tabella `table` dal file ROOT `file` e ritorna i valori come lista di oggetti con gli attributi in `attributes`."""
+
     if __debug__:
         print(f"--> Reading table {table} of file {file}")
     # Genera la classe giusta in runtime, se non ne è stata specificata una
