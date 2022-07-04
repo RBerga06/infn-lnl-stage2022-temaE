@@ -150,7 +150,7 @@ Potete utilizzarlo come un test per vedere se tutto funziona correttamente: `pyt
 ### TRNG
 
 Il TRNG (True Random Number Generator) è definito nel file `rand.py`.
-Per utilizzarlo, basta importare da lì la classe `TrueRandomGenerator` e utilizzare il metodo `random_number`
+Per utilizzarlo, basta importare da lì la classe `TrueRandomGenerator` e utilizzare il metodo `random_number`:
 
 ```python
 from rand import TrueRandomGenerator
