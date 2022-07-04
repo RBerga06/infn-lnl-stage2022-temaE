@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 import matplotlib.pyplot as plt
 from ROOT import *  # type: ignore
 
@@ -10,14 +11,18 @@ T: float = 4e-6  # 4µs
 BASELINE_CALC_N: int = 60  # 17 per il file 'fondo.root'
 
 
+
+# --- Utility ----
+
 # Calcolo della media degli elementi contenuti nel vettore "v"
 def mean(v):
-    return sum(v)/len(v)
+    return sum(v) / len(v)
 
 
 # Calcolo delle aree per ogni evento
 def aree(t, BASELINE, max_area=None, min_samples=0, max_samples=None):
-    print(f"--> aree({BASELINE=}, {max_area=})")
+    if __debug__:
+        print(f"--> aree({BASELINE=}, {max_area=})")
 
     aree = []
     for event in t:
@@ -33,13 +38,17 @@ def aree(t, BASELINE, max_area=None, min_samples=0, max_samples=None):
             # ... salva l'area nel vettore "Aree"
             aree.append(temp_area)
 
-    print("    aree calcolate.")
+    if __debug__:
+        print("    aree calcolate.")
     return aree
 
 
+# --- Programma principale ----
+
 # Funzione principale
 def main():
-    print("START")
+    if __debug__:
+        print("START")
 
     # ----------------------------- Apertura file -----------------------------
     print("--> open file")
@@ -47,13 +56,16 @@ def main():
     t = f.Get("Data_R")     # Prende dati "Data_R" dal file
 
     # ------------------------ Calcolo della baseline -------------------------
-    print("--> BASELINE")
+    if __debug__:
+        print("--> calculating baseline")
     medie = []
     for event in t:
         # Calcola della media dei primi `BASELINE_CALC_N` samples richiamando la funzione "mean"
         # Salva la media nel vettore "medie"
         medie.append(mean([*event.Samples][:BASELINE_CALC_N]))
-    # Salva la media del vettore "medie" nella "BASELINE"
+    # Salva la media del vettore "medie" come "BASELINE"
+    if __debug__:
+        print("    done.")
     BASELINE = mean(medie)
     #BASELINE = 13313.683338704632      # già calcolata, all'occorrenza
 
