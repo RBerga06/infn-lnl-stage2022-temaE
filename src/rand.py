@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 from ROOT import TFile  # type: ignore
 
 
@@ -94,6 +93,9 @@ class TrueRandomGenerator:
 
 # Funzione per testare il generatore
 def test():
+    # La libreria matplotlib serve soltanto qua: importarla all'inizio di tutto il programma è sconveniente
+    import matplotlib.pyplot as plt
+
     gen = TrueRandomGenerator()
 
     # -------------------------------- Utility --------------------------------
