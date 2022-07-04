@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Questo modulo contiene un generatore di numeri veramente casuali (TRNG)."""
 from ROOT import TFile
 
 
