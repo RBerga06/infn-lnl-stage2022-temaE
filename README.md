@@ -80,6 +80,13 @@ Potete fare riferimento a questi video:
 
 ## Utilizzo
 
+Per eseguire un file, aprire il terminale e assicurarsi di essere nella cartella principale. Poi, digitare `python3 src/nome-del-file.py`.
+
+### Stagisti
+
+Il file `stagisti.py` contiene il codice utilizzato per determinare l'ordine di presentazione del lavoro svolto.
+Potete utilizzarlo come un test per vedere se tutto funziona correttamente: `python3 -O src/stagisti.py` dovrebbe scrivere a schermo `['Rosalinda', 'Riccardo', 'Giacomo', 'Jacopo']`
+
 ### TRNG
 
 Il TRNG (True Random Number Generator) è definito nel file `rand.py`.
@@ -109,4 +116,22 @@ trng = TrueRandomGenerator()
 xs = [trng.random_number() for _ in range(10)]
 
 print(*xs, sep=", ")
-````
+```
+
+Il TRNG legge i tempi dal file `data.root`, ne calcola le differenze e da queste ricava bit casuali (`0` o `1` in ordine imprevedibile).
+Raggruppando ad 8 ad 8 questi bit genera byte (anche questi casuali), convertiti poi in numeri decimali da 0 a 255.
+Per aggiungere, alla fine di tutti i numeri, gli stessi convertiti erroneamente, passare il parametro `bug=True`:
+
+```python
+trng = TrueRandomGenerator(bug=True)
+```
+
+Per leggere da un altro file, passare il parametro `file="/path/to/file.root"`. Per esempio:
+
+```python
+# Legge i dati dal file ~/data/my_data.root
+trng = TrueRandomGenerator(file="~/data/my_data.root")
+```
+
+> **Warning**
+> Il file specificato deve necessariamente avere la stessa struttura di `data.root` e `fondo.root` (aprite uno dei due con `rootbrowse`) per i dettagli.
