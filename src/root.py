@@ -1,5 +1,5 @@
+#!/usr/bin/env python3
 """Modulo che utilizza PyROOT (se installato), o uproot come backend."""
-
 from __future__ import annotations
 from collections import namedtuple
 from typing import Any, NamedTuple, TypeVar, get_origin, get_type_hints

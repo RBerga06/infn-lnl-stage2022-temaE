@@ -1,4 +1,5 @@
 from ROOT import TFile  # type: ignore
+#!/usr/bin/env python3
 
 
 # Generatore di numeri casuali che sfrutta la casualità dei dati del file "data.root"
@@ -9,7 +10,7 @@ class TrueRandomGenerator:
     randomNumbers:  list[int]
     nRandomNumbers: int
 
-    # Metodo di inizializzazione: crea numeri casuali e li salva nel vettore "bytes"
+    # Metodo di inizializzazione: crea numeri casuali e li salva nel vettore "randomNumbers"
     def __init__(self, file: str = "src/data.root", bug: bool = False):
         f = TFile(file)      # Apre il file
         t = f.Get("Data_R")  # Prende i dati dal file

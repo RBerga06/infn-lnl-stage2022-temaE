@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from rand import TrueRandomGenerator
 import matplotlib.pyplot as plt
 from math import pi as PI
