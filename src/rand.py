@@ -1,17 +1,17 @@
-from ROOT import TFile  # type: ignore
 #!/usr/bin/env python3
+from ROOT import TFile
 
 
 # Generatore di numeri casuali che sfrutta la casualità dei dati del file "data.root"
 class TrueRandomGenerator:
     """Un vero generatore di numeri casuali."""
-    deltaT:         list[float]
+    deltaT:         list[int]
     randomBits:     list[int]
     randomNumbers:  list[int]
     nRandomNumbers: int
 
     # Metodo di inizializzazione: crea numeri casuali e li salva nel vettore "randomNumbers"
-    def __init__(self, file: str = "src/data.root", bug: bool = False):
+    def __init__(self, file: str = "src/data.root", bug: bool = False) -> None:
         f = TFile(file)      # Apre il file
         t = f.Get("Data_R")  # Prende i dati dal file
 
@@ -65,12 +65,12 @@ class TrueRandomGenerator:
 
     # Metodo statico: genera un bit dal paramentro "n"
     @staticmethod
-    def _rand(n):
+    def _rand(n: int) -> int:
         return n%2
 
     # Metodo statico: converte il vettore di bit "v" in numero decimale
     @staticmethod
-    def _conv(v):
+    def _conv(v: list[int]) -> int:
         sum = 0
         for i in range(8):
             sum += v[7 - i] * 2**i
@@ -78,14 +78,14 @@ class TrueRandomGenerator:
 
     # Metodo statico: converte fasullamente il vettore di bit "v" in numero decimale
     @staticmethod
-    def _conv2(v):
+    def _conv2(v: list[int]) -> int:
         sum = 0
         for i in range(8):
             sum += v[i] * 2**i  # <-- il bug è qui, i pesi dei bit sono in ordine inverso:
         return sum              #     il bit a sinistra vale 2^0, mentre quello a destra vale 2^7
 
     # Metodo: restituisce un numero casuale
-    def random_number(self):
+    def random_number(self) -> int:
         n = self.randomNumbers[self._i]
         # Incremento dell'indice, torna a 0 se si raggiunge l'ultimo numero casuale disponibile
         self._i = (self._i + 1) % self.nRandomNumbers
