@@ -77,3 +77,36 @@ Potete fare riferimento a questi video:
 > **Disclaimer**
 > Se qualcosa dovesse andare storto, **non** create una `issue` (o una discussione) in questa `repo` di GitHub – gli ex-stagisti del tema E *non* si impegnano a risolvere problemi del genere.
 > Tuttavia, in questi casi [Google](https://www.google.com) si può rivelare uno strumento particolarmente utile, e se neanche così risolvete il vostro problema, potete sempre appellarvi a un forum.
+
+## Utilizzo
+
+### TRNG
+
+Il TRNG (True Random Number Generator) è definito nel file `rand.py`.
+Per utilizzarlo, basta importare da lì la classe `TrueRandomGenerator` e utilizzare il metodo `random_`
+
+```python
+from rand import TrueRandomGenerator
+
+trng = TrueRandomGenerator()
+
+# Un numero casuale tra 0 e 255
+x = trng.random_number()
+
+print(x)
+```
+
+> **Note**
+> Essendo i dati casuali predeterminati (e salvati nel file `data.root`), ogni esecuzione del programma darà *sempre* gli stessi risultati.
+> Per apprezzare la casualità dei dati è necessario chiamare `random_number()` più volte, per notare la successione di numeri che viene generata (sarà sempre la stessa, ma di per sé casuale).
+
+```python
+from rand import TrueRandomGenerator
+
+trng = TrueRandomGenerator()
+
+# Una lista di 10 numeri casuali
+xs = [trng.random_number() for _ in range(10)]
+
+print(*xs, sep=", ")
+````
