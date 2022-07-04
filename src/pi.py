@@ -46,7 +46,7 @@ def main ():
 
     # Inizializzazione
     TRG = TrueRandomGenerator(bug=BUG)  # Generatore
-    LEN = len(TRG.randomNumbers)        # Numero di valori casuali disponibili
+    LEN = TRG.nRandomNumbers            # Numero di valori casuali disponibili
     N_in = 0        # Numero di coordinate casuali all'interno del cerchio
     x_in = []       # Lista delle coordinate x all'interno del cerchio
     y_in = []       # Lista delle coordinate y all'interno del cerchio

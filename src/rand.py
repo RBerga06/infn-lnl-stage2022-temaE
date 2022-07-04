@@ -8,6 +8,7 @@ class TrueRandomGenerator:
     deltaT:         list[float]
     randomBits:     list[int]
     randomNumbers:  list[int]
+    nRandomNumbers: int
 
     # Metodo di inizializzazione: crea numeri casuali e li salva nel vettore "bytes"
     def __init__(self, file = "src/data.root", bug = False):
@@ -45,6 +46,7 @@ class TrueRandomGenerator:
 
         if bug:
             self.randomNumbers += randomNumbers_b
+        self.nRandomNumbers = len(self.randomNumbers)
 
         # -------------------- Metodo 2 --------------------
         #temp_byte = [0]*8
@@ -85,7 +87,7 @@ class TrueRandomGenerator:
     def random_number(self):
         n = self.randomNumbers[self._i]
         # Incremento dell'indice, torna a 0 se si raggiunge l'ultimo numero casuale disponibile
-        self._i = (self._i + 1) % len(self.randomNumbers)
+        self._i = (self._i + 1) % self.nRandomNumbers
         return n
 
 
