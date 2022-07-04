@@ -2,6 +2,7 @@
 """Modulo che utilizza PyROOT (se installato), o uproot come backend."""
 from __future__ import annotations
 from collections import namedtuple
+from pathlib import Path
 from typing import Any, NamedTuple, TypeVar, get_origin, get_type_hints
 import os
 
@@ -36,7 +37,7 @@ _T = TypeVar("_T", bound=NamedTuple)
 
 def read(
     # File e tabella
-    file: str,
+    file: Path | str,
     table: str,
     # Attributi da leggere (dedotti dalla classe - `cls=`, se definita)
     *attributes: str,
@@ -74,6 +75,7 @@ def read(
         list_conv = [name for name, t in get_type_hints(cls).items() if issubclass(get_origin(t) or t, list)]
     
     # Inizializzazione variabili
+    file = str(Path(file).expanduser().resolve())
     data: list[_T] = []         # Questo sarà il risultato della funzione
     vals: dict[str, Any] = {}   # Qua vengono salvati i parametri da passare alla classe nella costruzione dell'oggetto
 

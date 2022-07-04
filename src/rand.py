@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """Questo modulo contiene un generatore di numeri veramente casuali (TRNG)."""
+from pathlib import Path
 from typing import NamedTuple
 import root
+
+# Determina la cartella dove si trova questo file
+SRC = Path(__file__).parent
 
 
 class Event(NamedTuple):
@@ -19,7 +23,7 @@ class TrueRandomGenerator:
     nRandomNumbers: int
 
     # Metodo di inizializzazione: crea numeri casuali e li salva nel vettore "randomNumbers"
-    def __init__(self, file: str = "src/data.root", bug: bool = False) -> None:
+    def __init__(self, file: Path | str = SRC/"data.root", bug: bool = False) -> None:
         # Apri il file `file` e leggi la tabella "Data_R", salvando i dati come lista di eventi (oggeti di tipo `Event`)
         t = root.read(file, "Data_R", cls=Event)
 
