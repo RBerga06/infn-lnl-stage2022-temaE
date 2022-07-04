@@ -80,17 +80,29 @@ Potete fare riferimento a questi video:
 
 ## Utilizzo
 
-Per eseguire un file, aprire il terminale e assicurarsi di essere nella cartella principale. Poi, digitare `python3 src/nome-del-file.py`.
+Per eseguire un file, aprire il terminale e assicurarsi di essere nella cartella principale.
+Poi, digitare:
+
+```bash
+python3 -O src/nome-del-file.py
+```
+
+Di default, vengono stampate informazioni utili per capire cosa sta facendo il programma in questo momento (per esempio, per capire quali azioni richiedono maggior tempo).
+Per disattivare questo comportamento, basta inserire la flag `-O`:
+
+```bash
+python3 -O src/nome-del-file.py
+```
 
 ### Stagisti
 
 Il file `stagisti.py` contiene il codice utilizzato per determinare l'ordine di presentazione del lavoro svolto.
-Potete utilizzarlo come un test per vedere se tutto funziona correttamente: `python3 -O src/stagisti.py` dovrebbe scrivere a schermo `['Rosalinda', 'Riccardo', 'Giacomo', 'Jacopo']`
+Potete utilizzarlo come un test per vedere se tutto funziona correttamente: `python3 -O src/stagisti.py` dovrebbe scrivere a schermo `['Rosalinda', 'Riccardo', 'Giacomo', 'Jacopo']`.
 
 ### TRNG
 
 Il TRNG (True Random Number Generator) è definito nel file `rand.py`.
-Per utilizzarlo, basta importare da lì la classe `TrueRandomGenerator` e utilizzare il metodo `random_`
+Per utilizzarlo, basta importare da lì la classe `TrueRandomGenerator` e utilizzare il metodo `random_number`
 
 ```python
 from rand import TrueRandomGenerator
