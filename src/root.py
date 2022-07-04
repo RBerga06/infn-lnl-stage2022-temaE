@@ -45,7 +45,20 @@ def read(
     cls: type[_T] | None = None,
     cls_name: str = "Data"
 ) -> list[_T]:
-    """Legge la tabella `table` dal file ROOT `file` e ritorna i valori come lista di oggetti con gli attributi in `attributes`."""
+    """Legge la tabella `table` dal file ROOT `file` e ritorna i valori come lista di oggetti con gli attributi in `attributes`.
+    
+    Utilizzo
+    --------
+    Dichiara gli attributi di interesse chiamando la funzione
+    >>> root.read("file.root", "Data_R", "Timestamp", "Samples", list_conv=["Samples"])
+    -- oppure --
+    Dichiara gli attributi di interesse in una classe
+    >>> from typing import NamedTuple
+    >>> class Event(NamedTuple):
+    ...     Timestamp: int
+    ...     Samples: list[int]  # va convertito in lista
+    >>> root.read("file.root", cls=Event)
+    """
 
     if __debug__:
         print(f"--> Reading table {table} of file {file}")
