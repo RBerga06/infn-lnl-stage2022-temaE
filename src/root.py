@@ -61,9 +61,6 @@ def read(
     >>> root.read("file.root", cls=Event)
     """
 
-    if __debug__:
-        print(f"--> Reading table {table} of file {file}")
-
     if cls is None:
         # Non è stata specificata una classe: generane una adeguata ora.
         cls = namedtuple(cls_name, attributes)  # type: ignore
@@ -79,10 +76,12 @@ def read(
     data: list[_T] = []         # Questo sarà il risultato della funzione
     vals: dict[str, Any] = {}   # Qua vengono salvati i parametri da passare alla classe nella costruzione dell'oggetto
 
-    if ROOT:  # --- PyROOT ---
+    if __debug__:
+        print(f"--> Reading table {table} from file {file}")
 
-        t = TFile(file)   # Apri il file
-        t = t.Get(table)  # Leggi la tabella
+    if ROOT:  # --- PyROOT ---
+        f = TFile(file)   # Apri il file
+        t = f.Get(table)  # Leggi la tabella
         for x in t:
             vals.clear()  # Svuota i parametri
             for attr in attributes:

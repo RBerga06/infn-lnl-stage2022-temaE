@@ -36,7 +36,7 @@ class TrueRandomGenerator:
             print("--> calculating time differences")
         # Calcolo delle differenze dei tempi tra coppie di tempi adiacenti
         self.deltaT = []
-        for i in range (1, len(tempi)):
+        for i in range(1, len(tempi)):
             temp_deltaT = tempi[i] - tempi[i-1]    # Differenza tra il tempo "i" e il tempo "i-1"
             self.deltaT.append(temp_deltaT)        # Salva la differenza nel vettore "self.deltaT"
         if __debug__:
