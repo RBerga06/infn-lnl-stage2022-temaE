@@ -91,7 +91,7 @@ mamba create -y -c conda-forge -n iLoveTemaE python uproot matplotlib
 # 4.2. Attiva l'ambiente virtuale
 mamba activate iLoveTemaE
 # 4.3. Installa git via winget
- winget install --id Git.Git -e --source winget
+winget install --id Git.Git -e --source winget
 # 4.4. Clona questa repository
 git clone https://github.com/RBerga06/infn-lnl-stage2022-temaE.git
 # 4.5. Entra nella repository
