@@ -16,10 +16,10 @@ ROOT: bool = not eval(os.environ.get("FORCE_UPROOT", "0") or "0")
 try:
     if not ROOT:
         raise ModuleNotFoundError
-    from ROOT import TFile      # type: ignore
+    from ROOT import TFile  # type: ignore
 except ModuleNotFoundError:
     # Non c'è PyROOT: usiamo uproot
-    from uproot import open     # type: ignore
+    import uproot
     ROOT = False
 else:
     # nessun errore: PyROOT c'è.
@@ -71,7 +71,7 @@ def read(
             data.append(cls(**vals))  # type: ignore
     else:
         raw_data = {}
-        with open(f"{file}:{table}") as f:
+        with uproot.open(f"{file}:{table}") as f:
             branches = {k: v for k, v in f.iteritems()}
             for attr in attributes:
                 if attr in list_conv:
@@ -87,6 +87,8 @@ def read(
         print(f"    done (read {len(data)} items)")
     return data
 
+
+__all__ = ["read"]
 
 
 if __name__ == "__main__":
