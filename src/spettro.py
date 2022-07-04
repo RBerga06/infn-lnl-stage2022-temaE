@@ -8,7 +8,7 @@ import root
 
 # --- Costanti ---
 # Distanza temporale tra due samples
-T: float = 4e-6  # 4µs
+T: float = 4  # µs
 # Numero di samples da prendere per calcolare la baseline
 BASELINE_CALC_N: int = 60  # 17 per il file 'fondo.root'
 
@@ -62,7 +62,7 @@ def main():
 
     # ----------------------------- Apertura file -----------------------------
     SRC = Path(__file__).parent
-    t = root.read(SRC/"fondo.root", "Data_R", cls=Event)
+    t = root.read(SRC/"data.root", "Data_R", cls=Event)
 
     # ------------------------ Calcolo della baseline -------------------------
     if __debug__:
@@ -79,16 +79,19 @@ def main():
     #BASELINE = 13313.683338704632      # già calcolata, all'occorrenza
 
     # ---------------------- Calibrazione spettro in keV ----------------------
-    X1 = 118900  # picco a 1436 keV
-    X2 = 211400  # picco a 2600 keV
-    Y1 = 1436    # keV del decadimento 138La -> 138Ba (picco centrale)
-    Y2 = 2600    # keV del decadimento 227Ac (primo picco)
-    m = (Y1 - Y2) / (X1 - X2)
-    q = Y1 - m * X1
+    # X1 = 118900  # picco a 1436 keV
+    # X2 = 211400  # picco a 2600 keV
+    # Y1 = 1436    # keV del decadimento 138La -> 138Ba (picco centrale)
+    # Y2 = 2600    # keV del decadimento 227Ac (primo picco)
+    # m = (Y1 - Y2) / (X1 - X2)
+    # q = Y1 - m * X1
+    X = 118900  # picco a 1436 keV
+    Y = 1436    # keV del decadimento 138La -> 138Ba (picco centrale)
+    m = Y/X
 
     # Funzione di calibrazione
     def conv(x):
-        return m * x + q
+        return m * x #+ q
 
     # -------------------------------- Grafici --------------------------------   
     # Stampa i samples
@@ -102,13 +105,13 @@ def main():
 #    plt.hist(aree(t, BASELINE), bins = 10000)
 #    plt.show
 
-    # Spettro calibrato in keV, aree calcolate con samples nell'intervallo [BASELINE_CALC_N:150]
+    # Spettro calibrato in keV, aree calcolate con samples nell'intervallo [BASELINE_CALC_N, 150]
     plt.hist(list(map(conv, aree(t, BASELINE, min_samples=BASELINE_CALC_N, max_samples=150))), bins = 2500)
     plt.yscale("log")
     plt.xlabel("Energy [keV]")
     plt.ylabel("Counts")
     plt.xlim(left=0, right=conv(221400))
-    plt.ylim(top=10000, bottom=0.7)
+    plt.ylim(top=2500*T, bottom=.175*T)
     plt.title("Background energy spectrum")
     plt.show()
 
