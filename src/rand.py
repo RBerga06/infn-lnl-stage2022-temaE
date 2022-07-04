@@ -35,11 +35,11 @@ class TrueRandomGenerator:
         # -------------------- Metodo 1 --------------------
         nBytesPossibili = len(self.randomBits)//8       # Numero di bytes possibili = ⌊ <numero di bit> / 8 ⌋  ('//' è la divisione intera)
         for i in range(nBytesPossibili):
-            temp_byte = [0]*8                           # Dichiarazione di un vettore di lunghezza 8
+            temp_byte = [0]*8                           # Inizializzazione di un vettore di lunghezza 8 (pieno di zeri)
             for j in range(8):
-                temp_byte[j] = self.randomBits[i*8 + j] # Si prendono 8 elementi da "self.bits" e si salvano su "temp_byte"
+                temp_byte[j] = self.randomBits[i*8 + j] # Si prendono 8 elementi da "self.randomBits" e si salvano su "temp_byte"
             
-            # Conversione tramite la funzione "_conv" di "temp_byte" e salvataggio in "self.randNumbers"
+            # Conversione tramite la funzione "_conv" di "temp_byte" e salvataggio in "self.randomNumbers"
             self.randomNumbers.append(self._conv(temp_byte))
             if bug:
                 randomNumbers_b.append(self._conv2(temp_byte))
