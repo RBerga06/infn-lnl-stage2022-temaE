@@ -4,7 +4,7 @@ from ROOT import TFile
 
 # Generatore di numeri casuali che sfrutta la casualità dei dati del file "data.root"
 class TrueRandomGenerator:
-    """Un vero generatore di numeri casuali."""
+    """Un generatore di numeri veramente casuali."""
     deltaT:         list[int]
     randomBits:     list[int]
     randomNumbers:  list[int]
