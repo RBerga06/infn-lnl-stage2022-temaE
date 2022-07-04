@@ -33,7 +33,7 @@ class TrueRandomGenerator:
         self.randomNumbers = []
         randomNumbers_b = []
         # -------------------- Metodo 1 --------------------
-        nBytesPossibili = len(self.randomBits)//8       # Numero di bytes possibili = divisione intera tra totale di bits e 8
+        nBytesPossibili = len(self.randomBits)//8       # Numero di bytes possibili = ⌊ <numero di bit> / 8 ⌋  ('//' è la divisione intera)
         for i in range(nBytesPossibili):
             temp_byte = [0]*8                           # Dichiarazione di un vettore di lunghezza 8
             for j in range(8):
