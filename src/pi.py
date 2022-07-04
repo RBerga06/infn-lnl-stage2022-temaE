@@ -43,7 +43,7 @@ def main ():
 
     # Inizializzazione
     TRG = TrueRandomGenerator(bug=BUG)  # Generatore
-    LEN = len(TRG.randomNumbers)                # Numero di valori casuali disponibili
+    LEN = len(TRG.randomNumbers)        # Numero di valori casuali disponibili
     N_in = 0        # Numero di coordinate casuali all'interno del cerchio
     x_in = []       # Lista delle coordinate x all'interno del cerchio
     y_in = []       # Lista delle coordinate y all'interno del cerchio
@@ -73,7 +73,7 @@ def main ():
         # Disegna i punti nel piano cartesiano
         plt.scatter(x_in,  y_in,  marker = ".")
         plt.scatter(x_out, y_out, marker = ".")
-        #plt.axes().set_aspect('equal')     # deprecated
+        plt.gca().set_aspect('equal', adjustable='box')
         plt.show()
 
         # Disegno andamento della stima di π in funzione del numero di coordinate
@@ -100,7 +100,7 @@ def main ():
 
         plt.scatter(x_out, y_out, marker = ".")
         plt.scatter(x_in,  y_in,  marker = ".")
-        plt.axes().set_aspect('equal')
+        plt.gca().set_aspect('equal', adjustable='box')
         plt.show()
 
         plt.plot(pi_array)
@@ -145,7 +145,7 @@ def main ():
 
         plt.scatter(x_out, y_out, marker = ".")
         plt.scatter(x_in,  y_in,  marker = ".")
-        plt.axes().set_aspect('equal')
+        plt.gca().set_aspect("equal", adjustable="box")
         plt.show()
 
         plt.plot(pi_array)
