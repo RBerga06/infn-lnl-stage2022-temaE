@@ -1,6 +1,8 @@
 # Stage 2022 ai Laboratori Nazionali di Legnaro (LNL) dell'Istituto Nazionale di Fisica Nucleare (INFN) – Elaborato del Tema E
 
-True Random Number Generator based on Physical Phenomena
+True Random Number Generator basato su fenomeni fisici.
+
+Autori (ed ex-stagisti): **Riccardo Bergamaschi**, **Jacopo Di Nardo**, **Rosalinda Permunian** e **Giacomo Simonetto**
 
 ## Installazione
 
@@ -193,3 +195,18 @@ trng = TrueRandomGenerator(file="~/data/my_data.root")
 
 > **Warning**
 > Il file specificato deve necessariamente avere la stessa struttura di `data.root` e `fondo.root` (aprite uno dei due con `rootbrowse`) per i dettagli.
+
+Di default, la libreria per leggere i dati è `PyROOT` (quando installata); altrimenti, viene utilizzata `uproot`.
+Per forzare l'utilizzo di `uproot` anche quando `PyROOT` è installata, impostare la variabile d'ambiente `FORCE_UPROOT`.
+Su UNIX:
+
+```bash
+export FORCE_UPROOT=1  # Anche '=True' va bene
+python3 src/file.py
+```
+
+O, per evitare di usare `export`:
+
+```bash
+FORCE_UPROOT=1 python3 src/file.py
+```
