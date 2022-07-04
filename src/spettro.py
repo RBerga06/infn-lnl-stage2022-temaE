@@ -1,10 +1,12 @@
 import matplotlib.pyplot as plt
-from cmath import log
-from ROOT import *
+from ROOT import *  # type: ignore
 
 
-# Costanti
-T = 4   # Distanza temporale tra due samples
+# --- Costanti ---
+# Distanza temporale tra due samples
+T: float = 4e-6  # 4µs
+# Numero di samples da prendere per calcolare la baseline
+BASELINE_CALC_N: int = 60  # 17 per il file 'fondo.root'
 
 
 # Calcolo della media degli elementi contenuti nel vettore "v"
@@ -22,10 +24,10 @@ def aree(t, BASELINE, max_area=None, min_samples=0, max_samples=None):
         samples = [*event.Samples][min_samples:max_samples]
 
         # Calcolo dell'area:
-        # ((Numero di samples · baseline) - somma dei samples) · distanza temporale
+        #    area = ((numero di samples · baseline) - somma dei samples) · distanza temporale
         temp_area = (len(samples) * BASELINE - sum(samples)) * T
 
-        # Se non ci sono limiti all'area o area < del limite ...
+        # Se non sono stati impostati limiti all'area o area < del limite ...
         if max_area is None or temp_area < max_area:
             # ... salva l'area nel vettore "Aree"
             aree.append(temp_area)
@@ -47,9 +49,9 @@ def main():
     print("--> BASELINE")
     medie = []
     for event in t:
-        # Calcola della media dei primi 17 samples richiamando la funzione "mean"
+        # Calcola della media dei primi `BASELINE_CALC_N` samples richiamando la funzione "mean"
         # Salva la media nel vettore "medie"
-        medie.append(mean([*event.Samples][:60]))
+        medie.append(mean([*event.Samples][:BASELINE_CALC_N]))
     # Salva la media del vettore "medie" nella "BASELINE"
     BASELINE = mean(medie)
     #BASELINE = 13313.683338704632      # già calcolata, all'occorrenza
@@ -78,18 +80,18 @@ def main():
 #    plt.hist(aree(t, BASELINE), bins = 10000)
 #    plt.show
 
-    # Spettro calibrato in keV, aree calcolate con samples nell'intervallo [60:150]
-    plt.hist(list(map(conv, aree(t, BASELINE, min_samples=60, max_samples=150))), bins = 2500)
+    # Spettro calibrato in keV, aree calcolate con samples nell'intervallo [BASELINE_CALC_N:150]
+    plt.hist(list(map(conv, aree(t, BASELINE, min_samples=BASELINE_CALC_N, max_samples=150))), bins = 2500)
     plt.yscale("log")
     plt.xlabel("Energy [keV]")
     plt.ylabel("Counts")
-    plt.xlim(left = 0, right = conv(221400))
-    plt.ylim(top = 10000, bottom = 0.7)
+    plt.xlim(left=0, right=conv(221400))
+    plt.ylim(top=10000, bottom=0.7)
     plt.title("Background energy spectrum")
     plt.show()
 
 
 
-# Esegue "main()" quando il programma viene eseguito
+# Chiama "main()" quando il programma viene eseguito direttamente
 if __name__ == '__main__':
     main()

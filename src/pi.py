@@ -11,7 +11,7 @@ BUG = True
 
 
 # Calcolo di π con metodo Monte Carlo e numeri casuali generati con TrueRandomGenerator
-def main ():
+def main():
     # Determina l'algoritmo da utlizzare
     width = os.get_terminal_size().columns          # Larghezza del terminale
     title = " Monte Carlo Method π Approximator "   # Titolo
@@ -47,12 +47,13 @@ def main ():
     # Inizializzazione
     TRG = TrueRandomGenerator(bug=BUG)  # Generatore
     LEN = TRG.nRandomNumbers            # Numero di valori casuali disponibili
-    N_in = 0        # Numero di coordinate casuali all'interno del cerchio
-    x_in = []       # Lista delle coordinate x all'interno del cerchio
-    y_in = []       # Lista delle coordinate y all'interno del cerchio
-    x_out = []      # Lista delle coordinate x all'esterno del cerchio
-    y_out = []      # Lista delle coordinate y all'esterno del cerchio
-    pi_array = []   # Lista delle stime di π nel tempo
+    N_in:     int         = 0   # Numero di coordinate casuali all'interno del cerchio
+    x_in:     list[int]   = []  # Lista delle coordinate x all'interno del cerchio
+    y_in:     list[int]   = []  # Lista delle coordinate y all'interno del cerchio
+    x_out:    list[int]   = []  # Lista delle coordinate x all'esterno del cerchio
+    y_out:    list[int]   = []  # Lista delle coordinate y all'esterno del cerchio
+    pi_array: list[float] = []  # Lista delle stime di π nel tempo
+    pi:       float             # Stima di π, ricalcolata ad ogni iterazione
 
     # ------------------------- Metodo 1: base, O(n) --------------------------
     if _mode == 0:
@@ -160,6 +161,6 @@ def main ():
 
 
 
-# Esegui "main()" quando il programma viene eseguito
+# Chiama "main()" quando il programma viene eseguito direttamente
 if __name__ == '__main__':
     main()

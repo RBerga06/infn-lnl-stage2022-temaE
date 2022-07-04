@@ -11,7 +11,7 @@ class TrueRandomGenerator:
     nRandomNumbers: int
 
     # Metodo di inizializzazione: crea numeri casuali e li salva nel vettore "bytes"
-    def __init__(self, file = "src/data.root", bug = False):
+    def __init__(self, file: str = "src/data.root", bug: bool = False):
         f = TFile(file)      # Apre il file
         t = f.Get("Data_R")  # Prende i dati dal file
 
@@ -46,6 +46,7 @@ class TrueRandomGenerator:
 
         if bug:
             self.randomNumbers += randomNumbers_b
+
         self.nRandomNumbers = len(self.randomNumbers)
 
         # -------------------- Metodo 2 --------------------
@@ -130,7 +131,7 @@ def test():
     #plt.title("Bits distribution")
 
     # Numeri casuali
-    plt.hist(gen.randomNumbers, bins = 256)
+    plt.hist(gen.randomNumbers, bins=256)
     plt.yscale("log")
     plt.xlabel("Bytes")
     plt.ylabel("Counts")
@@ -140,6 +141,6 @@ def test():
 
 
 
-# Esegui "test()" quando il programma viene eseguito
+# Chiama "test()" quando il programma viene eseguito direttamente
 if __name__ == '__main__':
     test()
