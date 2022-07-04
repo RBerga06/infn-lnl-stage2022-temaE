@@ -49,35 +49,63 @@ def read(
 
     if __debug__:
         print(f"--> Reading table {table} of file {file}")
-    # Genera la classe giusta in runtime, se non ne è stata specificata una
+
     if cls is None:
+        # Non è stata specificata una classe: generane una adeguata ora.
         cls = namedtuple(cls_name, attributes)  # type: ignore
+        # Se list_conv non è stato specificato, consideralo una lista vuota
         list_conv = list_conv or []
     else:
+        # La classe è stata specificata: determina `attributes` e `list_conv` a partire da quella.
         attributes = cls._fields
         list_conv = [name for name, t in get_type_hints(cls).items() if issubclass(get_origin(t) or t, list)]
-    data: list[_T] = []
-    vals: dict[str, Any] = {}
-    if ROOT:
-        f = TFile(file)
-        t = f.Get(table)
+    
+    # Inizializzazione variabili
+    data: list[_T] = []         # Questo sarà il risultato della funzione
+    vals: dict[str, Any] = {}   # Qua vengono salvati i parametri da passare alla classe nella costruzione dell'oggetto
+
+    if ROOT:  # --- PyROOT ---
+
+        t = TFile(file)   # Apri il file
+        t = t.Get(table)  # Leggi la tabella
         for x in t:
-            vals.clear()
+            vals.clear()  # Svuota i parametri
             for attr in attributes:
+                # Converti l'attributo in lista ove necessario
                 if attr in list_conv:
                     vals[attr] = [*getattr(x, attr)]
                 else:
                     vals[attr] = getattr(x, attr)
+            # Crea l'oggetto e aggiungilo a `data`
             data.append(cls(**vals))  # type: ignore
-    else:
-        raw_data = {}
-        with uproot.open(f"{file}:{table}") as f:
-            branches = {k: v for k, v in f.iteritems()}
+
+    else:  # --- uproot ---
+
+        # Mappa vuota per i dati grezzi (associa al nome dell'attributo la lista dei valori, ancora da combinare negli oggetti)
+        raw_data: dict[str, Any] = {}
+        # Apri la tabella del file
+        with uproot.open(f"{file}:{table}") as t:
+            # Salva i “rami” come mappa
+            branches = {k: v for k, v in t.iteritems()}
             for attr in attributes:
+                # Converti l'attributo in lista ove necessario
                 if attr in list_conv:
                     raw_data[attr] = list(map(list, branches[attr].array()))
                 else:
                     raw_data[attr] = list(branches[attr].array())
+
+        # Converti i dati grezzi in lista di oggetti: scorri gli indici e associa gli attributi corrispondenti, creando l'oggetto
+        #
+        # i:      0   1   2   3  ...
+        #         |   |   |   |
+        #         V   V   V   V
+        # attr0: x00 x01 x02 x03 ...  ¯|
+        # attr1: x10 x11 x12 x13 ...   |--> raw_data
+        # attr2: x20 x21 x22 x23 ...  _|
+        #         |   |   |   |
+        #         V   V   V   V
+        # data:  ### ### ### ### ...
+        #
         for i in range(len(raw_data[attributes[0]])):
             vals.clear()
             for attr in raw_data:
@@ -88,7 +116,9 @@ def read(
     return data
 
 
+# "Esporta" i simboli di interesse
 __all__ = ["read"]
+
 
 
 if __name__ == "__main__":
