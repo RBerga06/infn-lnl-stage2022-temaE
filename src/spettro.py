@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
+from pathlib import Path
 from typing import NamedTuple
 import matplotlib.pyplot as plt
 import root
@@ -60,7 +61,8 @@ def main():
         print("START")
 
     # ----------------------------- Apertura file -----------------------------
-    t = root.read("src/data.fondo", "Data_R", cls=Event)
+    SRC = Path(__file__).parent
+    t = root.read(SRC/"fondo.root", "Data_R", cls=Event)
 
     # ------------------------ Calcolo della baseline -------------------------
     if __debug__:
