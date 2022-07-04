@@ -80,23 +80,22 @@ python3 src/stagisti.py
 
 #### Setup su Windows
 
-1. Installa `winget` [dallo Store](https://www.microsoft.com/p/app-installer/9nblggh4nns1#activetab=pivot:overviewtab)
-2. Scarica l'installer di `mambaforge` [dal sito ufficiale](https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Windows-x86_64.exe)
-3. Apri l'eseguibile scaricato e segui i passaggi sullo schermo
-4. Installato `mambaforge`, esegui i seguenti comandi dal programma che si chiama `Anaconda Command Prompt`:
+1. Scarica e installa `git` [dal sito ufficiale](https://git-scm.com/download/win)
+2. Scarica e installa `mambaforge` [dal sito ufficiale](https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Windows-x86_64.exe)
+3. Installato `mambaforge`, esegui i seguenti comandi dal `Prompt dei Comandi`:
 
 ```bash
-# 4.1. Crea un ambiente virtuale (qui chiamato `iLoveTemaE` - per scegliere un altro nome, semplicemente digitarlo al posto di `iLoveTemaE`)
+# 3.0. Attiva mambaforge
+C:\Program Data\mambaforge\condabin\activate.bat
+# 3.1. Crea un ambiente virtuale (qui chiamato `iLoveTemaE` - per scegliere un altro nome, semplicemente digitarlo al posto di `iLoveTemaE`)
 mamba create -y -c conda-forge -n iLoveTemaE python uproot matplotlib
-# 4.2. Attiva l'ambiente virtuale
+# 3.2. Attiva l'ambiente virtuale
 mamba activate iLoveTemaE
-# 4.3. Installa git via winget
-winget install --id Git.Git -e --source winget
-# 4.4. Clona questa repository
+# 3.3. Clona questa repository
 git clone https://github.com/RBerga06/infn-lnl-stage2022-temaE.git
-# 4.5. Entra nella repository
+# 3.4. Entra nella repository
 cd infn-lnl-stage2022-temaE
-# 4.6. Esegui un file Python, in questo caso `stagisti.py`
+# 3.5. Esegui un file Python, in questo caso `stagisti.py`
 python3 src/stagisti.py
 ```
 
