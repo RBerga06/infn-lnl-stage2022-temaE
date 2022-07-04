@@ -8,27 +8,48 @@ Non essendo una vera e propria libreria, questo progetto non necessita di essere
 
 ### Dipendenze
 
-Librerie Python:
+Di seguito sono elencate le dipendenze:
 
-* Libreria open-source [matplotlib](https://matplotlib.org/) (per i grafici)
-* Framework [PyROOT](https://root.cern/) del CERN (per la lettura dei file di dati)
+* Per i grafici:
+  * Libreria open-source [matplotlib](https://matplotlib.org/)
+
+* Per la lettura dei file di dati in formato `.root` (ne serve almeno una):
+  * Libreria open-source [uproot](https://uproot.readthedocs.io/en/latest/) (consigliabile perché più leggera)
+  * Framework [PyROOT](https://root.cern/) del CERN (disponibile solo su UNIX)
 
 Per installare le dipdendenze nell'ambiente `conda` attualmente attivo:
 
 ```bash
-conda install -c conda-forge root matplotlib
+conda install -c conda-forge uproot matplotlib
 ```
 
-(non essendo `PyROOT` disponibile su PyPI, non esiste un comando analogo per `pip`)
+Per chi usa `mamba`:
+
+```bash
+mamba install -c conda-forge uproot matplotlib
+```
+
+Per chi usa `pip`:
+
+```bash
+pip install uproot awkward matplotlib
+```
 
 > **Note**
-> Per gli utenti Windows, è necessario compilare ROOT dal codice sorgente, [come illustrato nella documentazione](https://root.cern/install/#build-from-source) (in effetti esiste ROOT per Windows precompilato, ma PyROOT non è incluso).
+> Per gli utenti Windows che vogliono usare `PyROOT`, è necessario compilare il framework C++ `ROOT` da codice sorgente, [come illustrato nella documentazione](https://root.cern/install/#build-from-source) – in effetti esiste ROOT per Windows precompilato, ma PyROOT non è incluso.
 >
-> L'alternativa è utilizzare Unix virtualizzato, come descritto in seguito.
+> L'alternativa sarebbe utilizzare Unix virtualizzato, come descritto in seguito.
 
 ### Setup consigliato
 
 Di seguito i passaggi consigliati per disporre di un ambiente di sviluppo robusto e veloce, ma che non occupa troppo spazio su disco.
+
+Volendo, è possibile installare un IDE (Integrated Development Environment, Ambiente di Sviluppo Integrato) come [Visual Studio Code](https://code.visualstudio.com/).
+
+Le estensioni di Visual Studio Code consigliate sono:
+
+* [Python](https://marketplace.visualstudio.com/items?itemName=ms-python.python)
+* [ROOT File Viewer](https://marketplace.visualstudio.com/items?itemName=albertopdrf.root-file-viewer)
 
 #### Setup su Unix
 
@@ -42,7 +63,7 @@ mamba init "$(basename "${SHELL}")"
 # 3. Riavvia la shell
 exec "$SHELL"
 # 4. Crea un ambiente virtuale (qui chiamato `iLoveTemaE` - per scegliere un altro nome, semplicemente digitarlo al posto di `iLoveTemaE`)
-mamba create -y -c conda-forge -n iLoveTemaE python root matplotlib
+mamba create -y -c conda-forge -n iLoveTemaE python uproot matplotlib
 # 5. Attiva l'ambiente virtuale
 mamba activate iLoveTemaE
 # 6. Clona questa repository
@@ -53,12 +74,28 @@ cd infn-lnl-stage2022-temaE
 python3 src/stagisti.py
 ```
 
-Volendo, è possibile installare un IDE (Integrated Development Environment, Ambiente di Sviluppo Integrato) come [Visual Studio Code](https://code.visualstudio.com/).
+È consigliabile installare anche Visual Studio Code e alcune estensioni, come mostrato sopra.
 
-Le estensioni di Visual Studio Code consigliate sono:
+#### Setup su Windows
 
-* [Python](https://marketplace.visualstudio.com/items?itemName=ms-python.python)
-* [ROOT File Viewer](https://marketplace.visualstudio.com/items?itemName=albertopdrf.root-file-viewer)
+1. Scarica l'installer di `mambaforge` [dal sito ufficiale](https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-Windows-x86_64.exe)
+2. Apri l'eseguibile scaricato e segui i passaggi sullo schermo
+3. Installato `mambaforge`, esegui i seguenti comandi dal programma che si chiama `Anaconda Command Prompt`:
+
+```bash
+# 3.1. Crea un ambiente virtuale (qui chiamato `iLoveTemaE` - per scegliere un altro nome, semplicemente digitarlo al posto di `iLoveTemaE`)
+mamba create -y -c conda-forge -n iLoveTemaE python uproot matplotlib
+# 3.2. Attiva l'ambiente virtuale
+mamba activate iLoveTemaE
+# 3.3. Clona questa repository
+gh repo clone RBerga06/infn-lnl-stage2022-temaE || git clone https://github.com/RBerga06/infn-lnl-stage2022-temaE.git
+# 3.4. Entra nella repository
+cd infn-lnl-stage2022-temaE
+# 3.5. Esegui un file Python, in questo caso `stagisti.py`
+python3 src/stagisti.py
+```
+
+È consigliabile installare anche Visual Studio Code e alcune estensioni, come mostrato sopra.
 
 #### Setup di una macchina virtuale con Ubuntu su Windows
 
@@ -77,6 +114,15 @@ Potete fare riferimento a questi video:
 > **Disclaimer**
 > Se qualcosa dovesse andare storto, **non** create una `issue` (o una discussione) in questa `repo` di GitHub – gli ex-stagisti del tema E *non* si impegnano a risolvere problemi del genere.
 > Tuttavia, in questi casi [Google](https://www.google.com) si può rivelare uno strumento particolarmente utile, e se neanche così risolvete il vostro problema, potete sempre appellarvi a un forum.
+
+## Aggiornamento
+
+Per aggiornare la repo all'ultima versione, utilizzare i comandi:
+
+```bash
+git fetch
+git pull
+```
 
 ## Utilizzo
 
