@@ -9,7 +9,8 @@ import os
 # ----- 1. Importa la libreria corretta ------ #
 
 # Variabile che controlla la libreria da usare: True per PyROOT, False per uproot.
-ROOT: bool = not eval(os.environ.get("FORCE_UPROOT", "0"))
+#   Il valore iniziale è determinato a partire variabile d'ambiente FORCE_UPROOT.
+ROOT: bool = not eval(os.environ.get("FORCE_UPROOT", "0") or "0")
 
 # Prova a importare PyROOT; se fallisci, prova con uproot. Imposta la variabile `ROOT` di conseguenza.
 try:
