@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from math import pi as PI
 import random
 import sys
+import os
 
 # Costanti
 K = 255**2
@@ -12,9 +13,11 @@ BUG = True
 # Calcolo di π con metodo Monte Carlo e numeri casuali generati con TrueRandomGenerator
 def main ():
     # Determina l'algoritmo da utlizzare
-    print(f"""\
-{'='*22} Monte Carlo Method π Approximator {'='*22}
-
+    width = os.get_terminal_size().columns          # Larghezza del terminale
+    title = " Monte Carlo Method π Approximator "   # Titolo
+    around = "=" * (max(0, width - len(title))//2)  # Testo da inserire attorno al titolo
+    print(around, title, around, sep="")
+    print(f"""
 >>> Choose an algorithm:
  [0] Interpret data as sequential (x, y) points.
  [1] Interpret data as adjacent/linked (x, y) points.
