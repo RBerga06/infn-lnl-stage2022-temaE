@@ -2,6 +2,7 @@
 """Questo modulo contiene un generatore di numeri veramente casuali (TRNG)."""
 from pathlib import Path
 from typing import Literal, NamedTuple
+from enum import IntFlag
 import root
 
 # Determina la cartella dove si trova questo file
@@ -197,10 +198,9 @@ def test():
             vals[x] += 1
         plt.plot(local_means(vals, spread=32))
 
-    plt.yscale("log")
     plt.xlabel("Bytes")
     plt.ylabel("Counts")
-    plt.ylim(.7, 85)
+    plt.ylim(0, 85)
     plt.title("Bytes distribution")
     if __debug__:
         print("    done.")
