@@ -30,12 +30,19 @@ def mean(v):
 
 
 # Calcolo delle aree per ogni evento
-def aree(t, BASELINE, max_area=None, min_samples=0, max_samples=None):
-    if __debug__:
-        print(f"--> aree({BASELINE=}, {max_area=})")
+def aree(
+    events:      list[Event],
+    BASELINE:    float,
+    max_area:    float | None = None,
+    min_samples: int          = 0,
+    max_samples: int   | None = None,
+) -> list[float]:
 
-    aree = []
-    for event in t:
+    if __debug__:
+        print(f"--> calculating areas ({BASELINE=}, {max_area=}, samples range = [{min_samples}, {max_samples}])")
+
+    aree: list[float] = []
+    for event in events:
         # Estrazione dei samples dell'evento tra "min_samples" e "max_samples"
         samples = event.Samples[min_samples:max_samples]
 
@@ -49,7 +56,7 @@ def aree(t, BASELINE, max_area=None, min_samples=0, max_samples=None):
             aree.append(temp_area)
 
     if __debug__:
-        print("    aree calcolate.")
+        print("    done.")
     return aree
 
 
@@ -94,16 +101,16 @@ def main():
         return m * x #+ q
 
     # -------------------------------- Grafici --------------------------------   
-    # Stampa i samples
-#    for i, event in enumerate(t):
-#        if i > 10:
-#            break
-#        plt.plot([*event.Samples])
-#    plt.show()
+    # # Stampa i samples
+    # for i, event in enumerate(t):
+    #     if i > 10:
+    #         break
+    #     plt.plot([*event.Samples])
+    # plt.show()
 
-    # Spettro, aree calcolate con tutti i samples di ogni evento
-#    plt.hist(aree(t, BASELINE), bins = 10000)
-#    plt.show
+    # # Spettro, aree calcolate con tutti i samples di ogni evento
+    # plt.hist(aree(t, BASELINE), bins = 10000)
+    # plt.show
 
     # Spettro calibrato in keV, aree calcolate con samples nell'intervallo [BASELINE_CALC_N, 150]
     plt.hist(list(map(conv, aree(t, BASELINE, min_samples=BASELINE_CALC_N, max_samples=150))), bins = 2500)

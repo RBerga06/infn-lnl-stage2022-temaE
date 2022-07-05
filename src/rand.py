@@ -125,6 +125,11 @@ class TrueRandomGenerator:
         return n
 
 
+
+# Flag che controlla cosa mostrare nei grafici
+_PLOT_LOCAL_MEANS: bool = True
+
+
 # Funzione per testare il generatore
 def test():
     # La libreria matplotlib serve soltanto qua: importarla all'inizio di tutto il programma è sconveniente
@@ -133,43 +138,65 @@ def test():
     gen = TrueRandomGenerator()
 
     # -------------------------------- Utility --------------------------------
-    #print(len(gen.deltaT))                 # stampa deltaT disponibili
-    #print(*gen.randNumbers, sep="\n")      # stampa numeri casuali disponibili
-    #plt.hist(gen.bits)                     # istogramma per confrontare 0 e 1 (bits)
-    #plt.hist(gen.randNumbers, bins = 256)  # istogramma con numeri casuali
-    #plt.show()
+    # print(len(gen.deltaT))                 # stampa deltaT disponibili
+    # print(*gen.randNumbers, sep="\n")      # stampa numeri casuali disponibili
+    # plt.hist(gen.bits)                     # istogramma per confrontare 0 e 1 (bits)
+    # plt.hist(gen.randNumbers, bins = 256)  # istogramma con numeri casuali
+    # plt.show()
 
     # ----------------- Confronta frequenze di 0 e 1 in bits ------------------
-    #zero = 0
-    #uno = 0
-    #for i in gen.bits:
-    #    if i:
-    #        uno += 1
-    #    else:
-    #        zero += 1
-    #print(zero/(zero+uno))
-    #print(uno/(zero+uno))
+    # zero = 0
+    # uno = 0
+    # for i in gen.bits:
+    #     if i:
+    #         uno += 1
+    #     else:
+    #         zero += 1
+    # print(zero/(zero+uno))
+    # print(uno/(zero+uno))
 
 
     # ------------------------ Plot per presentazione -------------------------
     # Differenze di tempo
-    #plt.hist(gen.deltaT, bins = 500)
-    #plt.yscale("log")
-    #plt.xlabel("Time difference between two conecutive events [Digitizer Clock Periods]")
-    #plt.ylabel("Counts")
-    #plt.title("Time difference between two conecutive events")
+    # plt.hist(gen.deltaT, bins = 500)
+    # plt.yscale("log")
+    # plt.xlabel("Time difference between two conecutive events [Digitizer Clock Periods]")
+    # plt.ylabel("Counts")
+    # plt.title("Time difference between two conecutive events")
 
     # Bits (0, 1)
-    #plt.hist(gen.bits, bins = 3)
-    #plt.yscale("log")
-    #plt.xlabel("Bit")
-    #plt.ylabel("Counts")
-    #plt.title("Bits distribution")
+    # plt.hist(gen.bits, bins = 3)
+    # plt.yscale("log")
+    # plt.xlabel("Bit")
+    # plt.ylabel("Counts")
+    # plt.title("Bits distribution")
 
     # Numeri casuali
     if __debug__:
         print("--> plotting random numbers as an histogram")
-    plt.hist(gen.randomNumbers, bins=256)
+
+    # Salva nel namespace locale per velocizzare l'accesso
+    numbers = gen.randomNumbers
+
+    plt.hist(numbers, bins=256, alpha=.75 if _PLOT_LOCAL_MEANS else 1)
+
+    if _PLOT_LOCAL_MEANS:
+        # Funzione per calcolare la media locale (ciclica)
+        def local_means(v: list[int], spread: int = 5) -> list[float]:
+            # 'v' è il vettore con i dati
+            # 'spread' è quanti valori prendere
+            left = (spread - 1) // 2
+            L = len(v)
+            return [sum([v[(i + j - left) % L] for j in range(spread)])/spread for i in range(L)]
+
+        # Conta quanti numeri casuali vengono generati in base al loro valore
+        #   "plt.hist()"" lo fa in automatico, ma poiché dobbiamo fare le medie
+        #   locali abbiamo bisogno di questi conteggi
+        vals = [0]*256
+        for x in numbers:
+            vals[x] += 1
+        plt.plot(local_means(vals, spread=256))
+
     plt.yscale("log")
     plt.xlabel("Bytes")
     plt.ylabel("Counts")
