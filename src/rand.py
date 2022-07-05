@@ -14,7 +14,7 @@ class Event(NamedTuple):
     Timestamp: int
 
 
-# Metodo per la raccolta dei bit in byte. Non cambia il risultato, cambia la performance.
+# Switch per il raggruppamento dei bit in byte. Non cambia il risultato, cambia la performance.
 _BYTES_GENERATION_METHOD: Literal[0, 1] = 1
 
 
