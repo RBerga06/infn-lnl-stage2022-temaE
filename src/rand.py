@@ -2,7 +2,7 @@
 """Questo modulo contiene un generatore di numeri veramente casuali (TRNG)."""
 from pathlib import Path
 from typing import Literal, NamedTuple
-from enum import IntFlag
+from enum import Flag, auto
 import root
 
 # Determina la cartella dove si trova questo file
@@ -127,8 +127,28 @@ class TrueRandomGenerator:
 
 
 
-# Flag che controlla cosa mostrare nei grafici
-_PLOT_LOCAL_MEANS: bool = True
+# Classe che contiene le flag per scegliere cosa mostrare nei grafici
+class PLOT(Flag):
+    """Flag che controllano cosa mostrare nei grafici"""
+    NOTHING                         = 0
+    # Differenze di tempo
+    TIME_DELTAS                     = auto()
+    # Distribuzione dei bit
+    BITS_DISTRIBUTION               = auto()
+    # Distribuzione dei byte
+    BYTES_DISTRIBUTION              = auto()    # isogramma principale
+    BYTES_DISTRIBUTION_LOCAL_MEANS  = auto()    # medie locali
+
+
+# Specifica cosa mostrare usando le flag appena definite.
+#   Per combinarle, usare l'operatore «|»
+#   In pratica, basta commentare qua sotto le righe corrispondenti ad elementi o grafici da *non* mostrare
+TO_PLOT: PLOT = (PLOT.NOTHING
+    | PLOT.TIME_DELTAS
+    | PLOT.BITS_DISTRIBUTION
+    | PLOT.BYTES_DISTRIBUTION
+    | PLOT.BYTES_DISTRIBUTION_LOCAL_MEANS
+)
 
 
 # Funzione per testare il generatore
@@ -138,50 +158,51 @@ def test():
 
     gen = TrueRandomGenerator()
 
-    # -------------------------------- Utility --------------------------------
-    # print(len(gen.deltaT))                 # stampa deltaT disponibili
-    # print(*gen.randNumbers, sep="\n")      # stampa numeri casuali disponibili
-    # plt.hist(gen.bits)                     # istogramma per confrontare 0 e 1 (bits)
-    # plt.hist(gen.randNumbers, bins = 256)  # istogramma con numeri casuali
-    # plt.show()
+    if not TO_PLOT:
+        return
 
-    # ----------------- Confronta frequenze di 0 e 1 in bits ------------------
-    # zero = 0
-    # uno = 0
-    # for i in gen.bits:
-    #     if i:
-    #         uno += 1
-    #     else:
-    #         zero += 1
-    # print(zero/(zero+uno))
-    # print(uno/(zero+uno))
+    # Salva alcuni valori utili nel namespace locale
+    #   per velocizzare l'accesso
+    bits = gen.randomBits
+    nums = gen.randomNumbers
 
-
-    # ------------------------ Plot per presentazione -------------------------
-    # Differenze di tempo
-    # plt.hist(gen.deltaT, bins = 500)
-    # plt.yscale("log")
-    # plt.xlabel("Time difference between two conecutive events [Digitizer Clock Periods]")
-    # plt.ylabel("Counts")
-    # plt.title("Time difference between two conecutive events")
-
-    # Bits (0, 1)
-    # plt.hist(gen.bits, bins = 3)
-    # plt.yscale("log")
-    # plt.xlabel("Bit")
-    # plt.ylabel("Counts")
-    # plt.title("Bits distribution")
-
-    # Numeri casuali
     if __debug__:
-        print("--> plotting random numbers as an histogram")
+        print("--> plotting required items:")
+        print(*[f"     * {x}" for x in PLOT if x in TO_PLOT and x], sep="\n")
 
-    # Salva nel namespace locale per velocizzare l'accesso
-    numbers = gen.randomNumbers
 
-    plt.hist(numbers, bins=256, alpha=.75 if _PLOT_LOCAL_MEANS else 1)
+    # ------------------------ Differenze di tempo -------------------------
+    if PLOT.TIME_DELTAS in TO_PLOT:
+        plt.hist(gen.deltaT, bins = 500)
+        plt.yscale("log")
+        plt.xlabel("Time difference between two conecutive events [Digitizer Clock Periods]")
+        plt.ylabel("Counts")
+        plt.title("Time difference between two conecutive events")
+        plt.show()
 
-    if _PLOT_LOCAL_MEANS:
+
+    # ------------------------ Distribuzione dei bit -------------------------
+    if PLOT.BITS_DISTRIBUTION in TO_PLOT:
+        # print(len(gen.deltaT))                  # stampa il numero di deltaT disponibili
+        # print(*gen.randomNumbers, sep="\n")     # stampa numeri casuali disponibili
+        # # Confronta frequenze di 0 e 1 in bits
+        # n0 = gen.randomBits.count(0)
+        # print(n0/len(bits), (nbits-n0)/len(bits))
+        plt.hist(bits, bins=2)     # istogramma per confrontare 0 e 1 (i bit)
+        plt.xlabel("Bit")
+        plt.ylabel("Counts")
+        plt.ylim(bottom=0)
+        plt.title("Bits distribution")
+        plt.show()
+
+
+    # ------------------------ Distribuzione dei byte -------------------------
+
+    if PLOT.BYTES_DISTRIBUTION in TO_PLOT:
+        # Numeri casuali
+        plt.hist(nums, bins=256, alpha=.75 if PLOT.BYTES_DISTRIBUTION_LOCAL_MEANS in TO_PLOT else 1)
+
+    if PLOT.BYTES_DISTRIBUTION_LOCAL_MEANS in TO_PLOT:
         # Funzione per calcolare la media locale (ciclica)
         def local_means(v: list[int], spread: int = 5) -> list[float]:
             # 'v' è il vettore con i dati
@@ -194,19 +215,19 @@ def test():
         #   "plt.hist()"" lo fa in automatico, ma poiché dobbiamo fare le medie
         #   locali abbiamo bisogno di questi conteggi
         vals = [0]*256
-        for x in numbers:
+        for x in nums:
             vals[x] += 1
         plt.plot(local_means(vals, spread=32))
 
-    plt.xlabel("Bytes")
-    plt.ylabel("Counts")
-    plt.ylim(0, 85)
-    plt.title("Bytes distribution")
+    if PLOT.BYTES_DISTRIBUTION in TO_PLOT or PLOT.BYTES_DISTRIBUTION_LOCAL_MEANS in TO_PLOT:
+        plt.xlabel("Bytes")
+        plt.ylabel("Counts")
+        plt.ylim(0, 85)
+        plt.title("Bytes distribution")
+        plt.show()
+
     if __debug__:
         print("    done.")
-
-    plt.show()
-
 
 
 # Chiama "test()" quando il programma viene eseguito direttamente
