@@ -195,11 +195,12 @@ def test():
         vals = [0]*256
         for x in numbers:
             vals[x] += 1
-        plt.plot(local_means(vals, spread=256))
+        plt.plot(local_means(vals, spread=32))
 
     plt.yscale("log")
     plt.xlabel("Bytes")
     plt.ylabel("Counts")
+    plt.ylim(.7, 85)
     plt.title("Bytes distribution")
     if __debug__:
         print("    done.")
