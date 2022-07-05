@@ -54,7 +54,7 @@ def main():
     x_out:    list[int]   = []  # Lista delle coordinate x all'esterno del cerchio
     y_out:    list[int]   = []  # Lista delle coordinate y all'esterno del cerchio
     pi_array: list[float] = []  # Lista delle stime di π nel tempo
-    pi:       float             # Stima di π, ricalcolata ad ogni iterazione
+    pi:       float       = 0   # Stima di π, ricalcolata ad ogni iterazione
 
     # ------------------------- Metodo 1: base, O(n) --------------------------
     if _mode == 0:
@@ -145,7 +145,7 @@ def main():
                 x_out.append(x)
                 y_out.append(y)
 
-            pi= N_in * 4 / (i + 1)
+            pi = N_in * 4 / (i + 1)
             pi_array.append(pi)
 
         plt.scatter(x_out, y_out, marker = ".")
