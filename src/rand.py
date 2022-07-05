@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Questo modulo contiene un generatore di numeri veramente casuali (TRNG)."""
 from pathlib import Path
-from typing import NamedTuple
+from typing import Literal, NamedTuple
 import root
 
 # Determina la cartella dove si trova questo file
@@ -12,6 +12,10 @@ class Event(NamedTuple):
     """Questa classe rappresenta un evento."""
     # Sono specificati soltanto gli attributi che ci interessano
     Timestamp: int
+
+
+# Metodo per la raccolta dei bit in byte. Non cambia il risultato, cambia la performance.
+_BYTES_GENERATION_METHOD: Literal[0, 1] = 1
 
 
 # Generatore di numeri casuali che sfrutta la casualità dei dati del file "data.root"
@@ -53,38 +57,41 @@ class TrueRandomGenerator:
             print("--> generating random numbers")
         # Generazione di bytes
         self.randomNumbers = []
-        randomNumbers_b = []
-        # -------------------- Metodo 1 --------------------
-        nBytesPossibili = len(self.randomBits)//8       # Numero di bytes possibili = ⌊ <numero di bit> / 8 ⌋  ('//' è la divisione intera)
-        for i in range(nBytesPossibili):
-            temp_byte = [0]*8                           # Inizializzazione di un vettore di lunghezza 8 (pieno di zeri)
-            for j in range(8):
-                temp_byte[j] = self.randomBits[i*8 + j] # Si prendono 8 elementi da "self.randomBits" e si salvano su "temp_byte"
-            
-            # Conversione tramite la funzione "_conv" di "temp_byte" e salvataggio in "self.randomNumbers"
-            self.randomNumbers.append(self._conv(temp_byte))
-            if bug:
-                randomNumbers_b.append(self._conv2(temp_byte))
+        randomNumbers_b    = []
+        temp_byte = [0]*8                               # Inizializzazione di un vettore di lunghezza 8 (pieno di zeri)
 
+        if _BYTES_GENERATION_METHOD == 0:
+            # -------------------- Metodo 1 --------------------
+            nBytesPossibili = len(self.randomBits)//8       # Numero di bytes possibili = ⌊ <numero di bit> / 8 ⌋  ('//' è la divisione intera)
+            for i in range(nBytesPossibili):
+                for j in range(8):
+                    temp_byte[j] = self.randomBits[i*8 + j] # Si prendono 8 elementi da "self.randomBits" e si salvano su "temp_byte"
+                
+                # Conversione tramite la funzione "_conv" di "temp_byte" e salvataggio in "self.randomNumbers"
+                self.randomNumbers.append(self._conv(temp_byte))
+                if bug:
+                    randomNumbers_b.append(self._conv2(temp_byte))
+
+        else:
+            # -------------------- Metodo 2 --------------------
+            for i in range(len(self.randomBits)):
+                temp_byte[i%8] = self.randomBits[i]  # Scrittura dell'i-esimo bit nell'(i mod 8)-esima cella di "temp_byte"
+                if i%8 == 7:
+                    # Il byte è completo: convertiamolo in numero decimale e salviamolo
+                    self.randomNumbers.append(self._conv(temp_byte))
+                    if bug:
+                        randomNumbers_b.append(self._conv2(temp_byte))
+    
         if bug:
             self.randomNumbers += randomNumbers_b
+
         if __debug__:
             print("    done.")
 
+        # Salva la lunghezza di "self.randomNumbers" per un accesso più rapido
         self.nRandomNumbers = len(self.randomNumbers)
 
-        # -------------------- Metodo 2 --------------------
-        #temp_byte = [0]*8
-        #for i in len(self.randomBits):
-        #    temp_byte[i%8] = self.randomBits[i]        # Associazione dell'i-esimo bit all'(i mod 8)-esima cella di "temp_byte"
-        #    if i%8 == 7:
-        #        self.randomNumbers.append(self._conv(temp_byte))
-        #    if bug:
-        #        randomNumbers_B.append(self._conv2(temp_byte))
-        #if bug:
-        #    self.randNumbers += randomNumbers_B
-
-        # Dichiarazione variabile d'istanza
+        # Dichiarazione variabile d'istanza che tiene traccia del punto a cui siamo arrivati a leggere i byte casuali
         self._i = 0
 
     # Metodo statico: genera un bit dal paramentro "n"
@@ -108,7 +115,7 @@ class TrueRandomGenerator:
             sum += v[i] * 2**i  # <-- il bug è qui, i pesi dei bit sono in ordine inverso:
         return sum              #     il bit a sinistra vale 2^0, mentre quello a destra vale 2^7
 
-    # Metodo: restituisce un numero casuale
+    # Metodo: restituisce un numero casuale tra 0 e 255 (ogni volta diverso: scorre ciclicamente lungo i byte casuali)
     def random_number(self) -> int:
         n = self.randomNumbers[self._i]
         # Incremento dell'indice, torna a 0 se si raggiunge l'ultimo numero casuale disponibile
