@@ -121,7 +121,7 @@ Potete fare riferimento a questi video:
 
 ## Aggiornamento
 
-Per aggiornare la repo all'ultima versione, utilizzare i comandi:
+Per aggiornare il clone locale di questa repository con gli ultimi miglioramenti, utilizzare i comandi:
 
 ```bash
 git fetch
