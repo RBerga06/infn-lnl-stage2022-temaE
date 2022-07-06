@@ -26,6 +26,7 @@ def main():
  [3] Use pseudo-random (x, y) points.\
 """)
     # Richiede all'utente l'algoritmo da utilizzare (il valore di "_mode")
+    _mode: int
     while True:
         try:
             _mode = int(input("> "))
@@ -63,25 +64,25 @@ def main():
             x = TRG.random_number()
             y = TRG.random_number()
 
-            # Se il punto di coordinate (x, y) appartiene al 1/4 di cerchio di raggio 255...
+            # Se il punto di coordinate (x, y) appartiene al 1/4 di cerchio di raggio 255:
             if x**2 + y**2 <= K:
-                N_in = N_in + 1  # ... incrementa il numero di coordinate all'interno ...
-                x_in.append(x)   # ... salva la coordinata x nella lista dedicata ...
-                y_in.append(y)   # ... salva la coordinata y nella lista dedicata ...
-            else: # ... altrimenti le coordinate (x, y) non appartengono al cerchio ...
-                x_out.append(x)  # ... salva la coordinata x nella lista dedicata ...
-                y_out.append(y)  # ... salva la coordinata y nella lista dedicata.
+                N_in = N_in + 1  # incrementa il numero di coordinate all'interno,
+                x_in.append(x)   # salva la coordinata x nella lista dedicata,
+                y_in.append(y)   # salva la coordinata y nella lista dedicata.
+            else: # Altrimenti, le coordinate (x, y) non appartengono al cerchio:
+                x_out.append(x)  # salva la coordinata x nella lista dedicata,
+                y_out.append(y)  # salva la coordinata y nella lista dedicata.
 
-            pi = N_in * 4 / (i + 1)  # Calcolo di π ad ogni ciclo
-            pi_array.append(pi)  # Salva "pi" nella lista dedicata
+            pi = N_in * 4 / (i + 1)  # Approssima π con i valori ottenuti finora
+            pi_array.append(pi)      # Salva questa stima nella lista dedicata
 
         # Disegna i punti nel piano cartesiano
-        plt.scatter(x_in,  y_in,  marker = ".")
-        plt.scatter(x_out, y_out, marker = ".")
-        plt.gca().set_aspect('equal', adjustable='box')
+        plt.scatter(x_in,  y_in,  marker = ".")  # type: ignore
+        plt.scatter(x_out, y_out, marker = ".")  # type: ignore
+        plt.gca().set_aspect("equal", adjustable="box")
         plt.show()
 
-        # Disegno andamento della stima di π in funzione del numero di coordinate
+        # Disegna l'andamento della stima di π in funzione del numero di coordinate
         plt.plot(pi_array)
         plt.plot([PI] * (LEN // 2), linestyle = "dashed")
         plt.show()
@@ -100,14 +101,16 @@ def main():
                 x_out.append(x)
                 y_out.append(y)
 
-            pi = N_in * 4 / (i + 1)
-            pi_array.append(pi)
+            pi = N_in * 4 / (i + 1)  # Approssima π con i valori ottenuti finora
+            pi_array.append(pi)      # Salva questa stima nella lista dedicata
 
-        plt.scatter(x_out, y_out, marker = ".")
-        plt.scatter(x_in,  y_in,  marker = ".")
+        # Disegna i punti nel piano cartesiano
+        plt.scatter(x_out, y_out, marker = ".")  # type: ignore
+        plt.scatter(x_in,  y_in,  marker = ".")  # type: ignore
         plt.gca().set_aspect('equal', adjustable='box')
         plt.show()
 
+        # Disegna l'andamento della stima di π in funzione del numero di coordinate
         plt.plot(pi_array)
         plt.plot([PI] * (LEN - 1), linestyle = "dashed")
         plt.show()
@@ -124,7 +127,7 @@ def main():
 
         pi = N_in * 4 / LEN**2            # Calcolo stima finale di π
 
-        # Andamento di pi in funzione del numero di coordinate
+        # Disegna l'andamento della stima di π in funzione del numero di coordinate
         plt.plot(pi_array, marker = ".", linestyle = "")
         plt.plot([PI] * LEN, linestyle = "dashed")
         plt.show()
@@ -145,20 +148,24 @@ def main():
                 x_out.append(x)
                 y_out.append(y)
 
-            pi = N_in * 4 / (i + 1)
-            pi_array.append(pi)
+            pi = N_in * 4 / (i + 1)  # Approssima π con i valori ottenuti finora
+            pi_array.append(pi)      # Salva questa stima nella lista dedicata
 
-        plt.scatter(x_out, y_out, marker = ".")
-        plt.scatter(x_in,  y_in,  marker = ".")
+        # Disegna i punti nel piano cartesiano
+        plt.scatter(x_out, y_out, marker = ".")  # type: ignore
+        plt.scatter(x_in,  y_in,  marker = ".")  # type: ignore
         plt.gca().set_aspect("equal", adjustable="box")
         plt.show()
 
+        # Disegna l'andamento della stima di π in funzione del numero di coordinate
         plt.plot(pi_array)
         plt.plot([PI] * LEN * 100, linestyle = "dashed")
         plt.show()
 
     # Stampa la stima finale di π
-    print(pi)
+    if __debug__:
+        print(f"π = {PI}")
+        print(f"π ≈ {pi}")
 
 
 
