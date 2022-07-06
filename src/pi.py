@@ -117,15 +117,15 @@ def main():
 
     # ------------ Metodo 3: tutte le coordinate possibili, O(n^2) ------------
     elif _mode == 2:
-        bytes = [b**2 for b in TRG.randomNumbers]   # Pre-calcolo dei quadrati, per ottimizzazione
+        nums = [b**2 for b in TRG.randomNumbers]   # Pre-calcolo dei quadrati, per ottimizzazione
 
-        for i, x in enumerate(bytes):       # "x" scorre vettore "bytes", "i" l'indice
-            for y in bytes:                 # "y" scorre vettore "bytes"
-                if x + y <= K:              # Analogo al metodo 1
+        for i, x in enumerate(nums):  # "x" scorre vettore "bytes", "i" l'indice
+            for y in nums:            # "y" scorre vettore "bytes"
+                if x + y <= K:        # Analogo al metodo 1
                     N_in += 1
             pi_array.append(N_in * 4 / (LEN * (i + 1)))
 
-        pi = N_in * 4 / LEN**2            # Calcolo stima finale di π
+        pi = N_in * 4 / LEN**2        # Calcolo stima finale di π
 
         # Disegna l'andamento della stima di π in funzione del numero di coordinate
         plt.plot(pi_array, marker = ".", linestyle = "")
