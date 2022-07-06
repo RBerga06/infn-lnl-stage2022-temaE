@@ -144,6 +144,21 @@ Per disattivare questo comportamento, basta inserire la flag `-O`:
 python -O src/nome-del-file.py
 ```
 
+Di default, la libreria per leggere i dati è `PyROOT` (quando installata); altrimenti, viene utilizzata `uproot`.
+Per forzare l'utilizzo di `uproot` anche quando `PyROOT` è installata, impostare la variabile d'ambiente `FORCE_UPROOT`.
+Su UNIX:
+
+```bash
+export FORCE_UPROOT=1  # Anche '=True' va bene
+python src/file.py
+```
+
+O, per evitare di usare `export`:
+
+```bash
+FORCE_UPROOT=1 python src/file.py
+```
+
 ### Stagisti
 
 Il file `stagisti.py` contiene il codice utilizzato per determinare l'ordine di presentazione del lavoro svolto.
@@ -198,17 +213,10 @@ trng = TrueRandomGenerator(file="~/data/my_data.root")
 > **Warning**
 > Il file specificato deve necessariamente avere la stessa struttura di `data.root` e `fondo.root` (aprite uno dei due con `rootbrowse`) per i dettagli.
 
-Di default, la libreria per leggere i dati è `PyROOT` (quando installata); altrimenti, viene utilizzata `uproot`.
-Per forzare l'utilizzo di `uproot` anche quando `PyROOT` è installata, impostare la variabile d'ambiente `FORCE_UPROOT`.
-Su UNIX:
+### Stima di π
 
-```bash
-export FORCE_UPROOT=1  # Anche '=True' va bene
-python src/file.py
-```
-
-O, per evitare di usare `export`:
-
-```bash
-FORCE_UPROOT=1 python src/file.py
-```
+Il nostro gruppo ha utilizzato il TRNG per stimare π tramite il metodo Monte Carlo: potete trovare il codice in `pi.py`.
+Abbiamo provato a stimare π combinando i dati in tre modi diversi per ottenere le coordinate dei punti: per apprezzare al meglio le differenze, abbiamo reso il programma interattivo.
+Utilizzando infatti `python -O pi.py`, il programma chiede all'utente di selezionare un algoritmo di combinazione dei numeri casuali.
+Per non doverlo specificare ogni volta a programma lanciato, abbiamo aggiunto la possibilità di specificarlo direttamente dalla riga dicomando.
+Ad esempio, per utilizzare l'algoritmo n.0: `python -O pi.py 0`.
