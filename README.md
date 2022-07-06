@@ -73,7 +73,7 @@ gh repo clone RBerga06/infn-lnl-stage2022-temaE || git clone https://github.com/
 # 7. Entra nella repository
 cd infn-lnl-stage2022-temaE
 # 8. Esegui un file Python, in questo caso `stagisti.py`
-python src/stagisti.py
+python -O src/stagisti.py
 ```
 
 È consigliabile installare anche Visual Studio Code e alcune estensioni, come mostrato sopra.
@@ -96,7 +96,7 @@ git clone https://github.com/RBerga06/infn-lnl-stage2022-temaE.git
 # 3.4. Entra nella repository
 cd infn-lnl-stage2022-temaE
 # 3.5. Esegui un file Python, in questo caso `stagisti.py`
-python src/stagisti.py
+python -O src/stagisti.py
 ```
 
 È consigliabile installare anche Visual Studio Code e alcune estensioni, come mostrato sopra.
