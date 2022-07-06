@@ -17,7 +17,7 @@ ROOT: bool = not eval(os.environ.get("FORCE_UPROOT", "0") or "0")
 try:
     if not ROOT:
         raise ModuleNotFoundError
-    from ROOT import TFile  # type: ignore
+    import ROOT as PyROOT
 except ModuleNotFoundError:
     # Non c'è PyROOT: usiamo uproot
     import uproot
@@ -80,8 +80,9 @@ def read(
         print(f"--> Reading table {table} from file {file}")
 
     if ROOT:  # --- PyROOT ---
-        f = TFile(file)   # Apri il file
-        t = f.Get(table)  # Leggi la tabella
+        PyROOT.keeppolling = 0  # type: ignore # Termina il loop degli eventi di PyROOT, in modo che non interferisca con matplotlib
+        f = PyROOT.TFile(file)  # type: ignore # Apri il file
+        t = f.Get(table)                       # Leggi la tabella
         for x in t:
             vals.clear()  # Svuota i parametri
             for attr in attributes:
@@ -92,6 +93,7 @@ def read(
                     vals[attr] = getattr(x, attr)
             # Crea l'oggetto e aggiungilo a `data`
             data.append(cls(**vals))  # type: ignore
+        f.Close()
 
     else:  # --- uproot ---
 
@@ -99,7 +101,7 @@ def read(
         raw_data: dict[str, Any] = {}
         # Apri la tabella del file
         with uproot.open(f"{file}:{table}") as t:
-            # Salva i “rami” come mappa
+            # Salva i “rami” come mappa
             branches = {k: v for k, v in t.iteritems()}
             for attr in attributes:
                 # Converti l'attributo in lista ove necessario
