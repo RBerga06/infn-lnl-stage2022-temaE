@@ -219,4 +219,4 @@ Il nostro gruppo ha utilizzato il TRNG per stimare π tramite il metodo Monte Ca
 Abbiamo provato a stimare π combinando i dati in tre modi diversi per ottenere le coordinate dei punti: per apprezzare al meglio le differenze, abbiamo reso il programma interattivo.
 Utilizzando infatti `python -O pi.py`, il programma chiede all'utente di selezionare un algoritmo di combinazione dei numeri casuali.
 Per non doverlo specificare ogni volta a programma lanciato, abbiamo aggiunto la possibilità di specificarlo direttamente dalla riga dicomando.
-Ad esempio, per utilizzare l'algoritmo n.0: `python -O pi.py 0`.
+Ad esempio, per utilizzare l'algoritmo n°`0`: `python -O pi.py 0`.
