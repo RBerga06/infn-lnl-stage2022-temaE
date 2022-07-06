@@ -11,13 +11,29 @@ K = 255**2
 BUG = True
 
 
-# Calcolo di π con metodo Monte Carlo e numeri casuali generati con TrueRandomGenerator
-def main():
-    # Determina l'algoritmo da utlizzare
-    width = os.get_terminal_size().columns          # Larghezza del terminale
-    title = " Monte Carlo Method π Approximator "   # Titolo
-    around = "=" * (max(0, width - len(title))//2)  # Testo da inserire attorno al titolo
-    print(around, title, around, sep="")
+def mode() -> int:
+    """Determina l'algoritmo da utilizzare"""
+    # Controlla se l'algoritmo è stato selezionato da riga di comando.
+    #   Struttura del vettore "sys.argv":
+    #     $ python /path/to/script.py a1 a2 a3
+    #     sys.argv = ["/path/to/script.py", "a1", "a2", "a3"]
+    if len(sys.argv) > 1:
+        # Ci sono almeno 2 valori in sys.argv, quindi è stato inserito almeno un argomento
+        try:
+            _mode = int(sys.argv[1])
+        except:
+            # Gestione errori: se il modo selezionato dalla riga di comando
+            #   non è valido, continua con la selezione interattiva
+            pass
+        else:
+            # Controlla se il numero inserito è valido
+            if 0 <= _mode <= 3:
+                # Valido
+                return _mode
+            else:
+                # Invalido: continua con la selezione interattiva
+                pass
+    # Selezione interattiva dell'algoritmo
     print(f"""
 >>> Choose an algorithm:
  [0] Interpret data as sequential (x, y) points.
@@ -44,7 +60,20 @@ def main():
                 print("[!] Invalid integer (has to be in [0, 3])!")
                 continue
             # Tutto ok: "_mode" è impostato e si continua col programma
-            break
+            return _mode  # questo 'return' interrompe il ciclo 'while' e ritorna il valore di '_mode'
+
+
+# Calcolo di π con metodo Monte Carlo e numeri casuali generati con TrueRandomGenerator
+def main():
+    # Stampa il titolo
+    width = os.get_terminal_size().columns          # Larghezza del terminale
+    title = " Monte Carlo Method π Approximator "   # Titolo
+    around = "=" * (max(0, width - len(title))//2)  # Testo da inserire attorno al titolo
+    print(around, title, around, sep="")
+
+    # Determina l'algoritmo da utilizzare
+    _mode: int = mode()                         # Usa la funzione sopra definita
+    print(f"[i] Using algorithm [{_mode}].")    # Stampa l'algoritmo, per sicurezza
 
     # Inizializzazione
     TRG = TrueRandomGenerator(bug=BUG)  # Generatore
