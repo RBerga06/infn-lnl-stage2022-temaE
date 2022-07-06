@@ -211,7 +211,7 @@ trng = TrueRandomGenerator(file="~/data/my_data.root")
 ```
 
 > **Warning**
-> Il file specificato deve necessariamente avere la stessa struttura di `data.root` e `fondo.root` (aprite uno dei due con `rootbrowse`) per i dettagli.
+> Il file specificato deve necessariamente avere la stessa struttura di `data.root` e `fondo.root` (aprite uno dei due con `rootbrowse` per i dettagli).
 
 ### Stima di π
 
