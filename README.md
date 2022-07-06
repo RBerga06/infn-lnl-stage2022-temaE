@@ -134,7 +134,7 @@ Per eseguire un file, aprire il terminale e assicurarsi di essere nella cartella
 Poi, digitare:
 
 ```bash
-python -O src/nome-del-file.py
+python src/nome-del-file.py
 ```
 
 Di default, vengono stampate informazioni utili per capire cosa sta facendo il programma in questo momento (per esempio, per capire quali azioni richiedono maggior tempo).
