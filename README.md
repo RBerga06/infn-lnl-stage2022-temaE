@@ -73,7 +73,7 @@ gh repo clone RBerga06/infn-lnl-stage2022-temaE || git clone https://github.com/
 # 7. Entra nella repository
 cd infn-lnl-stage2022-temaE
 # 8. Esegui un file Python, in questo caso `stagisti.py`
-python3 src/stagisti.py
+python src/stagisti.py
 ```
 
 È consigliabile installare anche Visual Studio Code e alcune estensioni, come mostrato sopra.
@@ -96,7 +96,7 @@ git clone https://github.com/RBerga06/infn-lnl-stage2022-temaE.git
 # 3.4. Entra nella repository
 cd infn-lnl-stage2022-temaE
 # 3.5. Esegui un file Python, in questo caso `stagisti.py`
-python3 src/stagisti.py
+python src/stagisti.py
 ```
 
 È consigliabile installare anche Visual Studio Code e alcune estensioni, come mostrato sopra.
@@ -134,20 +134,20 @@ Per eseguire un file, aprire il terminale e assicurarsi di essere nella cartella
 Poi, digitare:
 
 ```bash
-python3 -O src/nome-del-file.py
+python -O src/nome-del-file.py
 ```
 
 Di default, vengono stampate informazioni utili per capire cosa sta facendo il programma in questo momento (per esempio, per capire quali azioni richiedono maggior tempo).
 Per disattivare questo comportamento, basta inserire la flag `-O`:
 
 ```bash
-python3 -O src/nome-del-file.py
+python -O src/nome-del-file.py
 ```
 
 ### Stagisti
 
 Il file `stagisti.py` contiene il codice utilizzato per determinare l'ordine di presentazione del lavoro svolto.
-Potete utilizzarlo come un test per vedere se tutto funziona correttamente: `python3 -O src/stagisti.py` dovrebbe scrivere a schermo `['Rosalinda', 'Riccardo', 'Giacomo', 'Jacopo']`.
+Potete utilizzarlo come un test per vedere se tutto funziona correttamente: `python -O src/stagisti.py` dovrebbe scrivere a schermo `['Rosalinda', 'Riccardo', 'Giacomo', 'Jacopo']`.
 
 ### TRNG
 
@@ -204,11 +204,11 @@ Su UNIX:
 
 ```bash
 export FORCE_UPROOT=1  # Anche '=True' va bene
-python3 src/file.py
+python src/file.py
 ```
 
 O, per evitare di usare `export`:
 
 ```bash
-FORCE_UPROOT=1 python3 src/file.py
+FORCE_UPROOT=1 python src/file.py
 ```
