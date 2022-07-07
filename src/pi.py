@@ -9,6 +9,7 @@ import random
 import sys
 import os
 
+
 # Costanti
 K = 255**2
 SRC = Path(__file__).parent  # Cartella di questo file
@@ -98,9 +99,14 @@ def main():
     # Determina il valore di "BUG", tenendo conto della riga di comando
     BUG = bug(True)  # Di default è attivo
 
+    if __debug__:
+        # Comunica che BUG è attivo (per sicurezza)
+        print(f"[i] BUG is {'en' if BUG else 'dis'}abled.")
+
     # Determina l'algoritmo da utilizzare
-    _mode: int = mode()                         # Usa la funzione sopra definita
-    print(f"[i] Using algorithm [{_mode}].")    # Stampa l'algoritmo, per sicurezza
+    _mode: int = mode()                          # Usa la funzione sopra definita
+    print(f"[i] Using algorithm [{_mode}].")     # Stampa l'algoritmo, per sicurezza
+
 
     # Inizializzazione
     TRG = TrueRandomGenerator(bug=BUG)  # Generatore
