@@ -225,9 +225,20 @@ def main():
         plt.show()
 
     # Stampa la stima finale di π
-    if __debug__:
-        print(f"π = {PI}")
-        print(f"π ≈ {pi}")
+    spi = str(pi)
+    SPI = str(PI)
+    # Conta quante cifre sono corrette
+    L = len(SPI)
+    i = 0
+    for i in range(L):
+        if SPI[i] != spi[i]:
+            break
+    # Stampa i valori in un riquadro
+    print(f",{'-'*(L+6)},")
+    print(f"| π ≈ {spi} |")
+    print(f"| π = {SPI} |")
+    print(f"|     {'+'*i}^{'~'*(L-i-1)} |")
+    print(f"'{'-'*(L+6)}'")
 
 
 
