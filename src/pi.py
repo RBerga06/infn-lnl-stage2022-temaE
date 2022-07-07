@@ -2,6 +2,7 @@
 from rand import TrueRandomGenerator
 import matplotlib.pyplot as plt
 from math import pi as PI
+from pathlib import Path
 import random
 import sys
 import os
@@ -9,6 +10,7 @@ import os
 # Costanti
 K = 255**2
 BUG = True
+SRC = Path(__file__).parent  # Cartella di questo file
 
 
 def mode() -> int:
