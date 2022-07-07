@@ -65,7 +65,12 @@ def read(
     >>> class Event(NamedTuple):
     ...     Timestamp: int
     ...     Samples: list[int]  # va convertito in lista
-    >>> root.read("file.root", cls=Event)
+    >>> root.read("file.root", "Data_R", cls=Event)
+    
+    Per concatenare due file (o due alberi), basta utilizzare l'operatore `+` sui risultati:
+    >>> root.read("file.root",  "Data_1", cls=Event) + root.read("file.root",  "Data_2", cls=Event)
+    >>> root.read("file1.root", "Data_R", cls=Event) + root.read("file2.root", "Data_R", cls=Event)
+    >>> root.read("file1.root", "Data_1", cls=Event) + root.read("file2.root", "Data_2", cls=Event)
     """
 
     if cls is None:
