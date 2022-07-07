@@ -47,7 +47,7 @@ class TrueRandomGenerator:
         # Se `events=` non è stato specificato, inizia con una lista vuota (altrimenti copia `events` in `t`)
         t: list[Event] = [] if events is None else events.copy()
         # Se `files=` non è stato specificato, ma `file=` sì, allora usa quel file; se invece nemmeno `file=` è stato specificato, non usare alcun file
-        files = [] if file is None else [file] if files is None else files.copy()
+        files = ([] if file is None else [file]) if files is None else files.copy()
         # Apri i file in `files` e leggi l'albero "Data_R", aggiungendo i dati a `t` (come lista di eventi, cioè oggetti di tipo `Event`)
         for f in files:
             t += root.read(f, "Data_R", cls=Event)
