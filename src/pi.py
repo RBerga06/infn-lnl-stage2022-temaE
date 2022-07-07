@@ -224,21 +224,24 @@ def main():
         plt.plot([PI] * LEN * 100, linestyle = "dashed")
         plt.show()
 
-    # Stampa la stima finale di π
-    spi = str(pi)
-    SPI = str(PI)
+    # --- Stampa la stima finale di π ---
+    # Converti i numeri in stringhe, rimuovendo il punto decimale (non conta come cifra uguale/diversa)
+    spi = str(pi).replace(".", "")
+    SPI = str(PI).replace(".", "")
+    L = len(SPI)    # Per velocizzare i calcoli
     # Conta quante cifre sono corrette
-    L = len(SPI)
     i = 0
     for i in range(L):
         if SPI[i] != spi[i]:
             break
     # Stampa i valori in un riquadro
-    print(f",{'-'*(L+6)},")
-    print(f"| π ≈ {spi} |")
-    print(f"| π = {SPI} |")
-    print(f"|     {'+'*i}^{'~'*(L-i-1)} |")
-    print(f"'{'-'*(L+6)}'")
+    print(f"""\
+,{'-'*(L+7)},
+| π ≈ {pi} |
+| π = {PI} |
+|     {'+' if i else '^'}-{'+'*(i-1) if i else ''}{'^' if i else ''}{'~'*(L-i-1)} |
+'{'-'*(L+7)}'\
+""")
 
 
 
