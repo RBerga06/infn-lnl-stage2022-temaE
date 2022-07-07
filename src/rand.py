@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Questo modulo contiene un generatore di numeri veramente casuali (TRNG)."""
+from __future__ import annotations
 from pathlib import Path
 from typing import Literal, NamedTuple
 from enum import Flag, auto
@@ -29,10 +30,23 @@ class TrueRandomGenerator:
     randomNumbers:  list[int]
     nRandomNumbers: int
 
-    # Metodo di inizializzazione: crea numeri casuali e li salva nel vettore "randomNumbers"
-    def __init__(self, file: Path | str = SRC/"data.root", bug: bool = False) -> None:
-        # Apri il file `file` e leggi l'albero "Data_R", salvando i dati come lista di eventi (oggeti di tipo `Event`)
-        t = root.read(file, "Data_R", cls=Event)
+    # Metodo di inizializzazione: ottiene i dati, genera da questi bit e numeri casuali e li salva in variabili d'istanza ("self.*")
+    def __init__(self,
+        # Fonti di dati
+        events: list[Event] | None = None,      # Eventi già caricati
+        file: Path | str = SRC/"data.root",     # Apri un file
+        files: list[Path | str] | None = None,  # Apri più di un file
+        # Comportamento
+        bug: bool = False
+    ) -> None:
+        # --- Lettura dei dati (eventi) ---
+        # Se sono stati specificati, carica gli eventi direttamente
+        t = events.copy() if events else []
+        # Se è stato specificato un solo file (con il parametro `file=`), e non è stato specificato `files=`, carica quello
+        files = files or [file]
+        # Apri i file in `files` e leggi l'albero "Data_R", salvando i dati come lista di eventi (oggeti di tipo `Event`)
+        for f in files:
+            t += root.read(f, "Data_R", cls=Event)
 
         # Salvataggio dei tempi degli eventi nel vettore "tempi"
         tempi = []
