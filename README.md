@@ -238,3 +238,6 @@ Abbiamo provato a stimare π combinando i dati in tre modi diversi per ottenere 
 Utilizzando infatti `python -O pi.py`, il programma chiede all'utente di selezionare un algoritmo di combinazione dei numeri casuali.
 Per non doverlo specificare ogni volta a programma lanciato, abbiamo aggiunto la possibilità di specificarlo direttamente dalla riga dicomando.
 Ad esempio, per utilizzare l'algoritmo n°`0`: `python -O pi.py 0`.
+Esiste anche la possibilità di passare `bug=True` al TRNG da riga di comando: per questa opzione, specificare la flag `--bug` dopo l'eventuale numero: `python -O pi.py 0 --bug`.
+È anche possibile disattivarla esplicitamente tramite la flag `--no-bug`.
+Se vengono specificate entrambe, conta l'ultima inserita.
