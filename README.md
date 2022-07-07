@@ -203,15 +203,33 @@ Per aggiungere, alla fine di tutti i numeri, gli stessi convertiti erroneamente,
 trng = TrueRandomGenerator(bug=True)
 ```
 
-Per leggere da un altro file, passare il parametro `file="/path/to/file.root"`. Per esempio:
+Abbiamo aggiunto la possibilità di caricare i dati direttamente da una lista di eventi (mediante il parametro `events=`), o di leggere i dati da file (uno – `file=` o più – `files=`).
 
 ```python
+from rand import TrueRandomGenerator, Event, SRC
+# Carica i dati da una lista
+#   "data" dev'essere una lista di `Event`i
+trng = TrueRandomGenerator(events=data)
 # Legge i dati dal file ~/data/my_data.root
-trng = TrueRandomGenerator(file="~/data/my_data.root")
+trng = TrueRandomGenerator(file="~/data/my_data.root")     # Due scritture
+trng = TrueRandomGenerator(files=["~/data/my_data.root"])  #  equivalenti
+# Legge i dati dai file ~/data/data1.root e ~/data/data2.root
+trng = TrueRandomGenerator(files=["~/data/data1.root", "~/data/data2.root"])
+# Se non viene specificato alcun parametro di caricamento dati, usa il file `SRC/data.root`
+trng = TrueRandomGenerator()                      # Due scritture
+trng = TrueRandomGenerator(file=SRC/"data.root")  #  equivalenti
 ```
 
+> **Note**
+> I parametri `file=` e `files=` sono incompatibili fra loro (se specificati entrambi, `file=` viene ignorato).
+> Invece, `file=` e `events=` (o `files=` e `events=`) possono essere passati entrambi: *prima* verranno importati gli eventi da `events=`, e poi a questi andranno a concatenarsi quelli letti dai `files=` (o dal `file=`).
+> Essendo totalmente scorrelato dall'acquisizione dati, `bug=` è compatibile con qualunque combinazione appena descritta.
+
 > **Warning**
-> Il file specificato deve necessariamente avere la stessa struttura di `data.root` e `fondo.root` (aprite uno dei due con `rootbrowse` per i dettagli).
+> I file specificati devono necessariamente avere la stessa struttura di `data.root` e `fondo.root` (aprite uno dei due con `rootbrowse` per i dettagli).
+
+> **Warning**
+> I file specificati devono necessariamente contenere almeno 9 eventi, cioè il minimo per generare un byte casuale.
 
 ### Stima di π
 

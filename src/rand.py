@@ -33,20 +33,27 @@ class TrueRandomGenerator:
     # Metodo di inizializzazione: ottiene i dati, genera da questi bit e numeri casuali e li salva in variabili d'istanza ("self.*")
     def __init__(self,
         # Fonti di dati
-        events: list[Event] | None = None,      # Eventi già caricati
-        file: Path | str = SRC/"data.root",     # Apri un file
-        files: list[Path | str] | None = None,  # Apri più di un file
+        events: list[Event]      | None = None,  # Eventi passati direttamente
+        file:        Path | str  | None = None,  # Apri un file
+        files:  list[Path | str] | None = None,  # Apri un file o più
         # Comportamento
         bug: bool = False
     ) -> None:
+
         # --- Lettura dei dati (eventi) ---
-        # Se sono stati specificati, carica gli eventi direttamente
-        t = events.copy() if events else []
-        # Se è stato specificato un solo file (con il parametro `file=`), e non è stato specificato `files=`, carica quello
-        files = files or [file]
-        # Apri i file in `files` e leggi l'albero "Data_R", salvando i dati come lista di eventi (oggeti di tipo `Event`)
+        # Se nessuno fra `events=`, `file=` e `files` è stato specificato, usa il file di default
+        if events is file is files is None:
+            files = [SRC/"data.root"]
+        # Se `events=` non è stato specificato, inizia con una lista vuota (altrimenti copia `events` in `t`)
+        t: list[Event] = [] if events is None else events.copy()
+        # Se `files=` non è stato specificato, ma `file=` sì, allora usa quel file; se invece nemmeno `file=` è stato specificato, non usare alcun file
+        files = [] if file is None else [file] if files is None else files.copy()
+        # Apri i file in `files` e leggi l'albero "Data_R", aggiungendo i dati a `t` (come lista di eventi, cioè oggetti di tipo `Event`)
         for f in files:
             t += root.read(f, "Data_R", cls=Event)
+        # Se non ci sono abbastanza eventi, riporta un errore e termina il programma
+        if len(t) < 9:
+            raise ValueError(f"Not enough data: only {len(t)} events!")
 
         # Salvataggio dei tempi degli eventi nel vettore "tempi"
         tempi = []
