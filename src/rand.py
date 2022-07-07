@@ -61,7 +61,7 @@ class TrueRandomGenerator:
             tempi.append(event.Timestamp)
 
         if __debug__:
-            print("--> calculating time differences")
+            print("--> Calculating time differences")
         # Calcolo delle differenze dei tempi tra coppie di tempi adiacenti
         self.deltaT = []
         for i in range(1, len(tempi)):
@@ -71,14 +71,14 @@ class TrueRandomGenerator:
             print("    done.")
 
         if __debug__:
-            print("--> generating random bits")
+            print("--> Generating random bits")
         # Applicazione della funzione "_rand" alle differenze dei tempi e salvataggio nel vettore "self.bits"
         self.randomBits = list(map(self._rand, self.deltaT))
         if __debug__:
             print("    done.")
 
         if __debug__:
-            print("--> generating random numbers")
+            print("--> Generating random numbers")
         # Generazione di bytes
         self.randomNumbers = []
         randomNumbers_b    = []
@@ -188,7 +188,7 @@ def test():
     nums = gen.randomNumbers
 
     if __debug__:
-        print("--> plotting required items:")
+        print("--> Plotting required items:")
         print(*[f"     * {x}" for x in PLOT if x in TO_PLOT and x], sep="\n")
 
 
