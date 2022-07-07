@@ -31,7 +31,7 @@ class TrueRandomGenerator:
 
     # Metodo di inizializzazione: crea numeri casuali e li salva nel vettore "randomNumbers"
     def __init__(self, file: Path | str = SRC/"data.root", bug: bool = False) -> None:
-        # Apri il file `file` e leggi la tabella "Data_R", salvando i dati come lista di eventi (oggeti di tipo `Event`)
+        # Apri il file `file` e leggi l'albero "Data_R", salvando i dati come lista di eventi (oggeti di tipo `Event`)
         t = root.read(file, "Data_R", cls=Event)
 
         # Salvataggio dei tempi degli eventi nel vettore "tempi"

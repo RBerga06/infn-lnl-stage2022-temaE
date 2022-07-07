@@ -3,7 +3,7 @@
 from __future__ import annotations
 from collections import namedtuple
 from pathlib import Path
-from typing import Any, NamedTuple, TypeVar, get_origin, get_type_hints
+from typing import Any, NamedTuple, TypeVar, get_origin, get_type_hints, overload
 import os
 
 
@@ -35,10 +35,17 @@ if __debug__:
 
 _T = TypeVar("_T", bound=NamedTuple)
 
+# O si specifica la classe tramite il parametro `cls`...
+@overload
+def read(file: Path | str, tree: str, *, cls: type[_T]) -> list[_T]: ...
+# ... oppure bisogna specificare `attributes`, `list_conv` e `cls_name`
+@overload
+def read(file: Path | str, tree: str, *attributes: str, list_conv: list[str] | None = None, cls_name: str = "Data") -> list[Any]: ...
+# La funzione vera e propria
 def read(
     # File e tabella
     file: Path | str,
-    table: str,
+    tree: str,
     # Attributi da leggere (dedotti dalla classe - `cls=`, se definita)
     *attributes: str,
     list_conv: list[str] | None = None,
@@ -77,12 +84,12 @@ def read(
     vals: dict[str, Any] = {}   # Qua vengono salvati i parametri da passare alla classe nella costruzione dell'oggetto
 
     if __debug__:
-        print(f"--> Reading table {table} from file {file}")
+        print(f"--> Reading tree {tree!r} from file {file!r}")
 
     if ROOT:  # --- PyROOT ---
         PyROOT.keeppolling = 0  # type: ignore # Termina il loop degli eventi di PyROOT, in modo che non interferisca con matplotlib
         f = PyROOT.TFile(file)  # type: ignore # Apri il file
-        t = f.Get(table)                       # Leggi la tabella
+        t = f.Get(tree)                        # Leggi l'albero
         for x in t:
             vals.clear()  # Svuota i parametri
             for attr in attributes:
@@ -99,8 +106,8 @@ def read(
 
         # Mappa vuota per i dati grezzi (associa al nome dell'attributo la lista dei valori, ancora da combinare negli oggetti)
         raw_data: dict[str, Any] = {}
-        # Apri la tabella del file
-        with uproot.open(f"{file}:{table}") as t:
+        # Apri l'albero `tree` dal file `file`
+        with uproot.open(f"{file}:{tree}") as t:
             # Salva i “rami” come mappa
             branches = {k: v for k, v in t.iteritems()}
             for attr in attributes:
