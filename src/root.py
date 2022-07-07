@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """Modulo che utilizza PyROOT (se installato), o uproot come backend."""
 from __future__ import annotations
 from collections import namedtuple

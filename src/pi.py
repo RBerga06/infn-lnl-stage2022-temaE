@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""Utilizza il TRNG per stimare π tramite il metodo Monte Carlo."""
 from rand import TrueRandomGenerator
 import matplotlib.pyplot as plt
 from math import pi as PI

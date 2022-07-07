@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """Questo modulo contiene un generatore di numeri veramente casuali (TRNG)."""
 from __future__ import annotations
 from pathlib import Path
