@@ -11,8 +11,28 @@ import os
 
 # Costanti
 K = 255**2
-BUG = True
 SRC = Path(__file__).parent  # Cartella di questo file
+
+
+def bug(default: bool, /) -> bool:
+    """Determina se è stato attivato il “bug” da riga di comando."""
+    # $ python pi.py                 # --> di default
+    # $ python pi.py --bug           # --> attivo
+    # $ python pi.py --no-bug        # --> disattivato
+    # $ python pi.py --no-bug --bug  # --> attivo      (--bug sovrascrive --no-bug)
+    # $ python pi.py --bug --no-bug  # --> disattivato (--no-bug sovrascrive --bug)
+    if "--bug" in sys.argv:
+        if "--no-bug" in sys.argv:
+            BUG = sys.argv[::-1].index("--bug") < sys.argv[::-1].index("--no-bug")
+            sys.argv = [x for x in sys.argv if x not in ("--no-bug", "--bug")]
+            return BUG
+        else:
+            sys.argv = [x for x in sys.argv if x != "--bug"]
+            return True
+    elif "--no-bug" in sys.argv:
+        sys.argv = [x for x in sys.argv if x != "--no-bug"]
+        return False
+    return default
 
 
 def mode() -> int:
@@ -74,6 +94,9 @@ def main():
     title = " Monte Carlo Method π Approximator "   # Titolo
     around = "=" * (max(0, width - len(title))//2)  # Testo da inserire attorno al titolo
     print(around, title, around, sep="")
+
+    # Determina il valore di "BUG", tenendo conto della riga di comando
+    BUG = bug(True)  # Di default è attivo
 
     # Determina l'algoritmo da utilizzare
     _mode: int = mode()                         # Usa la funzione sopra definita
