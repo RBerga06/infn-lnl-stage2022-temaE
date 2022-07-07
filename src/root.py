@@ -89,7 +89,7 @@ def read(
     vals: dict[str, Any] = {}   # Qua vengono salvati i parametri da passare alla classe nella costruzione dell'oggetto
 
     if __debug__:
-        print(f"--> Reading tree {tree!r} from file {file!r}")
+        print(f"--> Reading tree {tree!r} from file {file!r}.")
 
     if ROOT:  # --- PyROOT ---
         PyROOT.keeppolling = 0  # type: ignore # Termina il loop degli eventi di PyROOT, in modo che non interferisca con matplotlib
