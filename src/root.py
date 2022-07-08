@@ -36,8 +36,8 @@ if __debug__:
 
 # ----- 2. Definisci la funzione di lettura ------ #
 
-
 _T = TypeVar("_T", bound=NamedTuple)
+
 
 # O si specifica la classe tramite il parametro `cls`...
 @overload
