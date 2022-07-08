@@ -36,12 +36,14 @@ if __debug__:
 
 # ----- 2. Definisci la funzione di lettura ------ #
 
+
 _T = TypeVar("_T", bound=NamedTuple)
 
 # O si specifica la classe tramite il parametro `cls`...
 @overload
 def read(file: Path | str, tree: str, /, *, cls: type[_T]) -> list[_T]:
     ...
+
 
 # ... oppure bisogna specificare `attributes`, `list_conv` e `cls_name`
 @overload
@@ -53,6 +55,7 @@ def read(
     cls_name: str = "Data",
 ) -> list[Any]:
     ...
+
 
 # La funzione vera e propria
 def read(
