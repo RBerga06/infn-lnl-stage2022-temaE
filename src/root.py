@@ -4,7 +4,7 @@
 from __future__ import annotations
 from collections import namedtuple
 from pathlib import Path
-from typing import Any, NamedTuple, TypeVar, get_origin, get_type_hints, overload
+from typing import Any, NamedTuple, Sequence, TypeVar, get_origin, get_type_hints, overload
 import os
 
 
@@ -14,7 +14,8 @@ import os
 #   Il valore iniziale è determinato a partire variabile d'ambiente FORCE_UPROOT.
 ROOT: bool = not eval(os.environ.get("FORCE_UPROOT", "0") or "0")
 
-# Prova a importare PyROOT; se fallisci, prova con uproot. Imposta la variabile `ROOT` di conseguenza.
+# Prova a importare PyROOT; se fallisci, prova con uproot.
+#   Imposta la variabile `ROOT` di conseguenza.
 try:
     if not ROOT:
         raise ModuleNotFoundError
@@ -48,7 +49,7 @@ def read(
     file: Path | str,
     tree: str,
     *attributes: str,
-    list_conv: list[str] | None = None,
+    list_conv: Sequence[str] | None = None,
     cls_name: str = "Data",
 ) -> list[Any]:
     ...
@@ -60,12 +61,31 @@ def read(
     tree: str,
     # Attributi da leggere (dedotti dalla classe - `cls=`, se definita)
     *attributes: str,
-    list_conv: list[str] | None = None,
+    list_conv: Sequence[str] | None = None,
     # Classe dove salvare i dati
     cls: type[_T] | None = None,
     cls_name: str = "Data",
 ) -> list[_T]:
-    """Legge la tabella `table` dal file ROOT `file` e ritorna i valori come lista di oggetti con gli attributi in `attributes`.
+    """Legge la tabella `table` dal file ROOT `file` e ritorna i valori come lista di oggetti.
+
+    Parametri
+    ---------
+    file : Path | str.
+        Il file da leggere.
+    tree : str.
+        L'albero da leggere.
+    *attributes : tuple[str, ...], default ().
+        I set di dati da leggere e da salvare come attributi.
+        Vengono dedotti dalla classe (:param:`cls`), quando specificata.
+    list_conv : Optional[list[str]], default None.
+        I set di dati da convertire in liste.
+        Vengono dedotti dalla classe (:param:`cls`), quando specificata.
+    cls : Optional[type[NamedTuple]], default None.
+        La classe degli oggetti dove salvare i dati.
+        Deve essere una :func:`namedtuple(...)` (o una sottoclasse di `NamedTuple`).
+        Viene generata automaticamente a partire dagli altri parametri, se necessario.
+    cls_name : Optional[str], default "Data".
+        Il nome della :class:`cls` generata automaticamente (vedi :param:`cls`).
 
     Utilizzo
     --------
@@ -88,7 +108,7 @@ def read(
         # Non è stata specificata una classe: generane una adeguata ora.
         cls = namedtuple(cls_name, attributes)  # type: ignore
         # Se list_conv non è stato specificato, consideralo una lista vuota
-        list_conv = list_conv or []
+        list_conv = [*(list_conv or ())]
     else:
         # La classe è stata specificata: determina `attributes` e `list_conv` a partire da quella.
         attributes = cls._fields
