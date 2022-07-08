@@ -153,7 +153,8 @@ def read(
 
     else:  # --- uproot ---
 
-        # Mappa vuota per i dati grezzi (associa al nome dell'attributo la lista dei valori, ancora da combinare negli oggetti)
+        # Mappa vuota per i dati grezzi
+        #   (associa al nome dell'attributo la lista dei valori, ancora da combinare negli oggetti)
         raw_data: dict[str, Any] = {}
         # Apri l'albero `tree` dal file `file`
         with uproot.open(f"{file}:{tree}") as t:
@@ -166,7 +167,8 @@ def read(
                 else:
                     raw_data[attr] = list(branches[attr].array())
 
-        # Converti i dati grezzi in lista di oggetti: scorri gli indici e associa gli attributi corrispondenti, creando l'oggetto
+        # Converti i dati grezzi in lista di oggetti:
+        #   scorri gli indici e associa gli attributi corrispondenti, creando l'oggetto
         #
         # i:      0   1   2   3  ...
         #         |   |   |   |
