@@ -1,0 +1,12 @@
+scanner:
+    diff_only: False
+    linter: pycodestyle  # Other option is flake8
+
+pycodestyle:
+    max-line-length: 88
+    ignore:  # Errors and warnings to ignore
+        # - W504  # line break after binary operator
+        # - E402  # module level import not at top of file
+        # - E731  # do not assign a lambda expression, use a def
+        # - C406  # Unnecessary list literal - rewrite as a dict literal.
+        # - E741  # ambiguous variable name
