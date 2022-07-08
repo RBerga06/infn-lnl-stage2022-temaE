@@ -3,7 +3,7 @@
 """Questo modulo contiene un generatore di numeri veramente casuali (TRNG)."""
 from __future__ import annotations
 from pathlib import Path
-from typing import Literal, NamedTuple
+from typing import Literal, NamedTuple, overload
 from enum import Flag, auto
 import root
 
@@ -31,22 +31,39 @@ class TrueRandomGenerator:
 
     # --- Variabili d'istanza ---
     # pubbliche
-    deltaTs:        list[int]   # Differenze dei tempi
-    randomBits:     list[int]   # Bit (0|1) casuali
-    randomNumbers:  list[int]   # Numeri casuali (da 0 a 255)
-    nRandomNumbers: int         # Numero di numeri casuali
+    deltaTs:        list[int]  # Differenze dei tempi
+    randomBits:     list[int]  # Bit (0|1) casuali
+    randomNumbers:  list[int]  # Numeri casuali (da 0 a 255)
+    nRandomNumbers: int        # Numero di numeri casuali
     # protette
-    _i:             int         # Indice per il metodo `random_number()`
-
+    _i:             int        # Indice per il metodo `random_number()`
 
     # --- Metodo di inizializzazione ---
-    # Ottieni i dati, genera da questi bit e numeri casuali e salvali nelle variabili d'istanza.
+
+    # O si specifica il parametro `file=`...
+    @overload
+    def __init__(
+        self, /, *, events: list[Event] | None = ..., file: Path | str | None = ..., bug: bool = False
+    ) -> None:
+        ...
+    # ... oppure `files=`...
+    @overload
+    def __init__(
+        self, /, *, events: list[Event] | None = ..., files: list[Path | str] | None = ..., bug: bool = False,
+    ) -> None:
+        ...
+    # ... ma non entrambi.
+
+    # Metodo vero e proprio.
+    #   Ottieni i dati, genera da questi bit e numeri casuali e salvali nelle variabili d'istanza.
     def __init__(
         self,
+        /,
+        *,
         # Fonti di dati
-        events: list[Event]      | None = None,  # Eventi passati direttamente
-        file:        Path | str  | None = None,  # Apri un file
-        files:  list[Path | str] | None = None,  # Apri uno o più file
+        events: list[Event] | None = None,  # Eventi passati direttamente
+        file: Path | str | None = None,  # Apri un file
+        files: list[Path | str] | None = None,  # Apri uno o più file
         # Comportamento
         bug: bool = False,
     ) -> None:
@@ -54,7 +71,7 @@ class TrueRandomGenerator:
         # --- 0. Lettura dei dati (eventi) ---
         # Se nessuno fra `events=`, `file=` e `files` è stato specificato, usa il file di default
         if events is file is files is None:
-            files = [SRC/"data.root"]
+            files = [SRC / "data.root"]
         # Se `events=` è stato specificato, utilizzane una copia; altrimenti, inizia con una lista vuota
         events = [] if events is None else events.copy()
         # Se `files=` non è stato specificato, ma `file=` sì, allora usa quel file; se invece nemmeno `file=` è stato specificato, non usare alcun file
@@ -64,7 +81,9 @@ class TrueRandomGenerator:
             events += root.read(f, "Data_R", cls=Event)
         # Se non ci sono abbastanza eventi, riporta un errore e termina il programma
         if len(events) < 9:
-            raise ValueError(f"Not enough data to generate a random byte: only {len(events)} events!")
+            raise ValueError(
+                f"Not enough data to generate a random byte: only {len(events)} events!"
+            )
 
         # --- 1. Calcolo delle differenze dei tempi tra coppie di tempi adiacenti ---
         if __debug__:
@@ -72,13 +91,13 @@ class TrueRandomGenerator:
         self.deltaTs = []
         for i in range(1, len(events)):
             # `dT` = (tempo dell'`i`-esimo evento) - (tempo dell'`i-1`-esimo evento)
-            dT = events[i].Timestamp - events[i-1].Timestamp
+            dT = events[i].Timestamp - events[i - 1].Timestamp
             # Salva `dT` nel vettore dedicato
             self.deltaTs.append(dT)
         if __debug__:
             print("    done.")
 
-        # --- 2. Generazione dei bit casuali ---
+        # --- 2. Generazione dei bit casuali ---
         if __debug__:
             print("--> Generating random bits")
         # Applicazione del metodo (statico) `self._rand(...)` alle
@@ -89,10 +108,10 @@ class TrueRandomGenerator:
 
         if __debug__:
             print("--> Generating random numbers")
-        
+
         # --- 3. Generazione dei numeri casuali (da 0 a 255) ---
         self.randomNumbers = []
-        randomNumbers_b    = []
+        randomNumbers_b = []
         # Inizializza un vettore di lunghezza 8 (pieno di zeri)
         byte = [0] * 8
 
@@ -153,9 +172,7 @@ class TrueRandomGenerator:
     def _conv2(v: list[int]) -> int:
         sum = 0
         for i in range(8):
-            sum += (
-                v[i] * 2**i
-            )  # <-- il bug è qui, i pesi dei bit sono in ordine inverso:
+            sum += v[i] * 2**i  # <-- il bug è qui, i pesi dei bit sono in ordine inverso:
         return sum  #     il bit a sinistra vale 2^0, mentre quello a destra vale 2^7
 
     # Metodo: restituisce un numero casuale tra 0 e 255 (ogni volta diverso: scorre ciclicamente lungo i byte casuali)
@@ -215,9 +232,7 @@ def test():
     if PLOT.TIME_DELTAS in TO_PLOT:
         plt.hist(gen.deltaTs, bins=500)
         plt.yscale("log")
-        plt.xlabel(
-            "Time difference between two conecutive events [Digitizer Clock Periods]"
-        )
+        plt.xlabel("Time difference between two conecutive events [Digitizer Clock Periods]")
         plt.ylabel("Counts")
         plt.title("Time difference between two conecutive events")
         plt.show()
@@ -253,10 +268,7 @@ def test():
             # 'spread' è quanti valori prendere
             left = (spread - 1) // 2
             L = len(v)
-            return [
-                sum([v[(i + j - left) % L] for j in range(spread)]) / spread
-                for i in range(L)
-            ]
+            return [sum([v[(i + j - left) % L] for j in range(spread)]) / spread for i in range(L)]
 
         # Conta quanti numeri casuali vengono generati in base al loro valore
         #   `plt.hist()` lo fa in automatico, ma poiché dobbiamo fare le medie
@@ -266,10 +278,7 @@ def test():
             vals[x] += 1
         plt.plot(local_means(vals, spread=32))
 
-    if (
-        PLOT.BYTES_DISTRIBUTION in TO_PLOT
-        or PLOT.BYTES_DISTRIBUTION_LOCAL_MEANS in TO_PLOT
-    ):
+    if PLOT.BYTES_DISTRIBUTION in TO_PLOT or PLOT.BYTES_DISTRIBUTION_LOCAL_MEANS in TO_PLOT:
         plt.xlabel("Bytes")
         plt.ylabel("Counts")
         plt.ylim(0, 85)
