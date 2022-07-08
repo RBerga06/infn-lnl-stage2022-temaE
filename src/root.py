@@ -22,6 +22,7 @@ try:
 except ModuleNotFoundError:
     # Non c'è PyROOT: usiamo uproot
     import uproot
+
     ROOT = False
 else:
     # nessun errore: PyROOT c'è.
@@ -38,37 +39,46 @@ _T = TypeVar("_T", bound=NamedTuple)
 
 # O si specifica la classe tramite il parametro `cls`...
 @overload
-def read(file: Path | str, tree: str, *, cls: type[_T]) -> list[_T]: ...
+def read(file: Path | str, tree: str, /, *, cls: type[_T]) -> list[_T]:
+    ...
+
 # ... oppure bisogna specificare `attributes`, `list_conv` e `cls_name`
 @overload
-def read(file: Path | str, tree: str, *attributes: str, list_conv: list[str] | None = None, cls_name: str = "Data") -> list[Any]: ...
+def read(
+    file: Path | str,
+    tree: str,
+    *attributes: str,
+    list_conv: list[str] | None = None,
+    cls_name: str = "Data",
+) -> list[Any]:
+    ...
+
 # La funzione vera e propria
 def read(
     # File e tabella
     file: Path | str,
     tree: str,
-    # Attributi da leggere (dedotti dalla classe - `cls=`, se definita)
+    # Attributi da leggere (dedotti dalla classe - `cls=`, se definita)
     *attributes: str,
     list_conv: list[str] | None = None,
     # Classe dove salvare i dati
     cls: type[_T] | None = None,
-    cls_name: str = "Data"
+    cls_name: str = "Data",
 ) -> list[_T]:
     """Legge la tabella `table` dal file ROOT `file` e ritorna i valori come lista di oggetti con gli attributi in `attributes`.
-    
+
     Utilizzo
     --------
-    Dichiara gli attributi di interesse chiamando la funzione
+    >>> # Dichiara gli attributi di interesse chiamando la funzione
     >>> root.read("file.root", "Data_R", "Timestamp", "Samples", list_conv=["Samples"])
-    -- oppure --
-    Dichiara gli attributi di interesse in una classe
+    >>> # -- oppure --
+    >>> # Dichiara gli attributi di interesse in una classe
     >>> from typing import NamedTuple
     >>> class Event(NamedTuple):
     ...     Timestamp: int
     ...     Samples: list[int]  # va convertito in lista
     >>> root.read("file.root", "Data_R", cls=Event)
-    
-    Per concatenare due file (o due alberi), basta utilizzare l'operatore `+` sui risultati:
+    >>> # Per concatenare due file (o due alberi), basta utilizzare l'operatore `+` sui risultati:
     >>> root.read("file.root",  "Data_1", cls=Event) + root.read("file.root",  "Data_2", cls=Event)
     >>> root.read("file1.root", "Data_R", cls=Event) + root.read("file2.root", "Data_R", cls=Event)
     >>> root.read("file1.root", "Data_1", cls=Event) + root.read("file2.root", "Data_2", cls=Event)
@@ -82,20 +92,29 @@ def read(
     else:
         # La classe è stata specificata: determina `attributes` e `list_conv` a partire da quella.
         attributes = cls._fields
-        list_conv = [name for name, t in get_type_hints(cls).items() if issubclass(get_origin(t) or t, list)]
-    
+        list_conv = [
+            name
+            for name, t in get_type_hints(cls).items()
+            if issubclass(get_origin(t) or t, list)
+        ]
+
     # Inizializzazione variabili
     file = str(Path(file).expanduser().resolve())
-    data: list[_T] = []         # Questo sarà il risultato della funzione
-    vals: dict[str, Any] = {}   # Qua vengono salvati i parametri da passare alla classe nella costruzione dell'oggetto
+    data: list[_T] = []  # Questo sarà il risultato della funzione
+    # In `vals` vengono salvati i parametri da passare alla classe nella costruzione dell'oggetto
+    vals: dict[str, Any] = {}
 
     if __debug__:
         print(f"--> Reading tree {tree!r} from file {file!r}")
 
     if ROOT:  # --- PyROOT ---
-        PyROOT.keeppolling = 0  # type: ignore # Termina il loop degli eventi di PyROOT, in modo che non interferisca con matplotlib
-        f = PyROOT.TFile(file)  # type: ignore # Apri il file
-        t = f.Get(tree)                        # Leggi l'albero
+        # Termina il loop degli eventi di PyROOT, in modo che non interferisca con matplotlib
+        PyROOT.keeppolling = 0  # type: ignore
+        # Apri il file
+        f = PyROOT.TFile(file)  # type: ignore
+        # Leggi l'albero
+        t = f.Get(tree)
+        # Leggi e salva i dati di interesse
         for x in t:
             vals.clear()  # Svuota i parametri
             for attr in attributes:
@@ -106,6 +125,7 @@ def read(
                     vals[attr] = getattr(x, attr)
             # Crea l'oggetto e aggiungilo a `data`
             data.append(cls(**vals))  # type: ignore
+        # Chiudi il file
         f.Close()
 
     else:  # --- uproot ---
@@ -147,7 +167,6 @@ def read(
 
 # "Esporta" i simboli di interesse
 __all__ = ["read"]
-
 
 
 if __name__ == "__main__":
