@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# pylint: disable=no-member,used-before-assignment
 """Modulo che utilizza PyROOT (se installato), o uproot come backend."""
 from __future__ import annotations
+from typing import Any, NamedTuple, Sequence, TypeVar, get_origin, get_type_hints, overload
 from collections import namedtuple
 from pathlib import Path
-from typing import Any, NamedTuple, Sequence, TypeVar, get_origin, get_type_hints, overload
 import os
 
 
@@ -159,7 +160,7 @@ def read(
         # Apri l'albero `tree` dal file `file`
         with uproot.open(f"{file}:{tree}") as t:
             # Salva i “rami” come mappa
-            branches = {k: v for k, v in t.iteritems()}
+            branches = dict(t.iteritems())
             for attr in attributes:
                 # Converti l'attributo in lista ove necessario
                 if attr in list_conv:
@@ -181,10 +182,7 @@ def read(
         # data:  ### ### ### ### ...
         #
         for i in range(len(raw_data[attributes[0]])):
-            vals.clear()
-            for attr in raw_data:
-                vals[attr] = raw_data[attr][i]
-            data.append(cls(**vals))  # type: ignore
+            data.append(cls(**{name: val[i] for name, val in raw_data.items()}))  # type: ignore
     if __debug__:
         print(f"    done (read {len(data)} items).")
     return data
@@ -194,11 +192,19 @@ def read(
 __all__ = ["read"]
 
 
-if __name__ == "__main__":
-    # Test
+def test():
+    """Testa il funzionamento di `read()`"""
+
     class Event(NamedTuple):
+        """Rappresenta un evento."""
+
+        # Cosa leggere
         Timestamp: int
         Samples: list[int]
 
     data = read("src/fondo.root", "Data_R", cls=Event)
     assert isinstance(data[0], Event)
+
+
+if __name__ == "__main__":
+    test()
