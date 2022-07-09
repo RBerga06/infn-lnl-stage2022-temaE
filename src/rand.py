@@ -159,18 +159,22 @@ class TrueRandomGenerator:
     # Metodo statico: converte il vettore di bit "v" in numero decimale
     @staticmethod
     def _conv(v: list[int]) -> int:
+        # indici di `v` (`7-i`):  [ 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 ]
+        # esponenti di 2 (`i`) :  [ 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 ]
         sum = 0
         for i in range(8):
-            sum += v[7 - i] * 2**i
+            sum += v[7-i] * 2**i
         return sum
 
     # Metodo statico: converte fasullamente il vettore di bit "v" in numero decimale
     @staticmethod
     def _conv2(v: list[int]) -> int:
+        # indici di `v`  (`i`):  [ 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 ]
+        # esponenti di 2 (`i`):  [ 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 ]
         sum = 0
         for i in range(8):
-            sum += v[i] * 2**i  # <-- il bug è qui, i pesi dei bit sono in ordine inverso:
-        return sum  #     il bit a sinistra vale 2^0, mentre quello a destra vale 2^7
+            sum += v[i] * 2**i  # <-- il bug è qui, i pesi dei bit sono in ordine inverso
+        return sum
 
     # Metodo: restituisce un numero casuale tra 0 e 255 (ogni volta diverso: scorre ciclicamente lungo i byte casuali)
     def random_number(self) -> int:
@@ -204,6 +208,15 @@ TO_PLOT: PLOT = (
     | PLOT.BYTES_DISTRIBUTION
     | PLOT.BYTES_DISTRIBUTION_LOCAL_MEANS
 )
+
+
+# Funzione per calcolare le medie locali (ciclicamente)
+def cyclic_local_means(v: list[int], spread: int = 5) -> list[float]:
+    # 'v' è il vettore con i dati
+    # 'spread' è quanti valori prendere
+    left = (spread - 1) // 2
+    L = len(v)
+    return [sum([v[(i + j - left) % L] for j in range(spread)]) / spread for i in range(L)]
 
 
 # Funzione per testare il generatore
@@ -264,21 +277,14 @@ def test():
     if PLOT.BYTES_DISTRIBUTION_LOCAL_MEANS in TO_PLOT:
         if __debug__:
             print(_PLOT_ITEM_MESSAGE.format(PLOT.BYTES_DISTRIBUTION_LOCAL_MEANS))
-        # Funzione per calcolare la media locale (ciclica)
-        def local_means(v: list[int], spread: int = 5) -> list[float]:
-            # 'v' è il vettore con i dati
-            # 'spread' è quanti valori prendere
-            left = (spread - 1) // 2
-            L = len(v)
-            return [sum([v[(i + j - left) % L] for j in range(spread)]) / spread for i in range(L)]
-
-        # Conta quanti numeri casuali vengono generati in base al loro valore
+        # Conta quanti numeri casuali vengono generati in base al loro valore:
         #   `plt.hist()` lo fa in automatico, ma poiché dobbiamo fare le medie
-        #   locali abbiamo bisogno di questi conteggi
+        #   locali abbiamo bisogno di ottenere questi conteggi “manualmente”
         vals = [0] * 256
         for x in nums:
             vals[x] += 1
-        plt.plot(local_means(vals, spread=32))
+        # Disegna le medie locali
+        plt.plot(cyclic_local_means(vals, spread=32))
 
     if PLOT.BYTES_DISTRIBUTION in TO_PLOT or PLOT.BYTES_DISTRIBUTION_LOCAL_MEANS in TO_PLOT:
         plt.xlabel("Bytes")
