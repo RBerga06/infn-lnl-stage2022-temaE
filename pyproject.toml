@@ -13,3 +13,7 @@ ignore = [
 in-place = true
 recursive = true
 aggressive = 3
+
+
+[tool.pylint.main]
+max-line-length = 120
