@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """Utilizza il TRNG per stimare π tramite il metodo Monte Carlo."""
-from rand import TrueRandomGenerator
-import matplotlib.pyplot as plt
+import os
+import sys
+import random
 from math import pi as PI
 from pathlib import Path
-import random
-import sys
-import os
+import matplotlib.pyplot as plt
+from rand import TrueRandomGenerator
 
 
 # Costanti
@@ -27,10 +27,9 @@ def bug(default: bool, /) -> bool:
             BUG = sys.argv[::-1].index("--bug") < sys.argv[::-1].index("--no-bug")
             sys.argv = [x for x in sys.argv if x not in ("--no-bug", "--bug")]
             return BUG
-        else:
-            sys.argv = [x for x in sys.argv if x != "--bug"]
-            return True
-    elif "--no-bug" in sys.argv:
+        sys.argv = [x for x in sys.argv if x != "--bug"]
+        return True
+    if "--no-bug" in sys.argv:
         sys.argv = [x for x in sys.argv if x != "--no-bug"]
         return False
     return default
@@ -45,8 +44,8 @@ def mode() -> int:
     if len(sys.argv) > 1:
         # Ci sono almeno 2 valori in sys.argv, quindi è stato inserito almeno un argomento
         try:
-            _mode = int(sys.argv[1])
-        except BaseException:
+            _mode = int(eval(sys.argv[1]))
+        except:
             # Gestione errori: se il modo selezionato dalla riga di comando
             #   non è valido, continua con la selezione interattiva
             pass
@@ -55,11 +54,9 @@ def mode() -> int:
             if 0 <= _mode <= 3:
                 # Valido
                 return _mode
-            else:
-                # Invalido: continua con la selezione interattiva
-                pass
+            # Non valido: continua con la selezione interattiva
     # Selezione interattiva dell'algoritmo
-    print(f"""
+    print("""
 >>> Choose an algorithm:
  [0] Interpret data as sequential (x, y) points.
  [1] Interpret data as adjacent/linked (x, y) points.
@@ -70,12 +67,12 @@ def mode() -> int:
     _mode: int
     while True:
         try:
-            _mode = int(input("> "))
+            _mode = int(eval(input("> ")))
         # Gestione errori: per terminare il programma
         except (KeyboardInterrupt, EOFError, OSError):
             sys.exit(0)
         # Gestione errori: input non intero (chiede nuovamente)
-        except BaseException:
+        except:
             print("[!] Please type in an integer (0|1|2|3)!")
             continue
         # Numero intero: ok
@@ -88,8 +85,9 @@ def mode() -> int:
             return _mode  # questo 'return' interrompe il ciclo 'while' e ritorna il valore di '_mode'
 
 
-# Calcolo di π con metodo Monte Carlo e numeri casuali generati con TrueRandomGenerator
+# Funzione principale
 def main():
+    """Calcola π tramite il metodo Monte Carlo, utilizzando il nostro TRNG."""
     # Stampa il titolo
     width = os.get_terminal_size().columns
     title = " Monte Carlo Method π Approximator "
@@ -104,12 +102,12 @@ def main():
         print(f"[i] BUG is {'en' if BUG else 'dis'}abled.")
 
     # Determina l'algoritmo da utilizzare
-    _mode: int = mode()  # Usa la funzione sopra definita
-    print(f"[i] Using algorithm [{_mode}].")  # Stampa l'algoritmo, per sicurezza
+    MODE: int = mode()  # Usa la funzione sopra definita
+    print(f"[i] Using algorithm [{MODE}].")  # Stampa l'algoritmo, per sicurezza
 
     # Inizializzazione
     TRG = TrueRandomGenerator(bug=BUG)  # Il nostro generatore
-    LEN = TRG.nRandomNumbers    # Numero di valori casuali disponibili
+    LEN = TRG.n_random_numbers  # Numero di valori casuali disponibili
     N_in:     int         = 0   # Numero di coordinate casuali all'interno del cerchio  # noqa
     x_in:     list[int]   = []  # Lista delle coordinate x all'interno del cerchio      # noqa
     y_in:     list[int]   = []  # Lista delle coordinate y all'interno del cerchio      # noqa
@@ -118,16 +116,19 @@ def main():
     pi_array: list[float] = []  # Lista delle stime di π nel tempo
     pi: float = 0  # Stima di π, ricalcolata ad ogni iterazione
 
+    # Pre-calcolo dei quadrati, per ottimizzazione
+    squares = [x**2 for x in TRG.random_numbers]
+
     # ------------------------- Metodo 1: base, O(n) --------------------------
-    if _mode == 0:
+    if MODE == 0:
         for i in range(LEN // 2):
             # Generazione di coordinate con due numeri casuali sequenziali
             x = TRG.random_number()
             y = TRG.random_number()
 
-            # Se il punto di coordinate (x, y) appartiene al 1/4 di cerchio di raggio 255:
+            # Se il punto di coordinate (x, y) appartiene cerchio di raggio 255:
             if x**2 + y**2 <= K:
-                N_in = N_in + 1  # incrementa il numero di coordinate all'interno,
+                N_in += 1  # incrementa il numero di coordinate all'interno,
                 x_in.append(x)  # salva la coordinata x nella lista dedicata,
                 y_in.append(y)  # salva la coordinata y nella lista dedicata.
             else:  # Altrimenti, le coordinate (x, y) non appartengono al cerchio:
@@ -149,11 +150,11 @@ def main():
         plt.show()
 
     # -------------- Metodo 2: coppie di valori adiacenti, O(n) ---------------
-    elif _mode == 1:
+    elif MODE == 1:
         y = TRG.random_number()  # Assegnazione valore di default (pre-ciclo)
-        for i in range(LEN - 1):
-            x = y  # Assegnazione a "x" del numero casuale "y" precedentemente utilizzato
-            y = TRG.random_number()  # Creazione nuovo numero casuale
+        for i in range(LEN):
+            # L'`y` di prima diventa il nuovo `x`, mentre `y` diventa un nuovo numero casuale
+            x, y = y, TRG.random_number()
             if x**2 + y**2 <= K:  # Analogo al metodo 1
                 N_in = N_in + 1
                 x_in.append(x)
@@ -173,19 +174,16 @@ def main():
 
         # Disegna l'andamento della stima di π in funzione del numero di coordinate
         plt.plot(pi_array)
-        plt.plot([PI] * (LEN - 1), linestyle="dashed")
+        plt.plot([PI] * LEN, linestyle="dashed")
         plt.show()
 
     # ------------ Metodo 3: tutte le coordinate possibili, O(n^2) ------------
-    elif _mode == 2:
-        # Pre-calcolo dei quadrati, per ottimizzazione
-        nums = [b**2 for b in TRG.randomNumbers]
-
+    elif MODE == 2:
         # `enumerate([a, b, c]) -> [(0, a), (1, b), (2, c)]`
         # Questo ciclo scorre gli elementi (`x`) del vettore `nums`,
         #   associando a ciascuno il proprio indice (`i`)
-        for i, x in enumerate(nums):
-            for y in nums:
+        for i, x in enumerate(squares):
+            for y in squares:
                 if x + y <= K:  # Analogo al metodo 1
                     N_in += 1
             # Stima di π
@@ -231,20 +229,18 @@ def main():
         plt.show()
 
     # --- Stampa la stima finale di π ---
-    # Converti i numeri in stringhe, rimuovendo il punto decimale (non conta come cifra uguale/diversa)
-    spi = str(pi).replace(".", "")
-    SPI = str(PI).replace(".", "")
-    L = len(SPI)  # Per velocizzare i calcoli
+    # Per velocizzare i calcoli
+    L = len(str(PI)) - 1  # -1 perché ignoriamo il `.`
     # Conta quante cifre sono corrette
     i = 0
-    for i in range(L):
-        if SPI[i] != spi[i]:
+    for i, (spi, sPI) in enumerate(zip(str(pi).replace(".", ""), str(PI).replace(".", ""))):
+        if sPI != spi:
             break
     # Stampa i valori in un riquadro
     print(f"""\
 ,{'-'*(L+7)},
-| π ≈ {pi} |
-| π = {PI} |
+| π ≈ {pi:01.{L-1}f} |
+| π = {PI:01.{L-1}f} |
 |     {'+' if i else '^'}-{'+'*(i-1) if i else ''}{'^' if i else ''}{'~'*(L-i-1)} |
 '{'-'*(L+7)}'\
 """)
