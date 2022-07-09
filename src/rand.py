@@ -164,7 +164,7 @@ class TrueRandomGenerator:
         # esponenti di 2 (`i`) :  [ 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 ]
         sum = 0
         for i in range(8):
-            sum += v[7-i] * 2**i
+            sum += v[7 - i] * 2**i
         return sum
 
     # Metodo statico: converte fasullamente il vettore di bit "v" in numero decimale
