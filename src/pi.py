@@ -230,7 +230,7 @@ def main():
 
     # --- Stampa la stima finale di π ---
     # Per velocizzare i calcoli
-    L = len(str(pi)) - 1  # -1 perché ignoriamo il `.`
+    L = len(str(PI)) - 1  # -1 perché ignoriamo il `.`
     # Conta quante cifre sono corrette
     i = 0
     for i, (spi, sPI) in enumerate(zip(str(pi).replace(".", ""), str(PI).replace(".", ""))):
@@ -239,8 +239,8 @@ def main():
     # Stampa i valori in un riquadro
     print(f"""\
 ,{'-'*(L+7)},
-| π ≈ {pi} |
-| π = {PI} |
+| π ≈ {pi:01.{L-1}f} |
+| π = {PI:01.{L-1}f} |
 |     {'+' if i else '^'}-{'+'*(i-1) if i else ''}{'^' if i else ''}{'~'*(L-i-1)} |
 '{'-'*(L+7)}'\
 """)
