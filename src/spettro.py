@@ -86,7 +86,7 @@ def main():
 
     # ----------------------------- Apertura file -----------------------------
     SRC = Path(__file__).parent
-    t = root.read(SRC/"data.root", "Data_R", cls=Event)
+    t = root.read(SRC / "data.root", "Data_R", cls=Event)
 
     # ------------------------ Calcolo della baseline -------------------------
     if BASELINE_CALC_MODE == 0:
@@ -139,7 +139,7 @@ def main():
     plt.xlabel("Energy [keV]")
     plt.ylabel("Counts")
     plt.xlim(left=0, right=calibrate(221400))
-    plt.ylim(top=2500*T, bottom=0.175*T)
+    plt.ylim(top=2500 * T, bottom=0.175 * T)
     plt.title("Background energy spectrum")
     plt.show()
 
