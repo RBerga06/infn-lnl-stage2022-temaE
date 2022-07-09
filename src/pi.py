@@ -46,7 +46,7 @@ def mode() -> int:
         # Ci sono almeno 2 valori in sys.argv, quindi è stato inserito almeno un argomento
         try:
             _mode = int(sys.argv[1])
-        except:
+        except BaseException:
             # Gestione errori: se il modo selezionato dalla riga di comando
             #   non è valido, continua con la selezione interattiva
             pass
@@ -75,7 +75,7 @@ def mode() -> int:
         except (KeyboardInterrupt, EOFError, OSError):
             sys.exit(0)
         # Gestione errori: input non intero (chiede nuovamente)
-        except:
+        except BaseException:
             print("[!] Please type in an integer (0|1|2|3)!")
             continue
         # Numero intero: ok
