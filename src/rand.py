@@ -202,12 +202,13 @@ class PLOT(Flag):
 # Specifica cosa mostrare usando le flag appena definite.
 #   Per combinarle, usare l'operatore «|»
 #   In pratica, basta commentare qua sotto le righe corrispondenti ad elementi o grafici da *non* mostrare
-TO_PLOT: PLOT = (PLOT.NOTHING
+TO_PLOT: PLOT = \
+    (PLOT.NOTHING
     | PLOT.TIME_DELTAS
     | PLOT.BITS_DISTRIBUTION
     | PLOT.BYTES_DISTRIBUTION
     | PLOT.BYTES_DISTRIBUTION_LOCAL_MEANS
-)
+    )
 
 
 # Funzione per calcolare le medie locali (ciclicamente)
