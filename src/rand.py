@@ -45,6 +45,7 @@ class TrueRandomGenerator:
     def __init__(
         self, /, *, events: list[Event] | None = ..., file: Path | str | None = ..., bug: bool = False
     ) -> None: ...
+
     # ... oppure `files=`...
     @overload
     def __init__(
