@@ -110,11 +110,11 @@ def main():
     # Inizializzazione
     TRG = TrueRandomGenerator(bug=BUG)  # Il nostro generatore
     LEN = TRG.nRandomNumbers    # Numero di valori casuali disponibili
-    N_in:     int         = 0   # Numero di coordinate casuali all'interno del cerchio
-    x_in:     list[int]   = []  # Lista delle coordinate x all'interno del cerchio
-    y_in:     list[int]   = []  # Lista delle coordinate y all'interno del cerchio
-    x_out:    list[int]   = []  # Lista delle coordinate x all'esterno del cerchio
-    y_out:    list[int]   = []  # Lista delle coordinate y all'esterno del cerchio
+    N_in:     int         = 0   # Numero di coordinate casuali all'interno del cerchio  # noqa
+    x_in:     list[int]   = []  # Lista delle coordinate x all'interno del cerchio      # noqa
+    y_in:     list[int]   = []  # Lista delle coordinate y all'interno del cerchio      # noqa
+    x_out:    list[int]   = []  # Lista delle coordinate x all'esterno del cerchio      # noqa
+    y_out:    list[int]   = []  # Lista delle coordinate y all'esterno del cerchio      # noqa
     pi_array: list[float] = []  # Lista delle stime di π nel tempo
     pi: float = 0  # Stima di π, ricalcolata ad ogni iterazione
 
@@ -190,8 +190,8 @@ def main():
                     N_in += 1
             # Stima di π
             pi_array.append(N_in * 4 / (LEN * (i + 1)))
-    
-        # Stima finale di π (ultima stima calcolata)
+
+        # Stima finale di π (ultima stima calcolata)
         pi = pi_array[-1]
 
         # Disegna l'andamento della stima di π in funzione del numero di coordinate
