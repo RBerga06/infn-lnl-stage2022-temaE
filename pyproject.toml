@@ -25,4 +25,5 @@ disable = [
 	"R0903",  # too few public methods (*/2)
 	"R1704",  # Redefining argument with the local name '*'
 	"C0103",  # Variable name "*" doesn't conform to snake_case naming style
+	"W0702",  # No exception type(s) specified
 ]
