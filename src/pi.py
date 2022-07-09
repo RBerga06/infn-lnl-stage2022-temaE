@@ -109,7 +109,7 @@ def main():
 
     # Inizializzazione
     TRG = TrueRandomGenerator(bug=BUG)  # Il nostro generatore
-    LEN = TRG.nRandomNumbers    # Numero di valori casuali disponibili
+    LEN = TRG.n_random_numbers    # Numero di valori casuali disponibili
     N_in:     int         = 0   # Numero di coordinate casuali all'interno del cerchio  # noqa
     x_in:     list[int]   = []  # Lista delle coordinate x all'interno del cerchio      # noqa
     y_in:     list[int]   = []  # Lista delle coordinate y all'interno del cerchio      # noqa
@@ -179,7 +179,7 @@ def main():
     # ------------ Metodo 3: tutte le coordinate possibili, O(n^2) ------------
     elif _mode == 2:
         # Pre-calcolo dei quadrati, per ottimizzazione
-        nums = [b**2 for b in TRG.randomNumbers]
+        nums = [b**2 for b in TRG.random_numbers]
 
         # `enumerate([a, b, c]) -> [(0, a), (1, b), (2, c)]`
         # Questo ciclo scorre gli elementi (`x`) del vettore `nums`,
