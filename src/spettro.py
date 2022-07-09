@@ -32,11 +32,11 @@ def mean(v):
 
 # Calcolo delle aree per ogni evento
 def aree(
-    events:      list[Event],
-    BASELINE:    float,
-    max_area:    float | None = None,
-    min_samples: int          = 0,
-    max_samples: int   | None = None,
+    events: list[Event],
+    BASELINE: float,
+    max_area: float | None = None,
+    min_samples: int = 0,
+    max_samples: int | None = None,
 ) -> list[float]:
 
     if __debug__:
@@ -84,7 +84,7 @@ def main():
     if __debug__:
         print("    done.")
     BASELINE = mean(medie)
-    #BASELINE = 13313.683338704632      # già calcolata, all'occorrenza
+    # BASELINE = 13313.683338704632      # già calcolata, all'occorrenza
 
     # ---------------------- Calibrazione spettro in keV ----------------------
     # X1 = 118900  # picco a 1436 keV
@@ -94,14 +94,14 @@ def main():
     # m = (Y1 - Y2) / (X1 - X2)
     # q = Y1 - m * X1
     X = 118900  # picco a 1436 keV
-    Y = 1436    # keV del decadimento 138La -> 138Ba (picco centrale)
-    m = Y/X
+    Y = 1436  # keV del decadimento 138La -> 138Ba (picco centrale)
+    m = Y / X
 
     # Funzione di calibrazione
     def conv(x):
-        return m * x #+ q
+        return m * x  # + q
 
-    # -------------------------------- Grafici --------------------------------   
+    # -------------------------------- Grafici --------------------------------
     # # Stampa i samples
     # for i, event in enumerate(t):
     #     if i > 10:
@@ -114,17 +114,16 @@ def main():
     # plt.show
 
     # Spettro calibrato in keV, aree calcolate con samples nell'intervallo [BASELINE_CALC_N, 150]
-    plt.hist(list(map(conv, aree(t, BASELINE, min_samples=BASELINE_CALC_N, max_samples=150))), bins = 2500)
+    plt.hist(list(map(conv, aree(t, BASELINE, min_samples=BASELINE_CALC_N, max_samples=150))), bins=2500)
     plt.yscale("log")
     plt.xlabel("Energy [keV]")
     plt.ylabel("Counts")
     plt.xlim(left=0, right=conv(221400))
-    plt.ylim(top=2500*T, bottom=.175*T)
+    plt.ylim(top=2500*T, bottom=0.175*T)
     plt.title("Background energy spectrum")
     plt.show()
 
 
-
 # Chiama "main()" quando il programma viene eseguito direttamente
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
