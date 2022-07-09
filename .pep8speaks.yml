@@ -6,6 +6,7 @@ pycodestyle:
     max-line-length: 120
     ignore:
         - E221  # multiple spaces before operator
+        - E241  # multiple spaces after ':'
         # - W504  # line break after binary operator
         # - E402  # module level import not at top of file
         # - E731  # do not assign a lambda expression, use a def
