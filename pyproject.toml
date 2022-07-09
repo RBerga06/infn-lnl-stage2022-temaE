@@ -17,3 +17,12 @@ aggressive = 3
 
 [tool.pylint.main]
 max-line-length = 120
+
+[tool.pylint."MESSAGES CONTROL"]
+disable = [
+	"W0123",  # use of eval
+	"R0912",  # too many branches (*/12)
+	"R0903",  # too few public methods (*/2)
+	"R1704",  # Redefining argument with the local name '*'
+	"C0103",  # Variable name "*" doesn't conform to snake_case naming style
+]
