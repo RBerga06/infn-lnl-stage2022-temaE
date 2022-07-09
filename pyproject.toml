@@ -24,6 +24,7 @@ disable = [
 	# Warnings
 	"W0123",  # use of eval
 	"W0702",  # No exception type(s) specified
+	"W1203",  # Use %s formatting in logging functions
 	# Conventions
 	"C0103",  # Variable name "*" doesn't conform to snake_case naming style
 	# Refactoring
