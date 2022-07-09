@@ -20,10 +20,15 @@ max-line-length = 120
 
 [tool.pylint."MESSAGES CONTROL"]
 disable = [
+	# Errors
+	# Warnings
 	"W0123",  # use of eval
-	"R0912",  # too many branches (*/12)
-	"R0903",  # too few public methods (*/2)
-	"R1704",  # Redefining argument with the local name '*'
-	"C0103",  # Variable name "*" doesn't conform to snake_case naming style
 	"W0702",  # No exception type(s) specified
+	# Conventions
+	"C0103",  # Variable name "*" doesn't conform to snake_case naming style
+	# Refactoring
+	"R0903",  # too few public methods (*/2)
+	"R0912",  # too many branches (*/12)
+	"R0914",  # Too many local variables (21/15) (too-many-locals)
+	"R1704",  # Redefining argument with the local name '*'
 ]
