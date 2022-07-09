@@ -44,22 +44,18 @@ class TrueRandomGenerator:
     @overload
     def __init__(
         self, /, *, events: list[Event] | None = ..., file: Path | str | None = ..., bug: bool = False
-    ) -> None:
-        ...
+    ) -> None: ...
     # ... oppure `files=`...
     @overload
     def __init__(
-        self, /, *, events: list[Event] | None = ..., files: list[Path | str] | None = ..., bug: bool = False,
-    ) -> None:
-        ...
+        self, /, *, events: list[Event] | None = ..., files: list[Path | str] | None = ..., bug: bool = False
+    ) -> None: ...
     # ... ma non entrambi.
 
     # Metodo vero e proprio.
     #   Ottieni i dati, genera da questi bit e numeri casuali e salvali nelle variabili d'istanza.
     def __init__(
-        self,
-        /,
-        *,
+        self, *,
         # Fonti di dati
         events: list[Event] | None = None,  # Eventi passati direttamente
         file: Path | str | None = None,  # Apri un file
@@ -69,14 +65,15 @@ class TrueRandomGenerator:
     ) -> None:
 
         # --- 0. Lettura dei dati (eventi) ---
-        # Se nessuno fra `events=`, `file=` e `files` è stato specificato, usa il file di default
+        # Se nessuno fra `events=`, `file=` e `files` è stato specificato, usa il file di default (`data.root`)
         if events is file is files is None:
             files = [SRC / "data.root"]
         # Se `events=` è stato specificato, utilizzane una copia; altrimenti, inizia con una lista vuota
         events = [] if events is None else events.copy()
-        # Se `files=` non è stato specificato, ma `file=` sì, allora usa quel file; se invece nemmeno `file=` è stato specificato, non usare alcun file
+        # Se `files=` non è stato specificato, ma `file=` sì, allora usa quel file
+        #   Se invece nemmeno `file=` è stato specificato, non usare alcun file
         files = ([] if file is None else [file]) if files is None else files.copy()
-        # Apri i file in `files` e leggi l'albero "Data_R", aggiungendo i dati a `t` (come lista di eventi, cioè oggetti di tipo `Event`)
+        # Apri i file in `files` e leggi l'albero "Data_R", aggiungendo i dati a `t`
         for f in files:
             events += root.read(f, "Data_R", cls=Event)
         # Se non ci sono abbastanza eventi, riporta un errore e termina il programma
@@ -211,25 +208,24 @@ TO_PLOT: PLOT = (
 
 # Funzione per testare il generatore
 def test():
-    # La libreria matplotlib serve soltanto qua: importarla all'inizio di tutto il programma è sconveniente
+    # La libreria `matplotlib` serve soltanto qua: importarla all'inizio di tutto il programma è sconveniente
     import matplotlib.pyplot as plt
 
     gen = TrueRandomGenerator()
-
-    if not TO_PLOT:
-        return
 
     # Salva alcuni valori utili nel namespace locale
     #   per velocizzare l'accesso
     bits = gen.randomBits
     nums = gen.randomNumbers
 
-    if __debug__:
+    _PLOT_ITEM_MESSAGE = "     * {}"
+    if __debug__ and TO_PLOT:
         print("--> Plotting required items:")
-        print(*[f"     * {x}" for x in PLOT if x in TO_PLOT and x], sep="\n")
 
     # ------------------------ Differenze di tempo -------------------------
     if PLOT.TIME_DELTAS in TO_PLOT:
+        if __debug__:
+            print(_PLOT_ITEM_MESSAGE.format(PLOT.TIME_DELTAS))
         plt.hist(gen.deltaTs, bins=500)
         plt.yscale("log")
         plt.xlabel("Time difference between two conecutive events [Digitizer Clock Periods]")
@@ -239,6 +235,8 @@ def test():
 
     # ------------------------ Distribuzione dei bit -------------------------
     if PLOT.BITS_DISTRIBUTION in TO_PLOT:
+        if __debug__:
+            print(_PLOT_ITEM_MESSAGE.format(PLOT.BITS_DISTRIBUTION))
         # print(len(gen.deltaT))                  # stampa il numero di deltaT disponibili
         # print(*gen.randomNumbers, sep="\n")     # stampa numeri casuali disponibili
         # # Confronta frequenze di 0 e 1 in bits
@@ -254,6 +252,8 @@ def test():
     # ------------------------ Distribuzione dei byte -------------------------
 
     if PLOT.BYTES_DISTRIBUTION in TO_PLOT:
+        if __debug__:
+            print(_PLOT_ITEM_MESSAGE.format(PLOT.BYTES_DISTRIBUTION))
         # Numeri casuali
         plt.hist(
             nums,
@@ -262,6 +262,8 @@ def test():
         )
 
     if PLOT.BYTES_DISTRIBUTION_LOCAL_MEANS in TO_PLOT:
+        if __debug__:
+            print(_PLOT_ITEM_MESSAGE.format(PLOT.BYTES_DISTRIBUTION_LOCAL_MEANS))
         # Funzione per calcolare la media locale (ciclica)
         def local_means(v: list[int], spread: int = 5) -> list[float]:
             # 'v' è il vettore con i dati
