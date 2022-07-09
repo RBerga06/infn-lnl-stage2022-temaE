@@ -3,9 +3,10 @@
 import matplotlib.pyplot as plt
 from math import pi as PI
 
+
 def grid(N):
     TOT = N**2
-    K = (N-1)**2
+    K = (N - 1) ** 2
     N_in = 0
     N_out = 0
     for x in range(N):
@@ -39,13 +40,11 @@ def theoretical(N, case):
 if __name__ == "__main__":
     for N in range(1, 1024):
         grid(N)
-    #theoretical(N, case)
-
-    #diff = []
-    #for i in range(500):
+    # theoretical(N, case)
+    # diff = []
+    # for i in range(500):
     #    diff.append(-ideal(i, case) + theoretical(i, case))
-    #print()
-    #print(diff)
-#
-    #plt.plot(diff)
-    #plt.show()
+    # print()
+    # print(diff)
+    # plt.plot(diff)
+    # plt.show()

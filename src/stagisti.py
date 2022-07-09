@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from rand import TrueRandomGenerator
+
 g = TrueRandomGenerator()
 for i in range(0x16):
     g.random_number()
