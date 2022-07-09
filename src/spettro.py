@@ -16,6 +16,10 @@ BASELINE_CALC_N: int = 60  # 17 per il file 'fondo.root'
 #   0: media delle medie
 #   1: evento per evento
 BASELINE_CALC_MODE: Literal[0, 1] = 0
+# Punti di calibrazione dello spettro:
+#   0: Origine e picco a 1436 keV
+#   1: Picco a 1436 keV e picco a 2600 keV
+CALIBRATION_MODE: Literal[0, 1] = 0
 
 
 # --- Modelli ----
@@ -24,7 +28,6 @@ class Event(NamedTuple):
     """Questa classe rappresenta un evento."""
     # Sono specificati soltanto gli attributi che ci interessano
     Samples: list[int]
-
 
 
 # --- Utility ----
@@ -103,19 +106,20 @@ def main():
         BASELINE = None
 
     # ---------------------- Calibrazione spettro in keV ----------------------
-    # X1 = 118900  # picco a 1436 keV
-    # X2 = 211400  # picco a 2600 keV
-    # Y1 = 1436    # keV del decadimento 138La -> 138Ba (picco centrale)
-    # Y2 = 2600    # keV del decadimento 227Ac (primo picco)
-    # m = (Y1 - Y2) / (X1 - X2)
-    # q = Y1 - m * X1
-    X = 118900  # picco a 1436 keV
-    Y = 1436  # keV del decadimento 138La -> 138Ba (picco centrale)
-    m = Y / X
+    X1 = 118900  # picco a 1436 keV
+    X2 = 211400  # picco a 2600 keV
+    Y1 = 1436    # keV del decadimento 138La -> 138Ba (picco centrale)
+    Y2 = 2600    # keV del decadimento 227Ac (primo picco)
+    if CALIBRATION_MODE == 0:
+        m = Y1 / X1
+        q = 0
+    else:
+        m = (Y1 - Y2) / (X1 - X2)
+        q = Y1 - m * X1
 
     # Funzione di calibrazione
     def calibrate(x):
-        return m * x  # + q
+        return m * x + q
 
     # -------------------------------- Grafici --------------------------------
     # # Stampa i samples
