@@ -54,14 +54,14 @@ def logging_setup() -> None:
     """Setup `logging` based on command-line flags."""
     DEFAULT_LEVEL = logging.WARNING
     levels = get_levels()
-    # Controlla le varie flags che vengono passate al programma
+    # Controlla le varie flags che vengono passate al programma
     quietness = sys.argv.count("-q") - sys.argv.count("-v") + levels.index(DEFAULT_LEVEL)
     sys.argv = [x for x in sys.argv if x not in ("-v", "-q")]
     for arg in sys.argv.copy():
         if arg[0] == "-" and arg[1:] and set(arg[1:]) <= {"q", "v"}:
             quietness += arg.count("q") - arg.count("v")
             sys.argv.remove(arg)
-    # Determina il livello a partire dalla `silenziosità` richiesta
+    # Determina il livello a partire dalla `silenziosità` richiesta
     quietness = max(0, min(len(levels) - 1, quietness))
     level = levels[quietness]
     # Configurazione
