@@ -168,32 +168,32 @@ def task(msg: str) -> ContextManager[Logger]:
     return moduleLogger(depth=1).task(msg)
 
 
-def debug(msg: Any, *args: Any, extra: dict[str, Any], **kwargs) -> None:
+def debug(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
     """Log an debug message."""
     moduleLogger(depth=1).debug(msg, *args, extra=extra, **kwargs)
 
 
-def info(msg: Any, *args: Any, extra: dict[str, Any], **kwargs) -> None:
+def info(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
     """Log an information."""
     moduleLogger(depth=1).info(msg, *args, extra=extra, **kwargs)
 
 
-def warning(msg: Any, *args: Any, extra: dict[str, Any], **kwargs) -> None:
+def warning(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
     """Log a warning."""
     moduleLogger(depth=1).warning(msg, *args, extra=extra, **kwargs)
 
 
-def error(msg: Any, *args: Any, extra: dict[str, Any], **kwargs) -> None:
+def error(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
     """Log an error."""
     moduleLogger(depth=1).error(msg, *args, extra=extra, **kwargs)
 
 
-def critical(msg: Any, *args: Any, extra: dict[str, Any], **kwargs) -> None:
+def critical(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
     """Log an error that causes the program's termination."""
     moduleLogger(depth=1).critical(msg, *args, extra=extra, **kwargs)
 
 
-def exception(msg: Any, *args: Any, extra: dict[str, Any], **kwargs) -> None:
+def exception(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
     """Log an exception."""
     moduleLogger(depth=1).exception(msg, *args, extra=extra, **kwargs)
 
