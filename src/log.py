@@ -2,23 +2,34 @@
 # -*- coding : utf-8 -*-
 """Utility module: logging support."""
 from __future__ import annotations
+from logging import NOTSET, DEBUG, INFO, WARNING, ERROR, CRITICAL, getLogger
 import logging
 import os
 import sys
 
 
+__all__ = [
+    # Export from `logging`
+    "NOTSET", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL",
+    "getLogger",
+    # Defined here
+    "TIMESTAMP", "DEFAULT_LEVEL", "ICONS",
+    "cli_configure",
+]
+
+
 TIMESTAMP: bool = True
 
 ICONS = {
-    logging.NOTSET:   "[ ]",
-    logging.DEBUG:    "[#]",
-    logging.INFO:     "[i]",
-    logging.WARNING:  "[!]",
-    logging.ERROR:    "[x]",
-    logging.CRITICAL: "{x}",
+    NOTSET:   "[ ]",
+    DEBUG:    "[#]",
+    INFO:     "[i]",
+    WARNING:  "[!]",
+    ERROR:    "[x]",
+    CRITICAL: "{x}",
 }
 
-DEFAULT_LEVEL = logging.WARNING
+DEFAULT_LEVEL = WARNING
 _setup_done: bool = False
 
 
@@ -53,7 +64,7 @@ def get_levels() -> list[int]:
     ))
 
 
-def logging_setup() -> None:
+def cli_configure() -> None:
     """Setup `logging` based on command-line flags."""
     global _setup_done  # pylint: disable=global-statement
     if _setup_done:
@@ -78,9 +89,13 @@ def logging_setup() -> None:
     _setup_done = True
 
 
+if not eval(os.environ.get("NO_AUTO_LOGGING_CONFIG", "0") or "0"):
+    cli_configure()
+
+
 if __name__ == "__main__":
-    logging_setup()
-    logger = logging.getLogger(__name__)
+    cli_configure()
+    logger = getLogger(__name__)
     logger.critical("Message")
     logger.error("Message")
     logger.warning("Message")
