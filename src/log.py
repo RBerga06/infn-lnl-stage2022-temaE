@@ -9,7 +9,6 @@ import sys
 
 TIMESTAMP: bool = True
 
-
 ICONS = {
     logging.NOTSET:   "[ ]",
     logging.DEBUG:    "[#]",
@@ -18,6 +17,8 @@ ICONS = {
     logging.ERROR:    "[x]",
     logging.CRITICAL: "{x}",
 }
+
+DEFAULT_LEVEL = logging.WARNING
 
 
 class ConsoleFormatter(logging.Formatter):
@@ -52,7 +53,6 @@ def get_levels() -> list[int]:
 
 def logging_setup() -> None:
     """Setup `logging` based on command-line flags."""
-    DEFAULT_LEVEL = logging.WARNING
     levels = get_levels()
     # Controlla le varie flags che vengono passate al programma
     quietness = sys.argv.count("-q") - sys.argv.count("-v") + levels.index(DEFAULT_LEVEL)
