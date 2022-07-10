@@ -89,9 +89,10 @@ def cli_configure() -> None:
     # Configurazione
     ch = logging.StreamHandler()
     ch.setFormatter(ConsoleFormatter("{x} {message}", "[{asctime}]", style="{", datefmt="%Y-%m-%d %H:%M:%S"))
-    logging.root.addHandler(ch)
-    logging.root.setLevel(level)
     ch.setLevel(NOTSET)
+    root = getLogger()
+    root.addHandler(ch)
+    root.setLevel(level)
     _setup_done = True
 
 
