@@ -161,11 +161,11 @@ if not eval(os.environ.get("NO_AUTO_LOGGING_CONFIG", "0") or "0"):
 if __name__ == "__main__":
     cli_configure()
     logger = getLogger(__name__)
-    logger.critical("Message")
-    logger.error("Message")
-    logger.warning("Message")
-    logger.info("Message")
-    logger.debug("Message")
+    logger.critical("Critical")
+    logger.error("Error")
+    logger.warning("Warning")
+    logger.info("Info")
+    logger.debug("Debug")
     with logger.task("Running some serious computation...") as computation:
         time.sleep(1)
         computation.done_extra = "wasn't so useful"
