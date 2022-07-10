@@ -117,7 +117,7 @@ class Logger(logging.Logger):
             elif dt < 1_000_000_000:
                 dts = f"{dt/1_000_000} ms"
             else:
-                dts = time.strftime("%H:%M:%S", time.gmtime(dt/1_000_000_000))
+                dts = time.strftime("%H:%M:%S", time.gmtime(dt / 1_000_000_000))
             # Stampa il messaggio
             tsk.info(f"done{f' ({tsk.done_extra})' if tsk.done_extra else ''}.", extra=dict(took=f"took {dts} "))
 
