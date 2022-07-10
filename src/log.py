@@ -62,7 +62,8 @@ def get_levels() -> list[int]:
     name2level: dict[str, int] | None
     if sys.version_info >= (3, 11):
         name2level = logging.getLevelNamesMapping()  # pylint: disable=no-member
-    name2level = getattr(logging, "_nameToLevel", None)
+    else:
+        name2level = getattr(logging, "_nameToLevel", None)
     return sorted(set(
         name2level.values() if name2level
         else map(logging.getLevelName, 'CRITICAL ERROR WARNING INFO DEBUG NOTSET'.split(" "))
