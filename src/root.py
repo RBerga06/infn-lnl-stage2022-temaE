@@ -7,6 +7,7 @@ from typing import Any, NamedTuple, Sequence, TypeVar, get_origin, get_type_hint
 from collections import namedtuple
 from pathlib import Path
 import os
+from log import getLogger
 
 
 # ----- 1. Importa la libreria corretta ------ #
@@ -32,8 +33,7 @@ else:
 
 
 if __debug__:
-    print(f"[i] ROOT backend: {'PyROOT' if ROOT else 'uproot'}")
-
+    getLogger(__name__).info(f"ROOT backend: {'PyROOT' if ROOT else 'uproot'}")
 
 # ----- 2. Definisci la funzione di lettura ------ #
 
