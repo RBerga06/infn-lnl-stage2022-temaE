@@ -19,6 +19,7 @@ ICONS = {
 }
 
 DEFAULT_LEVEL = logging.WARNING
+_setup_done: bool = False
 
 
 class ConsoleFormatter(logging.Formatter):
@@ -28,7 +29,7 @@ class ConsoleFormatter(logging.Formatter):
         # Make the icon available
         setattr(record, "x", ICONS[record.levelno])
         if TIMESTAMP:
-            # Right-align the timestamp
+            # Right-align the timestamp
             width = os.get_terminal_size().columns  # Terminal width
             asctime = self.formatTime(record, self.datefmt)  # Time string
             rows = super().format(record).split("\n")
@@ -54,6 +55,9 @@ def get_levels() -> list[int]:
 
 def logging_setup() -> None:
     """Setup `logging` based on command-line flags."""
+    global _setup_done  # pylint: disable=global-statement
+    if _setup_done:
+        return
     levels = get_levels()
     # Controlla le varie flags che vengono passate al programma
     quietness = sys.argv.count("-q") - sys.argv.count("-v") + levels.index(DEFAULT_LEVEL)
@@ -71,6 +75,7 @@ def logging_setup() -> None:
     ch.setLevel(logging.NOTSET)
     logging.root.addHandler(ch)
     logging.root.setLevel(level)
+    _setup_done = True
 
 
 if __name__ == "__main__":
