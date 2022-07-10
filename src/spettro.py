@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Literal, NamedTuple
 import matplotlib.pyplot as plt
 import root
+from log import task
 
 
 # --- Costanti ---
@@ -32,8 +33,8 @@ class Event(NamedTuple):
 
 # --- Utility ----
 
-# Calcolo della media degli elementi contenuti nel vettore "v"
-def mean(v):
+def mean(v: list[float] | list[int]) -> float:
+    """Calcola la media degli elementi nel vettore `v`"""
     return sum(v) / len(v)
 
 
@@ -90,18 +91,15 @@ def main():
 
     # ------------------------ Calcolo della baseline -------------------------
     if BASELINE_CALC_MODE == 0:
-        if __debug__:
-            print("--> calculating baseline")
-        medie = []
-        for event in t:
-            # Calcola della media dei primi `BASELINE_CALC_N` samples richiamando la funzione "mean"
-            # Salva la media nel vettore "medie"
-            medie.append(mean(event.Samples[:BASELINE_CALC_N]))
-        # Salva la media del vettore "medie" come "BASELINE"
-        if __debug__:
-            print("    done.")
-        BASELINE = mean(medie)
-        # BASELINE = 13313.683338704632      # già calcolata, all'occorrenza
+        with task("Calculating baseline..."):
+            medie = []
+            for event in t:
+                # Calcola della media dei primi `BASELINE_CALC_N` samples richiamando la funzione "mean"
+                # Salva la media nel vettore "medie"
+                medie.append(mean(event.Samples[:BASELINE_CALC_N]))
+            # Salva la media del vettore "medie" come "BASELINE"
+            BASELINE = mean(medie)
+            # BASELINE = 13313.683338704632      # già calcolata, all'occorrenza
     else:
         BASELINE = None
 
