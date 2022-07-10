@@ -3,8 +3,9 @@
 """Utility module: logging support."""
 from __future__ import annotations
 from contextlib import contextmanager
-from typing import Iterator, cast
+from typing import Any, ContextManager, Iterator, cast
 from logging import NOTSET, DEBUG, INFO, WARNING, ERROR, CRITICAL, getLogger as _getLogger
+import inspect
 import time
 import logging
 import os
@@ -24,6 +25,14 @@ __all__ = [
 def getLogger(name: str = "") -> Logger:
     """Get the logger associated with this given name."""
     return cast(Logger, _getLogger(name))
+
+
+def moduleLogger(name: str | None = None, /, *, depth: int = 0) -> Logger:
+    """Get the logger associated with the module that's calling this function."""
+    return getLogger(
+        inspect.stack()[1 + depth].frame.f_globals["__name__"]
+        if name is None else name
+    )
 
 
 TIMESTAMP: bool = True
@@ -152,6 +161,41 @@ def cli_configure() -> None:
     root.addHandler(ch)
     root.setLevel(level)
     _setup_done = True
+
+
+def task(msg: str) -> ContextManager[Logger]:
+    """Log an debug message."""
+    return moduleLogger(depth=1).task(msg)
+
+
+def debug(msg: Any, *args: Any, extra: dict[str, Any], **kwargs) -> None:
+    """Log an debug message."""
+    moduleLogger(depth=1).debug(msg, *args, extra=extra, **kwargs)
+
+
+def info(msg: Any, *args: Any, extra: dict[str, Any], **kwargs) -> None:
+    """Log an information."""
+    moduleLogger(depth=1).info(msg, *args, extra=extra, **kwargs)
+
+
+def warning(msg: Any, *args: Any, extra: dict[str, Any], **kwargs) -> None:
+    """Log a warning."""
+    moduleLogger(depth=1).warning(msg, *args, extra=extra, **kwargs)
+
+
+def error(msg: Any, *args: Any, extra: dict[str, Any], **kwargs) -> None:
+    """Log an error."""
+    moduleLogger(depth=1).error(msg, *args, extra=extra, **kwargs)
+
+
+def critical(msg: Any, *args: Any, extra: dict[str, Any], **kwargs) -> None:
+    """Log an error that causes the program's termination."""
+    moduleLogger(depth=1).critical(msg, *args, extra=extra, **kwargs)
+
+
+def exception(msg: Any, *args: Any, extra: dict[str, Any], **kwargs) -> None:
+    """Log an exception."""
+    moduleLogger(depth=1).exception(msg, *args, extra=extra, **kwargs)
 
 
 if not eval(os.environ.get("NO_AUTO_LOGGING_CONFIG", "0") or "0"):
