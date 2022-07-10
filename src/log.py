@@ -92,7 +92,7 @@ class Logger(logging.Logger):
         """Log the fact we're doing something."""
         self.info(f"--> {msg}")
         task = self.getChild("task")
-        task._indent = self._indent + 1
+        task._indent = self._indent + 1  # pylint: disable=protected-access
         t0 = time.time_ns()
         try:
             yield task
@@ -110,7 +110,7 @@ class Logger(logging.Logger):
             else:
                 dts = time.strftime("%H:%M:%S", time.gmtime(dt/1_000_000_000))
             # Stampa il messaggio
-            task.info(f"done{f' ({task.done_extra}' if task.done_extra else ''}.", extra=dict(took=f"took {dts} "))
+            task.info(f"done{f' ({task.done_extra})' if task.done_extra else ''}.", extra=dict(took=f"took {dts} "))
 
 
 def get_levels() -> list[int]:
@@ -166,5 +166,6 @@ if __name__ == "__main__":
     logger.warning("Message")
     logger.info("Message")
     logger.debug("Message")
-    with logger.task("Running some serious computation...") as task:
+    with logger.task("Running some serious computation...") as computation:
         time.sleep(1)
+        computation.done_extra = "read 10 items."
