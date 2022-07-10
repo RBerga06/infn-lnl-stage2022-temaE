@@ -8,6 +8,7 @@ from math import pi as PI
 from pathlib import Path
 import matplotlib.pyplot as plt
 from rand import TrueRandomGenerator
+from log import info
 
 
 # Costanti
@@ -97,13 +98,12 @@ def main():
     # Determina il valore di "BUG", tenendo conto della riga di comando
     BUG = bug(True)  # Di default è attivo
 
-    if __debug__:
-        # Comunica che BUG è attivo (per sicurezza)
-        print(f"[i] BUG is {'en' if BUG else 'dis'}abled.")
+    # Comunica che BUG è attivo (per sicurezza)
+    info(f"BUG is {'en' if BUG else 'dis'}abled.")
 
     # Determina l'algoritmo da utilizzare
     MODE: int = mode()  # Usa la funzione sopra definita
-    print(f"[i] Using algorithm [{MODE}].")  # Stampa l'algoritmo, per sicurezza
+    info(f"Using algorithm [{MODE}].")  # Stampa l'algoritmo, per sicurezza
 
     # Inizializzazione
     TRG = TrueRandomGenerator(bug=BUG)  # Il nostro generatore
