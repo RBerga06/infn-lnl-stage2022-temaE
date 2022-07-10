@@ -36,20 +36,25 @@ _setup_done: bool = False
 class ConsoleFormatter(logging.Formatter):
     """A customized logging formatter."""
 
+    def __init__(self, lfmt: str, rfmt: str, *args, **kwargs) -> None:
+        """Left and right formatter strings."""
+        lfmt, rfmt = lfmt.replace('\0', ''), rfmt.replace('\0', '')
+        super().__init__(f"{lfmt}\0{rfmt}", *args, **kwargs)
+
     def format(self, record: logging.LogRecord) -> str:
         # Make the icon available
         setattr(record, "x", ICONS[record.levelno])
-        if TIMESTAMP:
-            # Right-align the timestamp
+        left, right = super().format(record).split("\0")
+        if right:
+            # Right-align text
             width = os.get_terminal_size().columns  # Terminal width
-            asctime = self.formatTime(record, self.datefmt)  # Time string
-            rows = super().format(record).split("\n")
+            rows = left.split("\n")
             first = rows[0]
-            if len(first) + 1 + len(asctime) <= width:
-                # Don't add the timestamp if the row is too long
-                first += f"{' '*(width-len(first)-len(asctime))}{asctime}"
+            if len(first) + 1 + len(right) <= width:
+                # Don't add the right text if the left one is too long
+                first += f"{' '*(width-len(first)-len(right))}{right}"
             return "\n".join([first, *rows[1:]])
-        return super().format(record)
+        return left
 
 
 def get_levels() -> list[int]:
@@ -82,7 +87,7 @@ def cli_configure() -> None:
     level = levels[quietness]
     # Configurazione
     ch = logging.StreamHandler()
-    ch.setFormatter(ConsoleFormatter("{x} {message}", style="{", datefmt="[%Y-%m-%d %H:%M:%S]"))
+    ch.setFormatter(ConsoleFormatter("{x} {message}", "[{asctime}]", style="{", datefmt="%Y-%m-%d %H:%M:%S"))
     ch.setLevel(logging.NOTSET)
     logging.root.addHandler(ch)
     logging.root.setLevel(level)
