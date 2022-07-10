@@ -28,12 +28,13 @@ class ConsoleFormatter(logging.Formatter):
         # Make the icon available
         setattr(record, "x", ICONS[record.levelno])
         if TIMESTAMP:
-            width = os.get_terminal_size().columns
-            msg = super().format(record)
-            asctime = self.formatTime(record, self.datefmt)
-            rows = msg.split("\n")
+            # Right-align the timestamp
+            width = os.get_terminal_size().columns  # Terminal width
+            asctime = self.formatTime(record, self.datefmt)  # Time string
+            rows = super().format(record).split("\n")
             first = rows[0]
             if len(first) + 1 + len(asctime) <= width:
+                # Don't add the timestamp if the row is too long
                 first += f"{' '*(width-len(first)-len(asctime))}{asctime}"
             return "\n".join([first, *rows[1:]])
         return super().format(record)
