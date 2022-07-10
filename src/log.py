@@ -13,12 +13,13 @@ import sys
 
 
 __all__ = [
-    # Export from `logging`
+    # Exported from `logging`
     "NOTSET", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL",
-    "getLogger",
+    # Overridden from `logging`
+    "getLogger", "debug", "info", "warning", "error", "critical", "exception",
     # Defined here
     "TIMESTAMP", "DEFAULT_LEVEL", "ICONS",
-    "cli_configure",
+    "moduleLogger", "task", "cli_configure",
 ]
 
 
@@ -160,6 +161,7 @@ def cli_configure() -> None:
     root.__class__ = Logger
     root.addHandler(ch)
     root.setLevel(level)
+    root._indent = 0  # pylint: disable=protected-access
     _setup_done = True
 
 
