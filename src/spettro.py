@@ -53,14 +53,14 @@ def aree(
             f"{max_area=}, samples range = [{min_samples}, {max_samples}])"
         )
 
-    aree: list[float] = []
+    aree_calcolate: list[float] = []
     for event in events:
         # Se necessario, calcola la BASELINE per questo evento
         if BASELINE_CALC_MODE == 1:
             BASELINE = mean(event.Samples[:BASELINE_CALC_N])
         assert BASELINE is not None
 
-        # Estrazione dei samples dell'evento tra "min_samples" e "max_samples"
+        # Estrazione dei samples dell'evento tra `min_samples` e `max_samples`
         samples = event.Samples[min_samples:max_samples]
 
         # Calcolo dell'area:
@@ -69,12 +69,12 @@ def aree(
 
         # Se non sono stati impostati limiti all'area o area < del limite ...
         if max_area is None or temp_area < max_area:
-            # ... salva l'area nel vettore "Aree"
-            aree.append(temp_area)
+            # ... salva l'area nel vettore `aree_calcolate`
+            aree_calcolate.append(temp_area)
 
     if __debug__:
         print("    done.")
-    return aree
+    return aree_calcolate
 
 
 # --- Programma principale ----
@@ -144,6 +144,6 @@ def main():
     plt.show()
 
 
-# Chiama "main()" quando il programma viene eseguito direttamente
+# Chiama `main()` quando il programma viene eseguito direttamente
 if __name__ == "__main__":
     main()
