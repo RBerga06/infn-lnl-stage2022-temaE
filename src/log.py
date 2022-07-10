@@ -168,4 +168,4 @@ if __name__ == "__main__":
     logger.debug("Message")
     with logger.task("Running some serious computation...") as computation:
         time.sleep(1)
-        computation.done_extra = "read 10 items."
+        computation.done_extra = "wasn't so useful"
