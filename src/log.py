@@ -100,11 +100,11 @@ class Logger(logging.Logger):
     def task(self, msg: str) -> Iterator[Logger]:
         """Log the fact we're doing something."""
         self.info(f"--> {msg}")
-        task = self.getChild("task")
-        task._indent = self._indent + 1  # pylint: disable=protected-access
+        tsk = self.getChild("task")
+        tsk._indent = self._indent + 1  # pylint: disable=protected-access
         t0 = time.time_ns()
         try:
-            yield task
+            yield tsk
         finally:
             t1 = time.time_ns()
             dt = t1 - t0
@@ -119,7 +119,7 @@ class Logger(logging.Logger):
             else:
                 dts = time.strftime("%H:%M:%S", time.gmtime(dt/1_000_000_000))
             # Stampa il messaggio
-            task.info(f"done{f' ({task.done_extra})' if task.done_extra else ''}.", extra=dict(took=f"took {dts} "))
+            tsk.info(f"done{f' ({tsk.done_extra})' if tsk.done_extra else ''}.", extra=dict(took=f"took {dts} "))
 
 
 def get_levels() -> list[int]:
