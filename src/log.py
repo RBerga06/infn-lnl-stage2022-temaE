@@ -29,7 +29,7 @@ ICONS = {
     CRITICAL: "{x}",
 }
 
-DEFAULT_LEVEL = WARNING
+DEFAULT_LEVEL = INFO if __debug__ else WARNING  # '-O' works like a '-q'
 _setup_done: bool = False
 
 
