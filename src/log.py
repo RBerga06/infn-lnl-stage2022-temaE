@@ -4,10 +4,10 @@
 from __future__ import annotations
 from contextlib import contextmanager
 from typing import Any, ContextManager, Iterator, cast
-from logging import NOTSET, DEBUG, INFO, WARNING, ERROR, CRITICAL, getLogger as _getLogger
+from logging import NOTSET, DEBUG, INFO, WARNING, ERROR, CRITICAL
+import logging
 import inspect
 import time
-import logging
 import os
 import sys
 
@@ -30,17 +30,19 @@ else:
 __all__ = [
     # Exported from `logging`
     "NOTSET", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL",
-    # Overridden from `logging`
-    "getLogger", "debug", "info", "warning", "error", "critical", "exception",
     # Defined here
-    "TIMESTAMP", "DEFAULT_LEVEL", "ICONS",
-    "moduleLogger", "task", "cli_configure",
+    "TIMESTAMP", "DEFAULT_LEVEL", "ICONS", "STYLES",
+    "ConsoleFormatter", "Logger",
+    "cli_configure", "getLogger", "moduleLogger",
+    "debug", "info", "warning", "error", "critical", "exception", "task",
 ]
 
 
 def getLogger(name: str = "") -> Logger:
     """Get the logger associated with this given name."""
-    return cast(Logger, _getLogger(name))
+    if not name:
+        raise ValueError("You should not use the root logger!")
+    return cast(Logger, logging.getLogger(name))
 
 
 def moduleLogger(name: str | None = None, /, *, depth: int = 0) -> Logger:
@@ -128,13 +130,22 @@ class ConsoleFormatter(logging.Formatter):
 
 class Logger(logging.Logger):
     """An enhanced logger."""
+    __slots__ = ("_indent", "result", "_result_logged", "_timestamp")
     _indent: int
-    done_extra: str
+    result: str
+    _result_logged: bool
+    _timestamp: int | None
 
     def __init__(self, name: str, level: int | str = NOTSET) -> None:
         super().__init__(name, level)
         self._indent = 0
-        self.done_extra = ""
+        self._task_reset()
+
+    def _task_reset(self):
+        """Resetta gli attributi relativi alla `task`."""
+        self.result = ""
+        self._result_logged = False
+        self._timestamp = None
 
     def makeRecord(self, *args, **kwargs) -> logging.LogRecord:
         record = super().makeRecord(*args, **kwargs)
@@ -142,12 +153,12 @@ class Logger(logging.Logger):
         return record
 
     @contextmanager
-    def task(self, msg: str) -> Iterator[Logger]:
+    def task(self, msg: str, level: int = INFO) -> Iterator[Logger]:
         """Log the fact we're doing something."""
-        self.info(f"--> {msg}")
+        self.log(level, f"--> {msg}")
         tsk = self.getChild("task")
         tsk._indent = self._indent + 1  # pylint: disable=protected-access
-        t0 = time.time_ns()
+        tsk.save_timestamp()
         try:
             yield tsk
         finally:
@@ -207,11 +218,9 @@ def cli_configure() -> None:
     ch.setFormatter(ConsoleFormatter(*MESSAGE_FORMAT, style="{", datefmt="%Y-%m-%d %H:%M:%S"))
     ch.setLevel(NOTSET)
     logging.setLoggerClass(Logger)
-    root = getLogger()
-    root.__class__ = Logger
+    root = logging.getLogger()
     root.addHandler(ch)
     root.setLevel(level)
-    root._indent = 0  # pylint: disable=protected-access
     _setup_done = True
 
 
