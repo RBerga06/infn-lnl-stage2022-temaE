@@ -50,7 +50,7 @@ def aree(
 ) -> list[float]:
     """Calcola l'area di ogni evento."""
     logger = taskLogger()
-    logger.debug(f"{max_area=}, samples range = [{min_samples}, {max_samples}])")
+    logger.debug(f"{max_area=}, samples range = [{min_samples}, {max_samples}]")
 
     aree_calcolate: list[float] = []
     for event in events:
@@ -76,10 +76,8 @@ def aree(
 
 # --- Programma principale ----
 
-# Funzione principale
 def main():
-    if __debug__:
-        print("START")
+    """Funzione principale."""
 
     # ----------------------------- Apertura file -----------------------------
     SRC = Path(__file__).parent
