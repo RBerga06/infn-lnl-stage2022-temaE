@@ -69,7 +69,7 @@ class Account:
 
     def pay(self, price: float) -> None:
         """Paga (= rimuovi dal conto) €`price`."""
-        # Senza `abs(...)` un prezzo negativo aumenterebbe i soldi sul conto.
+        # Senza `abs(...)` un prezzo negativo aumenterebbe i soldi sul conto.
         #   Così, il segno viene semplicemente ignorato.
         self.__money -= abs(price)
 
@@ -118,8 +118,8 @@ def inheritance_example():
 
 if __name__ == "__main__":
     print("~~~ classe.py ~~~")
-    # # # # # # # # # # # # # # # # # # # # # # #
+    # # # # # # # # # # # # # # # # # # # # # # #
     # Decommenta la riga di interesse qua sotto #
-    # # # # # # # # # # # # # # # # # # # # # # #
+    # # # # # # # # # # # # # # # # # # # # # # #
     #privatevar_example()
     #inheritance_example()
