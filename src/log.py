@@ -59,10 +59,10 @@ def moduleLogger(name: str | None = None, /, *, depth: int = 0) -> Logger:
 
 def taskLogger(module: str | None = None, /, id: str = "", *, depth: int = 0) -> Logger:
     """Get the task logger for the module that's calling this function."""
-    logger = moduleLogger(module, depth=1 + depth).getChild("task")
+    tl = moduleLogger(module, depth=1 + depth).getChild("task")
     if id:
-        return logger.getChild(id)
-    return logger
+        return tl.getChild(id)
+    return tl
 
 
 TIMESTAMP: bool = True
