@@ -304,14 +304,14 @@ def exception(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwarg
     moduleLogger(depth=1).exception(msg, *args, extra=extra, **kwargs)
 
 
-def style(message: str, style: str) -> str:  # pylint: disable=redefined-outer-name
+def style(message: str, style: str) -> str:
     """Apply the given `style` to `message` only if `rich` is available."""
     if RICH:
         return f"[{style}]{message}[/{style}]"
     return message
 
 
-def sprint(*values, sep: str = " ", end: str = "\n", style: str = ""):  # pylint: disable=redefined-outer-name
+def sprint(*values, sep: str = " ", end: str = "\n", style: str = ""):
     """Print styled text to console."""
     if RICH:
         if style:
