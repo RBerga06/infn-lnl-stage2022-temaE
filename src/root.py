@@ -202,7 +202,7 @@ def test():
         Samples: list[int]
 
     SRC = Path(__file__).parent
-    DEFAULT = SRC/"fondo.root"
+    DEFAULT = SRC / "fondo.root"
     if len(sys.argv) > 1:
         file = Path(sys.argv[1])
         if not file.exists():
