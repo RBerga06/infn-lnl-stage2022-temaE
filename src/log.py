@@ -208,7 +208,6 @@ class Logger(logging.Logger):
         self._result_logged = True
 
 
-
 def get_levels() -> list[int]:
     """Get the installed levels, as a list, in severity ascending order."""
     name2level: dict[str, int] | None
