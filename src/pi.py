@@ -262,7 +262,6 @@ def main():
 
 def style_pi(pi: str, i: int, OK: str, K0: str, KO: str) -> str:
     """Colora `pi` in base al numero di cifre corrette (`i`) e agli stili specificati."""
-    # i è il numero di cifre corrette
     s = ""
     for j, c in enumerate(pi.replace(".", "")):
         if j < i:
