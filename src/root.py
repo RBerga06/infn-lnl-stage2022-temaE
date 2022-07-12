@@ -14,7 +14,7 @@ from log import debug, info, task
 # ----- 1. Importa la libreria corretta ------ #
 
 # Variabile che controlla la libreria da usare: True per PyROOT, False per uproot.
-#   Il valore iniziale è determinato a partire variabile d'ambiente FORCE_UPROOT.
+#   Il valore iniziale è determinato a partire dalla variabile d'ambiente `FORCE_UPROOT`.
 FORCE_UPROOT = eval(os.environ.get("FORCE_UPROOT", "0") or "0")
 
 # Prova a importare PyROOT; se fallisci, prova con uproot.
