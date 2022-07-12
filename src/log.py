@@ -13,8 +13,11 @@ import sys
 
 
 # Prova ad importare `rich`, se possibile
+NO_RICH = bool(eval(os.environ.get("NO_RICH", "") or "0"))
 RICH: bool
 try:
+    if NO_RICH:
+        raise ModuleNotFoundError
     import rich.markup
     import rich.logging
     import rich.highlighter
@@ -106,7 +109,9 @@ class ConsoleFormatter(logging.Formatter):
             record.msg = " " * getattr(record, "indent") * 4 + record.msg
             delattr(record, "indent")
         # Format and right-align text
-        text = (f"[{STYLES[record.levelno]}]" + super().format(record) + "[/]")
+        text = super().format(record)
+        if RICH:
+            text = f"[{STYLES[record.levelno]}]{text}[/]"
         styles_len = len(text) - len(rich.markup.render(text)) if RICH else 0
         left, right = text.split("\0")
         if right:
