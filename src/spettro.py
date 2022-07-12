@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Literal, NamedTuple
 import matplotlib.pyplot as plt
 import root
-from log import moduleLogger, task, taskLogger
+from log import task, taskLogger
 
 
 # --- Costanti ---
