@@ -316,6 +316,8 @@ def sprint(*values, sep: str = " ", end: str = "\n", style: str = ""):  # pylint
 
 if not eval(os.environ.get("NO_AUTO_LOGGING_CONFIG", "0") or "0"):
     cli_configure()
+    # Silenzia i messaggi di debug di alcune librerie
+    getLogger("matplotlib").setLevel(WARNING)
 
 
 if __name__ == "__main__":
