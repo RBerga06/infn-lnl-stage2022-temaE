@@ -2,9 +2,9 @@
 # -*- coding : utf-8 -*-
 """Utility module: logging support."""
 from __future__ import annotations
-from typing import Any, ContextManager, Iterator, cast
+from typing import Any, Iterator, cast
 from logging import NOTSET, DEBUG, INFO, WARNING, ERROR, CRITICAL
-from contextlib import contextmanager
+from contextlib import contextmanager, _GeneratorContextManager
 from io import StringIO
 import logging
 import inspect
@@ -258,7 +258,7 @@ def cli_configure() -> None:
     _setup_done = True
 
 
-def task(msg: str, level: int = INFO) -> ContextManager[Logger]:
+def task(msg: str, level: int = INFO) -> _GeneratorContextManager[Logger]:
     """Log an debug message."""
     return moduleLogger(depth=1).task(msg, level=level)
 
@@ -350,3 +350,12 @@ if __name__ == "__main__":
             time.sleep(1)
             computation.info("Just slept 1s.")
         computation.done()
+    logger.debug("About to define function `_foo` with `@task` decorator")
+
+    @task("Foo task")
+    def _foo(x: int) -> None:
+        for __ in range(x):
+            time.sleep(1)
+
+    logger.debug("After defining function `_foo` with `@task` decorator")
+    _foo(2)
