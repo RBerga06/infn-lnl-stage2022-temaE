@@ -6,6 +6,7 @@ from __future__ import annotations
 from typing import Any, NamedTuple, Sequence, TypeVar, get_origin, get_type_hints, overload
 from collections import namedtuple
 from pathlib import Path
+import sys
 import os
 from log import info, task
 
@@ -200,7 +201,15 @@ def test():
         Timestamp: int
         Samples: list[int]
 
-    data = read("src/data.root", "Data_R", cls=Event)
+    SRC = Path(__file__).parent
+    DEFAULT = SRC/"fondo.root"
+    if len(sys.argv) > 1:
+        file = Path(sys.argv[1])
+        if not file.exists():
+            file = DEFAULT
+    else:
+        file = DEFAULT
+    data = read(file, "Data_R", cls=Event)
     assert isinstance(data[0], Event)
 
 
