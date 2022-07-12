@@ -133,7 +133,7 @@ class ConsoleFormatter(logging.Formatter):
         super().__init__(f"{lfmt}\0{rfmt}", *args, **kwargs)
 
     def format(self, record: logging.LogRecord) -> str:
-        # Make the console markup working
+        # Activate console markup
         if RICH:
             setattr(record, "markup", True)
         # Make the `icon` available and escape it if necessary
