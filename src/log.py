@@ -264,7 +264,7 @@ def cli_configure() -> None:
 
 
 def task(msg: str, level: int = INFO) -> _GeneratorContextManager[Logger]:
-    """Log an debug message."""
+    """Start logging a task."""
     return moduleLogger(depth=1).task(msg, level=level)
 
 
