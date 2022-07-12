@@ -8,23 +8,27 @@ from collections import namedtuple
 from pathlib import Path
 import sys
 import os
-from log import info, task
+from log import debug, info, task
 
 
 # ----- 1. Importa la libreria corretta ------ #
 
 # Variabile che controlla la libreria da usare: True per PyROOT, False per uproot.
 #   Il valore iniziale è determinato a partire variabile d'ambiente FORCE_UPROOT.
-ROOT: bool = not eval(os.environ.get("FORCE_UPROOT", "0") or "0")
+FORCE_UPROOT = eval(os.environ.get("FORCE_UPROOT", "0") or "0")
 
 # Prova a importare PyROOT; se fallisci, prova con uproot.
 #   Imposta la variabile `ROOT` di conseguenza.
+ROOT: bool
 try:
-    if not ROOT:
+    debug(f"Environment variable `FORCE_UPROOT` is {'' if FORCE_UPROOT else 'not '}set.")
+    if FORCE_UPROOT:
         raise ModuleNotFoundError
+    debug("Trying to import `PyROOT`")
     import ROOT as PyROOT
 except ModuleNotFoundError:
     # Non c'è PyROOT: usiamo uproot
+    debug("Trying to import `uproot`")
     import uproot
 
     ROOT = False
