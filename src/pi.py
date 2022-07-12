@@ -8,7 +8,7 @@ from math import pi as PI
 from pathlib import Path
 import matplotlib.pyplot as plt
 from rand import TrueRandomGenerator
-from log import info
+from log import info, warning
 
 
 # Costanti
@@ -74,13 +74,13 @@ def mode() -> int:
             sys.exit(0)
         # Gestione errori: input non intero (chiede nuovamente)
         except:
-            print("[!] Please type in an integer (0|1|2|3)!")
+            warning("Algorithm index has to be an integer (0|1|2|3)!")
             continue
         # Numero intero: ok
         else:
             # Troppo grande o troppo piccolo (chiede nuovamente)
             if _mode > 3 or _mode < 0:
-                print("[!] Invalid integer (has to be in [0, 3])!")
+                warning(f"Invalid integer `{_mode}` (has to be in [0, 3])!")
                 continue
             # Tutto ok: "_mode" è impostato e si continua col programma
             return _mode  # questo 'return' interrompe il ciclo 'while' e ritorna il valore di '_mode'
