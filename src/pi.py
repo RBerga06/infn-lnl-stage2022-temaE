@@ -15,6 +15,9 @@ from log import info, style, warning, sprint
 K = 255**2
 SRC = Path(__file__).parent  # Cartella di questo file
 
+# Se l'output è formattato male, imposta questa flag a `False`
+UNICODE_BOX: bool = True  # False
+
 
 def bug(default: bool, /) -> bool:
     """Determina se è stato attivato il “bug” da riga di comando."""
@@ -243,11 +246,18 @@ def main():
     OK_STYLE = "bold green"     # le cifre corrette
     K0_STYLE = "bold yellow"    # la prima cifra errata
     KO_STYLE = "bright_red"     # le altre cifre errate
+    # Margini del riquadro
+    UL = "┌" if UNICODE_BOX else ","
+    UR = "┐" if UNICODE_BOX else ","
+    DL = "└" if UNICODE_BOX else "'"
+    DR = "┘" if UNICODE_BOX else "'"
+    H = "─" if UNICODE_BOX else "-"
+    V = "│" if UNICODE_BOX else "|"
     sprint(f"""\
-,{'-'*(L+7)},
-| π ≈ {style_pi(spi, i, OK_STYLE, K0_STYLE, KO_STYLE)} |
-| π = {style_pi(sPI, i, PI_STYLE, OK_STYLE, PI_STYLE)} |
-|     {
+{UL}{H*(L+7)}{UR}
+{V} π ≈ {style_pi(spi, i, OK_STYLE, K0_STYLE, KO_STYLE)} {V}
+{V} π = {style_pi(sPI, i, PI_STYLE, OK_STYLE, PI_STYLE)} {V}
+{V}     {
     style('+', OK_STYLE) if i else style('^', K0_STYLE)
 }-{
     style('+', OK_STYLE)*(i-1) if i else ''
@@ -255,8 +265,8 @@ def main():
     style('^', K0_STYLE) if i else ''
 }{
     style('~', KO_STYLE)*(L-i-1)
-} |
-'{'-'*(L+7)}'\
+} {V}
+{DL}{H*(L+7)}{DR}\
 """)
 
 
