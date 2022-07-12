@@ -40,6 +40,27 @@ __all__ = [
 ]
 
 
+def style(message: str, style: str) -> str:
+    """Apply the given `style` to `message` only if `rich` is available."""
+    if RICH:
+        return f"[{style}]{message}[/{style}]"
+    return message
+
+
+def sprint(*values, sep: str = " ", end: str = "\n", style: str = ""):
+    """Print styled text to console."""
+    if RICH:
+        if style:
+            io = StringIO()
+            print(*values, sep=sep, end=end, file=io, flush=True)
+            io.seek(0)
+            rich.print(f"[{style}]{io.read()}[/{style}]", end="", flush=True)
+        else:
+            rich.print(*values, sep=sep, end=end, flush=True)
+    else:
+        print(*values, sep=sep, end=end, flush=True)
+
+
 def getLogger(name: str = "") -> Logger:
     """Get the logger associated with this given name."""
     if not name:
@@ -92,10 +113,13 @@ if RICH:
         "{x} {message}",
         "[/][dim][bold]{took}[/bold][{asctime}]"
     )
-    TASK_MESSAGE = "[bold]--> {}[/bold]"
 else:
-    MESSAGE_FORMAT = ("{x} {message}", "{took}[{asctime}]")
-    TASK_MESSAGE = "--> {}"
+    MESSAGE_FORMAT = (
+        "{x} {message}",
+        "{took}[{asctime}]"
+    )
+
+TASK_MESSAGE = style("--> {}", "bold")
 
 _setup_done: bool = False
 
@@ -302,27 +326,6 @@ def critical(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs
 def exception(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
     """Log an exception."""
     moduleLogger(depth=1).exception(msg, *args, extra=extra, **kwargs)
-
-
-def style(message: str, style: str) -> str:
-    """Apply the given `style` to `message` only if `rich` is available."""
-    if RICH:
-        return f"[{style}]{message}[/{style}]"
-    return message
-
-
-def sprint(*values, sep: str = " ", end: str = "\n", style: str = ""):
-    """Print styled text to console."""
-    if RICH:
-        if style:
-            io = StringIO()
-            print(*values, sep=sep, end=end, file=io, flush=True)
-            io.seek(0)
-            rich.print(f"[{style}]{io.read()}[/{style}]", end="", flush=True)
-        else:
-            rich.print(*values, sep=sep, end=end, flush=True)
-    else:
-        print(*values, sep=sep, end=end, flush=True)
 
 
 if not eval(os.environ.get("NO_AUTO_LOGGING_CONFIG", "0") or "0"):
