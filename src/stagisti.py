@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""Distribuisci le parti della presentazione casualmente fra gli stagisti."""
 from rand import TrueRandomGenerator
 
 g = TrueRandomGenerator()
@@ -9,6 +10,6 @@ stagisti = ["Rosalinda", "Jacopo", "Giacomo", "Riccardo"]
 risultati = []
 while len(risultati) < 4:
     stagista = stagisti[g.random_number() % 4]
-    if not stagista in risultati:
+    if stagista not in risultati:
         risultati.append(stagista)
 print(risultati)

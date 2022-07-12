@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""Analisi dello spettro del segnale."""
 from __future__ import annotations
 from pathlib import Path
 from typing import Literal, NamedTuple
 import matplotlib.pyplot as plt
 import root
+from log import task, taskLogger
 
 
 # --- Costanti ---
@@ -32,12 +34,13 @@ class Event(NamedTuple):
 
 # --- Utility ----
 
-# Calcolo della media degli elementi contenuti nel vettore "v"
-def mean(v):
+def mean(v: list[float] | list[int]) -> float:
+    """Calcola la media degli elementi nel vettore `v`"""
     return sum(v) / len(v)
 
 
 # Calcolo delle aree per ogni evento
+@task(f"Calculating {'BASELINES and ' if BASELINE_CALC_MODE == 1 else ''}areas")
 def aree(
     events: list[Event],
     BASELINE: float | None = None,
@@ -45,22 +48,18 @@ def aree(
     min_samples: int = 0,
     max_samples: int | None = None,
 ) -> list[float]:
+    """Calcola l'area di ogni evento."""
+    logger = taskLogger()
+    logger.debug(f"{max_area=}, samples range = [{min_samples}, {max_samples}]")
 
-    if __debug__:
-        print(
-            f"--> calculating {'BASELINES and ' if BASELINE_CALC_MODE == 1 else ''}"
-            f"areas({f'BASELINE={BASELINE}, ' if BASELINE_CALC_MODE == 0 else ''}"
-            f"{max_area=}, samples range = [{min_samples}, {max_samples}])"
-        )
-
-    aree: list[float] = []
+    aree_calcolate: list[float] = []
     for event in events:
         # Se necessario, calcola la BASELINE per questo evento
         if BASELINE_CALC_MODE == 1:
             BASELINE = mean(event.Samples[:BASELINE_CALC_N])
         assert BASELINE is not None
 
-        # Estrazione dei samples dell'evento tra "min_samples" e "max_samples"
+        # Estrazione dei samples dell'evento tra `min_samples` e `max_samples`
         samples = event.Samples[min_samples:max_samples]
 
         # Calcolo dell'area:
@@ -69,20 +68,16 @@ def aree(
 
         # Se non sono stati impostati limiti all'area o area < del limite ...
         if max_area is None or temp_area < max_area:
-            # ... salva l'area nel vettore "Aree"
-            aree.append(temp_area)
+            # ... salva l'area nel vettore `aree_calcolate`
+            aree_calcolate.append(temp_area)
 
-    if __debug__:
-        print("    done.")
-    return aree
+    return aree_calcolate
 
 
 # --- Programma principale ----
 
-# Funzione principale
 def main():
-    if __debug__:
-        print("START")
+    """Funzione principale."""
 
     # ----------------------------- Apertura file -----------------------------
     SRC = Path(__file__).parent
@@ -90,18 +85,16 @@ def main():
 
     # ------------------------ Calcolo della baseline -------------------------
     if BASELINE_CALC_MODE == 0:
-        if __debug__:
-            print("--> calculating baseline")
-        medie = []
-        for event in t:
-            # Calcola della media dei primi `BASELINE_CALC_N` samples richiamando la funzione "mean"
-            # Salva la media nel vettore "medie"
-            medie.append(mean(event.Samples[:BASELINE_CALC_N]))
-        # Salva la media del vettore "medie" come "BASELINE"
-        if __debug__:
-            print("    done.")
-        BASELINE = mean(medie)
-        # BASELINE = 13313.683338704632      # già calcolata, all'occorrenza
+        with task("Calculating baseline...") as calc:
+            medie = []
+            for event in t:
+                # Calcola della media dei primi `BASELINE_CALC_N` samples richiamando la funzione "mean"
+                # Salva la media nel vettore "medie"
+                medie.append(mean(event.Samples[:BASELINE_CALC_N]))
+            # Salva la media del vettore "medie" come "BASELINE"
+            BASELINE = mean(medie)
+            # BASELINE = 13313.683338704632      # già calcolata, all'occorrenza
+            calc.result = f"it's {BASELINE}"
     else:
         BASELINE = None
 
@@ -144,6 +137,6 @@ def main():
     plt.show()
 
 
-# Chiama "main()" quando il programma viene eseguito direttamente
+# Chiama `main()` quando il programma viene eseguito direttamente
 if __name__ == "__main__":
     main()

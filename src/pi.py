@@ -8,20 +8,24 @@ from math import pi as PI
 from pathlib import Path
 import matplotlib.pyplot as plt
 from rand import TrueRandomGenerator
+from log import info, style, warning, sprint
 
 
 # Costanti
 K = 255**2
 SRC = Path(__file__).parent  # Cartella di questo file
 
+# Se l'output è formattato male, imposta questa flag a `False`
+UNICODE_BOX: bool = True  # False
+
 
 def bug(default: bool, /) -> bool:
     """Determina se è stato attivato il “bug” da riga di comando."""
-    # $ python pi.py                 # --> di default
+    # $ python pi.py                 # --> di default
     # $ python pi.py --bug           # --> attivo
-    # $ python pi.py --no-bug        # --> disattivato
-    # $ python pi.py --no-bug --bug  # --> attivo      (--bug sovrascrive --no-bug)
-    # $ python pi.py --bug --no-bug  # --> disattivato (--no-bug sovrascrive --bug)
+    # $ python pi.py --no-bug        # --> disattivato
+    # $ python pi.py --no-bug --bug  # --> attivo      (--bug sovrascrive --no-bug)
+    # $ python pi.py --bug --no-bug  # --> disattivato (--no-bug sovrascrive --bug)
     if "--bug" in sys.argv:
         if "--no-bug" in sys.argv:
             BUG = sys.argv[::-1].index("--bug") < sys.argv[::-1].index("--no-bug")
@@ -54,10 +58,10 @@ def mode() -> int:
             if 0 <= _mode <= 3:
                 # Valido
                 return _mode
-            # Non valido: continua con la selezione interattiva
+            # Non valido: continua con la selezione interattiva
     # Selezione interattiva dell'algoritmo
     print("""
->>> Choose an algorithm:
+>>> Please choose an algorithm:
  [0] Interpret data as sequential (x, y) points.
  [1] Interpret data as adjacent/linked (x, y) points.
  [2] Generate every possible (x, y) combination.
@@ -73,13 +77,13 @@ def mode() -> int:
             sys.exit(0)
         # Gestione errori: input non intero (chiede nuovamente)
         except:
-            print("[!] Please type in an integer (0|1|2|3)!")
+            warning("Algorithm index has to be an integer (0|1|2|3)!")
             continue
         # Numero intero: ok
         else:
             # Troppo grande o troppo piccolo (chiede nuovamente)
             if _mode > 3 or _mode < 0:
-                print("[!] Invalid integer (has to be in [0, 3])!")
+                warning(f"Invalid integer `{_mode}` (has to be in [0, 3])!")
                 continue
             # Tutto ok: "_mode" è impostato e si continua col programma
             return _mode  # questo 'return' interrompe il ciclo 'while' e ritorna il valore di '_mode'
@@ -87,23 +91,21 @@ def mode() -> int:
 
 # Funzione principale
 def main():
-    """Calcola π tramite il metodo Monte Carlo, utilizzando il nostro TRNG."""
+    """Calcola π tramite il metodo Monte Carlo, utilizzando il nostro TRNG."""
     # Stampa il titolo
     width = os.get_terminal_size().columns
     title = " Monte Carlo Method π Approximator "
-    around = "=" * (max(0, width - len(title)) // 2)
-    print(around, title, around, sep="")
+    sprint(f"{title:=^{width}}", style="bold")  # see https://pyformat.info/ for why this works
 
     # Determina il valore di "BUG", tenendo conto della riga di comando
     BUG = bug(True)  # Di default è attivo
 
-    if __debug__:
-        # Comunica che BUG è attivo (per sicurezza)
-        print(f"[i] BUG is {'en' if BUG else 'dis'}abled.")
+    # Comunica che BUG è attivo (per sicurezza)
+    info(f"BUG is {'en' if BUG else 'dis'}abled.")
 
     # Determina l'algoritmo da utilizzare
     MODE: int = mode()  # Usa la funzione sopra definita
-    print(f"[i] Using algorithm [{MODE}].")  # Stampa l'algoritmo, per sicurezza
+    info(f"Using algorithm [{MODE}].")  # Stampa l'algoritmo, per sicurezza
 
     # Inizializzazione
     TRG = TrueRandomGenerator(bug=BUG)  # Il nostro generatore
@@ -153,7 +155,7 @@ def main():
     elif MODE == 1:
         y = TRG.random_number()  # Assegnazione valore di default (pre-ciclo)
         for i in range(LEN):
-            # L'`y` di prima diventa il nuovo `x`, mentre `y` diventa un nuovo numero casuale
+            # L'`y` di prima diventa il nuovo `x`, mentre `y` diventa un nuovo numero casuale
             x, y = y, TRG.random_number()
             if x**2 + y**2 <= K:  # Analogo al metodo 1
                 N_in = N_in + 1
@@ -231,19 +233,56 @@ def main():
     # --- Stampa la stima finale di π ---
     # Per velocizzare i calcoli
     L = len(str(PI)) - 1  # -1 perché ignoriamo il `.`
+    #
+    spi = f"{pi:01.{L-1}f}"
+    sPI = f"{PI:01.{L-1}f}"
     # Conta quante cifre sono corrette
     i = 0
-    for i, (spi, sPI) in enumerate(zip(str(pi).replace(".", ""), str(PI).replace(".", ""))):
-        if sPI != spi:
+    for i, (digit, DIGIT) in enumerate(zip(spi.replace(".", ""), sPI.replace(".", ""))):
+        if DIGIT != digit:
             break
     # Stampa i valori in un riquadro
-    print(f"""\
-,{'-'*(L+7)},
-| π ≈ {pi:01.{L-1}f} |
-| π = {PI:01.{L-1}f} |
-|     {'+' if i else '^'}-{'+'*(i-1) if i else ''}{'^' if i else ''}{'~'*(L-i-1)} |
-'{'-'*(L+7)}'\
+    PI_STYLE = "green"          # il valore vero di π
+    OK_STYLE = "bold green"     # le cifre corrette
+    K0_STYLE = "bold yellow"    # la prima cifra errata
+    KO_STYLE = "bright_red"     # le altre cifre errate
+    # Margini del riquadro
+    UL = "┌" if UNICODE_BOX else ","
+    UR = "┐" if UNICODE_BOX else ","
+    DL = "└" if UNICODE_BOX else "'"
+    DR = "┘" if UNICODE_BOX else "'"
+    H = "─" if UNICODE_BOX else "-"
+    V = "│" if UNICODE_BOX else "|"
+    sprint(f"""\
+{UL}{H*(L+7)}{UR}
+{V} π ≈ {style_pi(spi, i, OK_STYLE, K0_STYLE, KO_STYLE)} {V}
+{V} π = {style_pi(sPI, i, PI_STYLE, OK_STYLE, PI_STYLE)} {V}
+{V}     {
+    style('+', OK_STYLE) if i else style('^', K0_STYLE)
+}-{
+    style('+', OK_STYLE)*(i-1) if i else ''
+}{
+    style('^', K0_STYLE) if i else ''
+}{
+    style('~', KO_STYLE)*(L-i-1)
+} {V}
+{DL}{H*(L+7)}{DR}\
 """)
+
+
+def style_pi(pi: str, i: int, OK: str, K0: str, KO: str) -> str:
+    """Colora `pi` in base al numero di cifre corrette (`i`) e agli stili specificati."""
+    s = ""
+    for j, c in enumerate(pi.replace(".", "")):
+        if j < i:
+            s += style(c, OK)
+        elif j == i:
+            s += style(c, K0)
+        else:
+            s += style(c, KO)
+        if j == 0:
+            s += "."
+    return s
 
 
 # Chiama "main()" quando il programma viene eseguito direttamente

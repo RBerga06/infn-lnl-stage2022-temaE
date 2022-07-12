@@ -8,7 +8,7 @@ ignore = [
 	"E221",  # multiple spaces before operator
 	"E241",  # multiple spaces after ':'
 	"E704",  # multiple statements on one line (def)
-	"W503"   # line break before binary operator
+	"W503",  # line break before binary operator
 ]
 in-place = true
 recursive = true
@@ -23,12 +23,16 @@ disable = [
 	# Errors
 	# Warnings
 	"W0123",  # use of eval
+	"W0621",  # Redefining name '*' from outer scope
+	"W0622",  # Redefining built-in '*'
 	"W0702",  # No exception type(s) specified
+	"W1203",  # Use %s formatting in logging functions
 	# Conventions
 	"C0103",  # Variable name "*" doesn't conform to snake_case naming style
 	# Refactoring
 	"R0903",  # too few public methods (*/2)
 	"R0912",  # too many branches (*/12)
-	"R0914",  # Too many local variables (21/15) (too-many-locals)
+	"R0914",  # Too many local variables (*/15)
+	"R0915",  # Too many statements (*/50)
 	"R1704",  # Redefining argument with the local name '*'
 ]

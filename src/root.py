@@ -6,36 +6,45 @@ from __future__ import annotations
 from typing import Any, NamedTuple, Sequence, TypeVar, get_origin, get_type_hints, overload
 from collections import namedtuple
 from pathlib import Path
+import sys
 import os
+from log import critical, debug, info, task
 
 
-# ----- 1. Importa la libreria corretta ------ #
+# ----- 1. Importa la libreria corretta ------ #
 
 # Variabile che controlla la libreria da usare: True per PyROOT, False per uproot.
-#   Il valore iniziale è determinato a partire variabile d'ambiente FORCE_UPROOT.
-ROOT: bool = not eval(os.environ.get("FORCE_UPROOT", "0") or "0")
+#   Il valore iniziale è determinato a partire dalla variabile d'ambiente `FORCE_UPROOT`.
+FORCE_UPROOT = eval(os.environ.get("FORCE_UPROOT", "0") or "0")
 
 # Prova a importare PyROOT; se fallisci, prova con uproot.
 #   Imposta la variabile `ROOT` di conseguenza.
+ROOT: bool
 try:
-    if not ROOT:
+    debug(f"Environment variable `FORCE_UPROOT` is {'' if FORCE_UPROOT else 'not '}set.")
+    if FORCE_UPROOT:
         raise ModuleNotFoundError
+    debug("Trying to import `PyROOT`")
     import ROOT as PyROOT
 except ModuleNotFoundError:
-    # Non c'è PyROOT: usiamo uproot
-    import uproot
-
-    ROOT = False
+    try:
+        # Non c'è PyROOT: usiamo uproot
+        debug("Trying to import `uproot`")
+        import uproot
+    except ModuleNotFoundError:
+        # Non c'è né PyROOT né uproot:
+        critical("No ROOT backend available: please install either PyROOT (`root`) or `uproot`.")
+        sys.exit(1)
+    else:
+        ROOT = False
 else:
     # nessun errore: PyROOT c'è.
     ROOT = True
 
 
-if __debug__:
-    print(f"[i] ROOT backend: {'PyROOT' if ROOT else 'uproot'}")
+info(f"ROOT backend: {'PyROOT' if ROOT else 'uproot'}")
 
-
-# ----- 2. Definisci la funzione di lettura ------ #
+# ----- 2. Definisci la funzione di lettura ------ #
 
 _T = TypeVar("_T", bound=NamedTuple)
 
@@ -128,63 +137,62 @@ def read(
     # In `vals` vengono salvati i parametri da passare alla classe nella costruzione dell'oggetto
     vals: dict[str, Any] = {}
 
-    if __debug__:
-        print(f"--> Reading tree {tree!r} from file {file!r}")
+    with task(f"Reading tree {tree!r} from file {file!r}...") as reading:
 
-    if ROOT:  # --- PyROOT ---
-        # Termina il loop degli eventi di PyROOT, in modo che non interferisca con matplotlib
-        PyROOT.keeppolling = 0  # type: ignore
-        # Apri il file
-        f = PyROOT.TFile(file)  # type: ignore
-        # Leggi l'albero
-        t = f.Get(tree)
-        # Leggi e salva i dati di interesse
-        for x in t:
-            vals.clear()  # Svuota i parametri
-            for attr in attributes:
-                # Converti l'attributo in lista ove necessario
-                if attr in list_conv:
-                    vals[attr] = [*getattr(x, attr)]
-                else:
-                    vals[attr] = getattr(x, attr)
-            # Crea l'oggetto e aggiungilo a `data`
-            data.append(cls(**vals))  # type: ignore
-        # Chiudi il file
-        f.Close()
+        if ROOT:  # --- PyROOT ---
+            # Termina il loop degli eventi di PyROOT, in modo che non interferisca con matplotlib
+            PyROOT.keeppolling = 0  # type: ignore
+            # Apri il file
+            f = PyROOT.TFile(file)  # type: ignore
+            # Leggi l'albero
+            t = f.Get(tree)
+            # Leggi e salva i dati di interesse
+            for x in t:
+                vals.clear()  # Svuota i parametri
+                for attr in attributes:
+                    # Converti l'attributo in lista ove necessario
+                    if attr in list_conv:
+                        vals[attr] = [*getattr(x, attr)]
+                    else:
+                        vals[attr] = getattr(x, attr)
+                # Crea l'oggetto e aggiungilo a `data`
+                data.append(cls(**vals))  # type: ignore
+            # Chiudi il file
+            f.Close()
 
-    else:  # --- uproot ---
+        else:  # --- uproot ---
 
-        # Mappa vuota per i dati grezzi
-        #   (associa al nome dell'attributo la lista dei valori, ancora da combinare negli oggetti)
-        raw_data: dict[str, Any] = {}
-        # Apri l'albero `tree` dal file `file`
-        with uproot.open(f"{file}:{tree}") as t:
-            # Salva i “rami” come mappa
-            branches = dict(t.iteritems())
-            for attr in attributes:
-                # Converti l'attributo in lista ove necessario
-                if attr in list_conv:
-                    raw_data[attr] = list(map(list, branches[attr].array()))
-                else:
-                    raw_data[attr] = list(branches[attr].array())
+            # Mappa vuota per i dati grezzi
+            #   (associa al nome dell'attributo la lista dei valori, ancora da combinare negli oggetti)
+            raw_data: dict[str, Any] = {}
+            # Apri l'albero `tree` dal file `file`
+            with uproot.open(f"{file}:{tree}") as t:
+                # Salva i “rami” come mappa
+                branches = dict(t.iteritems())
+                for attr in attributes:
+                    # Converti l'attributo in lista ove necessario
+                    if attr in list_conv:
+                        raw_data[attr] = list(map(list, branches[attr].array()))
+                    else:
+                        raw_data[attr] = list(branches[attr].array())
 
-        # Converti i dati grezzi in lista di oggetti:
-        #   scorri gli indici e associa gli attributi corrispondenti, creando l'oggetto
-        #
-        # i:      0   1   2   3  ...
-        #         |   |   |   |
-        #         V   V   V   V
-        # attr0: x00 x01 x02 x03 ...  ¯|
-        # attr1: x10 x11 x12 x13 ...   |--> raw_data
-        # attr2: x20 x21 x22 x23 ...  _|
-        #         |   |   |   |
-        #         V   V   V   V
-        # data:  ### ### ### ### ...
-        #
-        for i in range(len(raw_data[attributes[0]])):
-            data.append(cls(**{name: val[i] for name, val in raw_data.items()}))  # type: ignore
-    if __debug__:
-        print(f"    done (read {len(data)} items).")
+            # Converti i dati grezzi in lista di oggetti:
+            #   scorri gli indici e associa gli attributi corrispondenti, creando l'oggetto
+            #
+            # i:      0   1   2   3  ...
+            #         |   |   |   |
+            #         V   V   V   V
+            # attr0: x00 x01 x02 x03 ...  ¯|
+            # attr1: x10 x11 x12 x13 ...   |--> raw_data
+            # attr2: x20 x21 x22 x23 ...  _|
+            #         |   |   |   |
+            #         V   V   V   V
+            # data:  ### ### ### ### ...
+            #
+            for i in range(len(raw_data[attributes[0]])):
+                data.append(cls(**{name: val[i] for name, val in raw_data.items()}))  # type: ignore
+
+        reading.result = f"read {len(data)} items"
     return data
 
 
@@ -202,7 +210,15 @@ def test():
         Timestamp: int
         Samples: list[int]
 
-    data = read("src/fondo.root", "Data_R", cls=Event)
+    SRC = Path(__file__).parent
+    DEFAULT = SRC / "fondo.root"
+    if len(sys.argv) > 1:
+        file = Path(sys.argv[1])
+        if not file.exists():
+            file = DEFAULT
+    else:
+        file = DEFAULT
+    data = read(file, "Data_R", cls=Event)
     assert isinstance(data[0], Event)
 
 

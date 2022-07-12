@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import matplotlib.pyplot as plt
-from math import pi as PI
+"""Ciò che succederebbe con un dataset ideale."""
+# from math import pi as PI
+# import matplotlib.pyplot as plt
 
 
-def grid(N):
+def grid(N: int) -> float:
+    """Calcola π sia per eccesso e per difetto su una griglia di lato `N`."""
     TOT = N**2
     K = (N - 1) ** 2
     N_in = 0
@@ -26,15 +28,15 @@ def grid(N):
     return pi
 
 
-def theoretical(N, case):
-    TOT = N**2
-    N_in = int(PI * TOT / 4)
-    if case == 0:
-        print(N_in)
-    elif case == 1:
-        print(N_in * 4 / TOT)
-        print(abs(PI - N_in * 4 / TOT))
-    return N_in
+# def theoretical(N, case):
+#     TOT = N**2
+#     N_in = int(PI * TOT / 4)
+#     if case == 0:
+#         print(N_in)
+#     elif case == 1:
+#         print(N_in * 4 / TOT)
+#         print(abs(PI - N_in * 4 / TOT))
+#     return N_in
 
 
 if __name__ == "__main__":
