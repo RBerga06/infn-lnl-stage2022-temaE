@@ -8,7 +8,7 @@ from collections import namedtuple
 from pathlib import Path
 import sys
 import os
-from log import debug, info, task
+from log import critical, debug, info, task
 
 
 # ----- 1. Importa la libreria corretta ------ #
@@ -27,11 +27,16 @@ try:
     debug("Trying to import `PyROOT`")
     import ROOT as PyROOT
 except ModuleNotFoundError:
-    # Non c'è PyROOT: usiamo uproot
-    debug("Trying to import `uproot`")
-    import uproot
-
-    ROOT = False
+    try:
+        # Non c'è PyROOT: usiamo uproot
+        debug("Trying to import `uproot`")
+        import uproot
+    except ModuleNotFoundError:
+        # Non c'è né PyROOT né uproot:
+        critical("No ROOT backend available: please install either PyROOT (`root`) or `uproot`.")
+        sys.exit(1)
+    else:
+        ROOT = False
 else:
     # nessun errore: PyROOT c'è.
     ROOT = True
