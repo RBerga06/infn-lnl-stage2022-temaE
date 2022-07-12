@@ -19,7 +19,7 @@ RICH: bool
 try:
     if NO_RICH:
         raise ModuleNotFoundError
-    import rich
+    import rich.console
     import rich.markup
     import rich.logging
     import rich.highlighter
@@ -43,20 +43,21 @@ __all__ = [
 def style(message: str, style: str) -> str:
     """Apply the given `style` to `message` only if `rich` is available."""
     if RICH:
-        return f"[{style}]{message}[/{style}]"
+        return f"[{style}]{message}[/]"
     return message
 
 
 def sprint(*values, sep: str = " ", end: str = "\n", style: str = ""):
     """Print styled text to console."""
+    console = rich.console.Console(highlight=False)
     if RICH:
         if style:
             io = StringIO()
             print(*values, sep=sep, end=end, file=io, flush=True)
             io.seek(0)
-            rich.print(f"[{style}]{io.read()}[/{style}]", end="", flush=True)
+            console.print(f"[{style}]{io.read()}[/{style}]", end="")
         else:
-            rich.print(*values, sep=sep, end=end, flush=True)
+            console.print(*values, sep=sep, end=end)
     else:
         print(*values, sep=sep, end=end, flush=True)
 
