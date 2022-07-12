@@ -162,20 +162,49 @@ class Logger(logging.Logger):
         try:
             yield tsk
         finally:
-            t1 = time.time_ns()
-            dt = t1 - t0
-            # Converti il ∆t in un formato utile
-            dts: str
-            if dt < 1_000:
-                dts = f"{dt} ns"
-            elif dt < 1_000_000:
-                dts = f"{dt/1_000} µs"
-            elif dt < 1_000_000_000:
-                dts = f"{dt/1_000_000} ms"
-            else:
-                dts = time.strftime("%H:%M:%S", time.gmtime(dt / 1_000_000_000))
             # Stampa il messaggio
-            tsk.info(f"done{f' ({tsk.done_extra})' if tsk.done_extra else ''}.", extra=dict(took=f"took {dts} "))
+            if not tsk._result_logged:  # pylint: disable=protected-access
+                tsk.done()
+            # Resetta questo logger
+            tsk._task_reset()   # pylint: disable=protected-access
+
+    def save_timestamp(self) -> None:
+        """Salva il tempo attuale in nanosecondi."""
+        self._timestamp = time.time_ns()
+
+    @staticmethod
+    def _repr_dt(dt: int) -> str:
+        # Converti il ∆t in un formato utile
+        if dt < 1_000:
+            return f"{dt} ns"
+        if dt < 1_000_000:
+            return f"{dt/1_000} µs"
+        if dt < 1_000_000_000:
+            return f"{dt/1_000_000} ms"
+        return time.strftime("%H:%M:%S", time.gmtime(dt / 1_000_000_000))
+
+    def done(self, result: str | None = None, level: int = INFO) -> None:
+        """Log a 'done (...)' message."""
+        t = time.time_ns()
+        if self._timestamp:
+            extra = dict(took=f"took {self._repr_dt(t - self._timestamp)} ")
+        else:
+            extra = {}
+        result = self.result if result is None else result
+        self.log(level, f"done{f' ({result})' if result else ''}.", extra=extra)
+        self._result_logged = True
+
+    def fail(self, result: str | None = None, level: int = ERROR) -> None:
+        """Log a 'fail (...)' message."""
+        t = time.time_ns()
+        if self._timestamp:
+            extra = dict(took=f"took {self._repr_dt(t - self._timestamp)} ")
+        else:
+            extra = {}
+        result = self.result if result is None else result
+        self.log(level, f"failed{f' ({result})' if result else ''}.", extra=extra)
+        self._result_logged = True
+
 
 
 def get_levels() -> list[int]:
@@ -224,9 +253,9 @@ def cli_configure() -> None:
     _setup_done = True
 
 
-def task(msg: str) -> ContextManager[Logger]:
+def task(msg: str, level: int = INFO) -> ContextManager[Logger]:
     """Log an debug message."""
-    return moduleLogger(depth=1).task(msg)
+    return moduleLogger(depth=1).task(msg, level=level)
 
 
 def debug(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
@@ -271,6 +300,25 @@ if __name__ == "__main__":
     logger.warning("Warning")
     logger.info("Info")
     logger.debug("Debug")
-    with logger.task("Running some serious computation...") as computation:
+    with logger.task("Null task #1") as computation:
+        pass
+    with logger.task("Null task #2") as computation:
+        computation.done()
+    with logger.task("Null task #3") as computation:
+        computation.done("explicit")
+    with logger.task("Null task #4") as computation:
+        computation.fail("explicit")
+    with logger.task("Null task #5") as computation:
+        computation.result = "custom result"
+    with logger.task("Sleep task #1 (1s)") as computation:
         time.sleep(1)
-        computation.done_extra = "wasn't so useful"
+        computation.fail()
+    with logger.task("Sleep task #2 (10s, loop)") as computation:
+        for _ in range(10):
+            time.sleep(1)
+        computation.done()
+    with logger.task("Sleep task #3 (10s, loop, log at every iteration)") as computation:
+        for _ in range(10):
+            time.sleep(1)
+            computation.info("Just slept 1s.")
+        computation.done()
