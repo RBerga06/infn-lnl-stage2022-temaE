@@ -2,9 +2,10 @@
 # -*- coding : utf-8 -*-
 """Utility module: logging support."""
 from __future__ import annotations
-from contextlib import contextmanager
 from typing import Any, ContextManager, Iterator, cast
 from logging import NOTSET, DEBUG, INFO, WARNING, ERROR, CRITICAL
+from contextlib import contextmanager
+from io import StringIO
 import logging
 import inspect
 import time
@@ -18,6 +19,7 @@ RICH: bool
 try:
     if NO_RICH:
         raise ModuleNotFoundError
+    import rich
     import rich.markup
     import rich.logging
     import rich.highlighter
@@ -289,6 +291,27 @@ def critical(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs
 def exception(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
     """Log an exception."""
     moduleLogger(depth=1).exception(msg, *args, extra=extra, **kwargs)
+
+
+def style(message: str, style: str) -> str:  # pylint: disable=redefined-outer-name
+    """Apply the given `style` to `message` only if `rich` is available."""
+    if RICH:
+        return f"[{style}]{message}[/{style}]"
+    return message
+
+
+def sprint(*values, sep: str = " ", end: str = "\n", style: str = ""):  # pylint: disable=redefined-outer-name
+    """Print styled text to console."""
+    if RICH:
+        if style:
+            io = StringIO()
+            print(*values, sep=sep, end=end, file=io, flush=True)
+            io.seek(0)
+            rich.print(f"[{style}]{io.read()}[/{style}]", end="", flush=True)
+        else:
+            rich.print(*values, sep=sep, end=end, flush=True)
+    else:
+        print(*values, sep=sep, end=end, flush=True)
 
 
 if not eval(os.environ.get("NO_AUTO_LOGGING_CONFIG", "0") or "0"):
