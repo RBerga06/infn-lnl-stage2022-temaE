@@ -69,7 +69,7 @@ STYLES = {
     DEBUG:    "dim",
     INFO:     "cyan",
     WARNING:  "yellow",
-    ERROR:    "red",
+    ERROR:    "red1",
     CRITICAL: "bold red",
 }
 
@@ -80,8 +80,10 @@ if RICH:
         "{x} {message}",
         "[/][dim][bold]{took}[/bold][{asctime}]"
     )
+    TASK_MESSAGE = "[bold]--> {}[/bold]"
 else:
     MESSAGE_FORMAT = ("{x} {message}", "{took}[{asctime}]")
+    TASK_MESSAGE = "--> {}"
 
 _setup_done: bool = False
 
@@ -155,7 +157,7 @@ class Logger(logging.Logger):
     @contextmanager
     def task(self, msg: str, level: int = INFO) -> Iterator[Logger]:
         """Log the fact we're doing something."""
-        self.log(level, f"--> {msg}")
+        self.log(level, TASK_MESSAGE.format(msg))
         tsk = self.getChild("task")
         tsk._indent = self._indent + 1  # pylint: disable=protected-access
         tsk.save_timestamp()
