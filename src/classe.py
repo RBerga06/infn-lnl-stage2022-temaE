@@ -85,13 +85,13 @@ def private_var_example():
     print(f"€{a.money:.2f}")  # €200.00
     a.pay(3.14)
     print(f"€{a.money:.2f}")  # €196.86
-    #print(a.__money)         # AttributeError!
-    #a.__money += 100         # AttributeError!
+    # print(a.__money)          # AttributeError!
+    # a.__money += 100          # AttributeError!
     # Purtroppo, però, in Python le variabili “private” non sono veramente private...
     #  per accedervi, utilizzare <oggetto>._<nome classe>__<nome privato>:
-    print(f"€{a._Account__money:.2f}") # €196.86
+    print(f"€{a._Account__money:.2f}")  # €196.86
     a._Account__money += 100  # Modifico la variabile “privata”
-    print(f"€{a.money:.2f}")           # €296.86
+    print(f"€{a.money:.2f}")            # €296.86
 
 
 def inheritance_example():
