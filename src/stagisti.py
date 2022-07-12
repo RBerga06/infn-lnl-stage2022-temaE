@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""Distribuisci le parti della presentazione casualmente fra gli stagisti."""
 from rand import TrueRandomGenerator
 
 g = TrueRandomGenerator()
