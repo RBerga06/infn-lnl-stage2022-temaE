@@ -157,7 +157,7 @@ class Logger(logging.Logger):
     @contextmanager
     def task(self, msg: str, level: int = INFO) -> Iterator[Logger]:
         """Log the fact we're doing something."""
-        self.log(level, TASK_MESSAGE.format(msg))
+        self.log(level, TASK_MESSAGE.format(msg))  # pylint: disable=logging-format-interpolation
         tsk = self.getChild("task")
         tsk._indent = self._indent + 1  # pylint: disable=protected-access
         tsk.save_timestamp()
