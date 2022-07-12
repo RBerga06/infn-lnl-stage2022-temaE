@@ -87,7 +87,7 @@ def main():
 
     # ------------------------ Calcolo della baseline -------------------------
     if BASELINE_CALC_MODE == 0:
-        with task("Calculating baseline..."):
+        with task("Calculating baseline...") as calc:
             medie = []
             for event in t:
                 # Calcola della media dei primi `BASELINE_CALC_N` samples richiamando la funzione "mean"
@@ -96,6 +96,7 @@ def main():
             # Salva la media del vettore "medie" come "BASELINE"
             BASELINE = mean(medie)
             # BASELINE = 13313.683338704632      # già calcolata, all'occorrenza
+            calc.result = f"it's {BASELINE}"
     else:
         BASELINE = None
 
