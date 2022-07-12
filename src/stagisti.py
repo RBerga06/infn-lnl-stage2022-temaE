@@ -10,6 +10,6 @@ stagisti = ["Rosalinda", "Jacopo", "Giacomo", "Riccardo"]
 risultati = []
 while len(risultati) < 4:
     stagista = stagisti[g.random_number() % 4]
-    if not stagista in risultati:
+    if stagista not in risultati:
         risultati.append(stagista)
 print(risultati)

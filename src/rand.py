@@ -100,7 +100,6 @@ class TrueRandomGenerator:
             #   differenze dei tempi e salvataggio nel vettore `self.bits`
             self.random_bits = list(map(self._rand, self.delta_times))
 
-
         # --- 3. Generazione dei numeri casuali (da 0 a 255) ---
         with task("Generating random numbers"):
 
@@ -138,7 +137,6 @@ class TrueRandomGenerator:
 
             if bug:
                 self.random_numbers += random_numbers_b
-
 
         # Salva la lunghezza di "self.randomNumbers" per un accesso più rapido
         self.n_random_numbers = len(self.random_numbers)

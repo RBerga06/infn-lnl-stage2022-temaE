@@ -77,7 +77,6 @@ class Account:
         return f"<Account bancario con €{self.money:.2f} di credito residuo>"
 
 
-
 def private_var_example():
     """Dimostrazione delle variabili private in Python."""
     # type: ignore
@@ -95,7 +94,6 @@ def private_var_example():
     print(f"€{a.money:.2f}")           # €296.86
 
 
-
 def inheritance_example():
     """Dimostrazione dell'«albero» delle classi."""
     a = Quadrato(3)
@@ -110,9 +108,9 @@ def inheritance_example():
 
     print(f"{Quadrato(10).area=}")
 
-    print(Quadrato(10))               # Scrive la stringa ritornata da `Quadrato.__repr__(...)`
-    print(Quadrato(10)*2)             # Equivale a `Quadrato(10).__mul__(2)`
-    print(Quadrato(10)*Quadrato(10))  # TypeError!
+    print(Quadrato(10))                 # Scrive la stringa ritornata da `Quadrato.__repr__(...)`
+    print(Quadrato(10) * 2)             # Equivale a `Quadrato(10).__mul__(2)`
+    print(Quadrato(10) * Quadrato(10))  # TypeError!
     # (`__mul__(...)`, ovvero l'operazione `*`, è definito solo per interi o decimali, non altri quadrati)
 
 
