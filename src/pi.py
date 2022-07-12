@@ -18,11 +18,11 @@ SRC = Path(__file__).parent  # Cartella di questo file
 
 def bug(default: bool, /) -> bool:
     """Determina se è stato attivato il “bug” da riga di comando."""
-    # $ python pi.py                 # --> di default
+    # $ python pi.py                 # --> di default
     # $ python pi.py --bug           # --> attivo
-    # $ python pi.py --no-bug        # --> disattivato
-    # $ python pi.py --no-bug --bug  # --> attivo      (--bug sovrascrive --no-bug)
-    # $ python pi.py --bug --no-bug  # --> disattivato (--no-bug sovrascrive --bug)
+    # $ python pi.py --no-bug        # --> disattivato
+    # $ python pi.py --no-bug --bug  # --> attivo      (--bug sovrascrive --no-bug)
+    # $ python pi.py --bug --no-bug  # --> disattivato (--no-bug sovrascrive --bug)
     if "--bug" in sys.argv:
         if "--no-bug" in sys.argv:
             BUG = sys.argv[::-1].index("--bug") < sys.argv[::-1].index("--no-bug")
@@ -55,7 +55,7 @@ def mode() -> int:
             if 0 <= _mode <= 3:
                 # Valido
                 return _mode
-            # Non valido: continua con la selezione interattiva
+            # Non valido: continua con la selezione interattiva
     # Selezione interattiva dell'algoritmo
     print("""
 >>> Choose an algorithm:
@@ -88,7 +88,7 @@ def mode() -> int:
 
 # Funzione principale
 def main():
-    """Calcola π tramite il metodo Monte Carlo, utilizzando il nostro TRNG."""
+    """Calcola π tramite il metodo Monte Carlo, utilizzando il nostro TRNG."""
     # Stampa il titolo
     width = os.get_terminal_size().columns
     title = " Monte Carlo Method π Approximator "
@@ -153,7 +153,7 @@ def main():
     elif MODE == 1:
         y = TRG.random_number()  # Assegnazione valore di default (pre-ciclo)
         for i in range(LEN):
-            # L'`y` di prima diventa il nuovo `x`, mentre `y` diventa un nuovo numero casuale
+            # L'`y` di prima diventa il nuovo `x`, mentre `y` diventa un nuovo numero casuale
             x, y = y, TRG.random_number()
             if x**2 + y**2 <= K:  # Analogo al metodo 1
                 N_in = N_in + 1
