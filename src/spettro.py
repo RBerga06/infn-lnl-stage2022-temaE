@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""Analisi dello spettro del segnale."""
 from __future__ import annotations
 from pathlib import Path
 from typing import Literal, NamedTuple
 import matplotlib.pyplot as plt
 import root
-from log import task
+from log import moduleLogger, task, taskLogger
 
 
 # --- Costanti ---
@@ -39,6 +40,7 @@ def mean(v: list[float] | list[int]) -> float:
 
 
 # Calcolo delle aree per ogni evento
+@task(f"Calculating {'BASELINES and ' if BASELINE_CALC_MODE == 1 else ''}areas")
 def aree(
     events: list[Event],
     BASELINE: float | None = None,
@@ -46,13 +48,9 @@ def aree(
     min_samples: int = 0,
     max_samples: int | None = None,
 ) -> list[float]:
-
-    if __debug__:
-        print(
-            f"--> calculating {'BASELINES and ' if BASELINE_CALC_MODE == 1 else ''}"
-            f"areas({f'BASELINE={BASELINE}, ' if BASELINE_CALC_MODE == 0 else ''}"
-            f"{max_area=}, samples range = [{min_samples}, {max_samples}])"
-        )
+    """Calcola l'area di ogni evento."""
+    logger = taskLogger()
+    logger.debug(f"{max_area=}, samples range = [{min_samples}, {max_samples}])")
 
     aree_calcolate: list[float] = []
     for event in events:
@@ -73,8 +71,6 @@ def aree(
             # ... salva l'area nel vettore `aree_calcolate`
             aree_calcolate.append(temp_area)
 
-    if __debug__:
-        print("    done.")
     return aree_calcolate
 
 
