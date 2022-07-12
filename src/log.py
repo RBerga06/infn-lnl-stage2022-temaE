@@ -42,6 +42,8 @@ def getLogger(name: str = "") -> Logger:
     """Get the logger associated with this given name."""
     if not name:
         raise ValueError("You should not use the root logger!")
+    if name == "root":
+        name = "root_"
     return cast(Logger, logging.getLogger(name))
 
 
