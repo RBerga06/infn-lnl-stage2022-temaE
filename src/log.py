@@ -164,20 +164,23 @@ class Logger(logging.Logger):
         return record
 
     @contextmanager
-    def task(self, msg: str, level: int = INFO) -> Iterator[Logger]:
+    def task(self, msg: str, level: int = INFO, id: str | None = None) -> Iterator[Logger]:
         """Log the fact we're doing something."""
+        # pylint: disable=protected-access
         self.log(level, TASK_MESSAGE.format(msg))  # pylint: disable=logging-format-interpolation
         tsk = self.getChild("task")
-        tsk._indent = self._indent + 1  # pylint: disable=protected-access
+        if id:
+            tsk = tsk.getChild(id)
+        tsk._indent = self._indent + 1
         tsk.save_timestamp()
         try:
             yield tsk
         finally:
             # Stampa il messaggio
-            if not tsk._result_logged:  # pylint: disable=protected-access
+            if not tsk._result_logged:
                 tsk.done()
             # Resetta questo logger
-            tsk._task_reset()   # pylint: disable=protected-access
+            tsk._task_reset()
 
     def save_timestamp(self) -> None:
         """Salva il tempo attuale in nanosecondi."""
@@ -263,9 +266,9 @@ def cli_configure() -> None:
     _setup_done = True
 
 
-def task(msg: str, level: int = INFO) -> _GeneratorContextManager[Logger]:
+def task(msg: str, level: int = INFO, id: str | None = "") -> _GeneratorContextManager[Logger]:
     """Start logging a task."""
-    return moduleLogger(depth=1).task(msg, level=level)
+    return moduleLogger(depth=1).task(msg, level=level, id=id)
 
 
 def debug(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
