@@ -8,7 +8,7 @@ from math import pi as PI
 from pathlib import Path
 import matplotlib.pyplot as plt
 from rand import TrueRandomGenerator
-from log import info, warning
+from log import info, warning, sprint
 
 
 # Costanti
@@ -92,8 +92,7 @@ def main():
     # Stampa il titolo
     width = os.get_terminal_size().columns
     title = " Monte Carlo Method π Approximator "
-    around = "=" * (max(0, width - len(title)) // 2)
-    print(around, title, around, sep="")
+    sprint(f"{title:=^{width}}", style="bold")  # see https://pyformat.info/ for why this works
 
     # Determina il valore di "BUG", tenendo conto della riga di comando
     BUG = bug(True)  # Di default è attivo
