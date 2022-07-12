@@ -8,7 +8,7 @@ from math import pi as PI
 from pathlib import Path
 import matplotlib.pyplot as plt
 from rand import TrueRandomGenerator
-from log import info, warning, sprint
+from log import info, style, warning, sprint
 
 
 # Costanti
@@ -58,7 +58,7 @@ def mode() -> int:
             # Non valido: continua con la selezione interattiva
     # Selezione interattiva dell'algoritmo
     print("""
->>> Choose an algorithm:
+>>> Please choose an algorithm:
  [0] Interpret data as sequential (x, y) points.
  [1] Interpret data as adjacent/linked (x, y) points.
  [2] Generate every possible (x, y) combination.
@@ -230,19 +230,49 @@ def main():
     # --- Stampa la stima finale di π ---
     # Per velocizzare i calcoli
     L = len(str(PI)) - 1  # -1 perché ignoriamo il `.`
+    #
+    spi = f"{pi:01.{L-1}f}"
+    sPI = f"{PI:01.{L-1}f}"
     # Conta quante cifre sono corrette
     i = 0
-    for i, (spi, sPI) in enumerate(zip(str(pi).replace(".", ""), str(PI).replace(".", ""))):
-        if sPI != spi:
+    for i, (digit, DIGIT) in enumerate(zip(spi.replace(".", ""), sPI.replace(".", ""))):
+        if DIGIT != digit:
             break
     # Stampa i valori in un riquadro
-    print(f"""\
+    PI_STYLE = "green"          # il valore vero di π
+    OK_STYLE = "bold green"     # le cifre corrette
+    K0_STYLE = "bold yellow"    # la prima cifra errata
+    KO_STYLE = "bright_red"     # le altre cifre errate
+    sprint(f"""\
 ,{'-'*(L+7)},
-| π ≈ {pi:01.{L-1}f} |
-| π = {PI:01.{L-1}f} |
-|     {'+' if i else '^'}-{'+'*(i-1) if i else ''}{'^' if i else ''}{'~'*(L-i-1)} |
+| π ≈ {style_pi(spi, i, OK_STYLE, K0_STYLE, KO_STYLE)} |
+| π = {style_pi(sPI, i, PI_STYLE, OK_STYLE, PI_STYLE)} |
+|     {
+    style('+', OK_STYLE) if i else style('^', K0_STYLE)
+}-{
+    style('+', OK_STYLE)*(i-1) if i else ''
+}{
+    style('^', K0_STYLE) if i else ''
+}{
+    style('~', KO_STYLE)*(L-i-1)
+} |
 '{'-'*(L+7)}'\
 """)
+
+
+def style_pi(pi: str, i: int, OK: str, K0: str, KO: str) -> str:
+    # i è il numero di cifre corrette
+    s = ""
+    for j, c in enumerate(pi.replace(".", "")):
+        if j < i:
+            s += style(c, OK)
+        elif j == i:
+            s += style(c, K0)
+        else:
+            s += style(c, KO)
+        if j == 0:
+            s += "."
+    return s
 
 
 # Chiama "main()" quando il programma viene eseguito direttamente
