@@ -12,6 +12,18 @@ import os
 import sys
 
 
+# Prova ad importare `rich`, se possibile
+RICH: bool
+try:
+    import rich.markup
+    import rich.logging
+    import rich.highlighter
+except ModuleNotFoundError:
+    RICH = False
+else:
+    RICH = True
+
+
 __all__ = [
     # Exported from `logging`
     "NOTSET", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL",
@@ -47,7 +59,25 @@ ICONS = {
     CRITICAL: "{x}",
 }
 
+STYLES = {
+    NOTSET:   "normal",
+    DEBUG:    "dim",
+    INFO:     "cyan",
+    WARNING:  "yellow",
+    ERROR:    "red",
+    CRITICAL: "bold red",
+}
+
 DEFAULT_LEVEL = INFO if __debug__ else WARNING  # '-O' works like a '-q'
+
+if RICH:
+    MESSAGE_FORMAT = (
+        "{x} {message}",
+        "[/][dim][bold]{took}[/bold][{asctime}]"
+    )
+else:
+    MESSAGE_FORMAT = ("{x} {message}", "{took}[{asctime}]")
+
 _setup_done: bool = False
 
 
@@ -60,26 +90,35 @@ class ConsoleFormatter(logging.Formatter):
         super().__init__(f"{lfmt}\0{rfmt}", *args, **kwargs)
 
     def format(self, record: logging.LogRecord) -> str:
-        # Make the `icon` available
-        setattr(record, "x", ICONS[record.levelno])
+        # Make the console markup working
+        if RICH:
+            setattr(record, "markup", True)
+        # Make the `icon` available and escape it if necessary
+        icon = ICONS[record.levelno]
+        if RICH:
+            icon = rich.markup.escape(icon)
+        setattr(record, "x", icon)
         # Fix `took` missing
         if not hasattr(record, "took"):
             setattr(record, "took", "")
         # Apply indent
-        record.msg = " " * getattr(record, "indent", 0) * 4 + record.msg
-        delattr(record, "indent")
+        if hasattr(record, "indent"):
+            record.msg = " " * getattr(record, "indent") * 4 + record.msg
+            delattr(record, "indent")
         # Format and right-align text
-        left, right = super().format(record).split("\0")
+        text = (f"[{STYLES[record.levelno]}]" + super().format(record) + "[/]")
+        styles_len = len(text) - len(rich.markup.render(text)) if RICH else 0
+        left, right = text.split("\0")
         if right:
             # Right-align text only if needed
             width = os.get_terminal_size().columns  # Terminal width
             rows = left.split("\n")
             first = rows[0]
-            if len(first) + 1 + len(right) <= width:
+            if len(first) + 1 + len(right) - styles_len <= width:
                 # Don't add the right text if the left one is too long
-                first += f"{' '*(width-len(first)-len(right))}{right}"
+                first += f"{' '*(width - len(first) - len(right) + styles_len)}{right}"
             return "\n".join([first, *rows[1:]])
-        return left
+        return left + "[/]"
 
 
 class Logger(logging.Logger):
@@ -153,8 +192,14 @@ def cli_configure() -> None:
     quietness = max(0, min(len(levels) - 1, quietness))
     level = levels[quietness]
     # Configurazione
-    ch = logging.StreamHandler()
-    ch.setFormatter(ConsoleFormatter("{x} {message}", "{took}[{asctime}]", style="{", datefmt="%Y-%m-%d %H:%M:%S"))
+    ch = rich.logging.RichHandler(
+        highlighter=rich.highlighter.NullHighlighter(),
+        show_level=False,
+        show_time=False,
+        rich_tracebacks=True,
+        show_path=False,
+    ) if RICH else logging.StreamHandler()
+    ch.setFormatter(ConsoleFormatter(*MESSAGE_FORMAT, style="{", datefmt="%Y-%m-%d %H:%M:%S"))
     ch.setLevel(NOTSET)
     logging.setLoggerClass(Logger)
     root = getLogger()
