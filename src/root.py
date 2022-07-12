@@ -132,7 +132,7 @@ def read(
     # In `vals` vengono salvati i parametri da passare alla classe nella costruzione dell'oggetto
     vals: dict[str, Any] = {}
 
-    with task(f"Reading tree {tree!r} from file {file!r}...") as _task:
+    with task(f"Reading tree {tree!r} from file {file!r}...") as reading:
 
         if ROOT:  # --- PyROOT ---
             # Termina il loop degli eventi di PyROOT, in modo che non interferisca con matplotlib
@@ -187,7 +187,7 @@ def read(
             for i in range(len(raw_data[attributes[0]])):
                 data.append(cls(**{name: val[i] for name, val in raw_data.items()}))  # type: ignore
 
-        _task.result = f"read {len(data)} items"
+        reading.result = f"read {len(data)} items"
     return data
 
 
