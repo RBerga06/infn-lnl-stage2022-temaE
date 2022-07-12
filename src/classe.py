@@ -119,5 +119,5 @@ if __name__ == "__main__":
     # # # # # # # # # # # # # # # # # # # # # # #
     # Decommenta la riga di interesse qua sotto #
     # # # # # # # # # # # # # # # # # # # # # # #
-    #privatevar_example()
-    #inheritance_example()
+    # privatevar_example()
+    # inheritance_example()
