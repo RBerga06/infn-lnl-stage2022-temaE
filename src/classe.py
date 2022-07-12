@@ -7,6 +7,7 @@ from __future__ import annotations
 
 
 class Rettangolo:
+    """Rappresenta un rettangolo."""
     a: float
     b: float
 
@@ -16,10 +17,12 @@ class Rettangolo:
 
     @property
     def area(self) -> float:
+        """Calcola l'area del rettangolo."""
         return self.a * self.b
 
     @property
     def perimetro(self) -> float:
+        """Calcola il perimetro del rettangolo."""
         return (self.a + self.b) * 2
 
     def __mul__(self, i: int | float) -> Rettangolo:
@@ -47,6 +50,7 @@ class Quadrato(Rettangolo):
 
     @property
     def lato(self):
+        """Il lato di questo quadrato."""
         return self.a  # o `self.b`, in realtà è indifferente
 
 
@@ -74,7 +78,7 @@ class Account:
 
 
 
-def privatevar_example():
+def private_var_example():
     """Dimostrazione delle variabili private in Python."""
     # type: ignore
     # print(f"{x:.2f}") -> stampa a schermo `x` con 2 cifre decimali
@@ -93,6 +97,7 @@ def privatevar_example():
 
 
 def inheritance_example():
+    """Dimostrazione dell'«albero» delle classi."""
     a = Quadrato(3)
     print(f"{a.lato=}")
     print(f"{a.perimetro=}")
