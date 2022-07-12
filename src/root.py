@@ -10,7 +10,7 @@ import os
 from log import info, task
 
 
-# ----- 1. Importa la libreria corretta ------ #
+# ----- 1. Importa la libreria corretta ------ #
 
 # Variabile che controlla la libreria da usare: True per PyROOT, False per uproot.
 #   Il valore iniziale è determinato a partire variabile d'ambiente FORCE_UPROOT.
@@ -34,7 +34,7 @@ else:
 
 info(f"ROOT backend: {'PyROOT' if ROOT else 'uproot'}")
 
-# ----- 2. Definisci la funzione di lettura ------ #
+# ----- 2. Definisci la funzione di lettura ------ #
 
 _T = TypeVar("_T", bound=NamedTuple)
 
@@ -182,7 +182,7 @@ def read(
             for i in range(len(raw_data[attributes[0]])):
                 data.append(cls(**{name: val[i] for name, val in raw_data.items()}))  # type: ignore
 
-        _task.done_extra = f"read {len(data)} items"
+        _task.result = f"read {len(data)} items"
     return data
 
 
