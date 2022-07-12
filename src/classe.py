@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """Per comprendere il funzionamento delle classi."""
+# pylint: disable=protected-access,no-member
 
 from __future__ import annotations
 
@@ -64,7 +65,8 @@ class Account:
 
     def pay(self, price: float) -> None:
         """Paga (= rimuovi dal conto) €`price`."""
-        # Senza `abs(...)` un prezzo negativo aumenterebbe i soldi sul conto. Così, il segno viene semplicemente ignorato.
+        # Senza `abs(...)` un prezzo negativo aumenterebbe i soldi sul conto.
+        #   Così, il segno viene semplicemente ignorato.
         self.__money -= abs(price)
 
     def __repr__(self) -> str:
@@ -74,6 +76,7 @@ class Account:
 
 def privatevar_example():
     """Dimostrazione delle variabili private in Python."""
+    # type: ignore
     # print(f"{x:.2f}") -> stampa a schermo `x` con 2 cifre decimali
     a = Account()
     print(f"€{a.money:.2f}")  # €200.00
@@ -104,7 +107,8 @@ def inheritance_example():
 
     print(Quadrato(10))               # Scrive la stringa ritornata da `Quadrato.__repr__(...)`
     print(Quadrato(10)*2)             # Equivale a `Quadrato(10).__mul__(2)`
-    print(Quadrato(10)*Quadrato(10))  # TypeError! (`__mul__(...)`, ovvero l'operazione `*`, è definito solo per interi o decimali, non altri quadrati)
+    print(Quadrato(10)*Quadrato(10))  # TypeError!
+    # (`__mul__(...)`, ovvero l'operazione `*`, è definito solo per interi o decimali, non altri quadrati)
 
 
 if __name__ == "__main__":
