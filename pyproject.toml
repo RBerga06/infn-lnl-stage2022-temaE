@@ -23,6 +23,7 @@ disable = [
 	# Errors
 	# Warnings
 	"W0123",  # use of eval
+	"W0621",  # Redefining name '*' from outer scope
 	"W0622",  # Redefining built-in '*'
 	"W0702",  # No exception type(s) specified
 	"W1203",  # Use %s formatting in logging functions
