@@ -97,10 +97,10 @@ def main():
     title = " Monte Carlo Method π Approximator "
     sprint(f"{title:=^{width}}", style="bold")  # see https://pyformat.info/ for why this works
 
-    # Determina il valore di "BUG", tenendo conto della riga di comando
+    # Determina il valore di `BUG`, tenendo conto delle flag da riga di comando
     BUG = bug(True)  # Di default è attivo
 
-    # Comunica che BUG è attivo (per sicurezza)
+    # Comunica se BUG è attivo (per sicurezza)
     info(f"BUG is {'en' if BUG else 'dis'}abled.")
 
     # Determina l'algoritmo da utilizzare

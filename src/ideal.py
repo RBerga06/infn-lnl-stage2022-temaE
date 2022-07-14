@@ -8,12 +8,14 @@
 def grid(N: int) -> float:
     """Calcola π sia per eccesso e per difetto su una griglia di lato `N`."""
     TOT = N**2
-    K = (N - 1) ** 2
+    squares = [x**2 for x in range(N)]
+    # K = (N - 1) ** 2
+    K = squares[-1]  # l'ultimo valore di `squares` è in effetti K
     N_in = 0
     N_out = 0
-    for x in range(N):
-        for y in range(N):
-            v = x**2 + y**2 - K
+    for X in squares:
+        for Y in squares:
+            v = X + Y - K
             if v == 0:
                 N_in += 1
                 N_out += 1
@@ -24,7 +26,7 @@ def grid(N: int) -> float:
     pim = N_in * 4 / TOT
     piM = (TOT - N_out) * 4 / TOT
     pi = (pim + piM) / 2
-    print(N, pim, piM, pi, sep=" \t")
+    print(f"{N}\t{pim:01.15f}\t{piM:01.15f}\t{pi:01.15f}")
     return pi
 
 
