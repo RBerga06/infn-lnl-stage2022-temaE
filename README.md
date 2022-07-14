@@ -153,6 +153,7 @@ Su UNIX:
 ```bash
 # Imposta la variabile d'ambiente per tutta la sessione
 export FORCE_UPROOT=1
+# Esegui normalmente i programmi
 python src/file.py
 # Più avanti, per disattivarla, si dovrà rimuoverla...
 export FORCE_UPROOT=""
@@ -171,6 +172,8 @@ Su Windows:
 ```powershell
 # Imposta la variabile d'ambiente
 set FORCE_UPROOT=1
+# Esegui normalmente i programmi
+python src/file.py
 # Più avanti, la si dovrà rimuovere...
 set FORCE_UPROOT=
 # ... o impostare a `False`
