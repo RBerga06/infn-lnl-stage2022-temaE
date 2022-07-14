@@ -42,8 +42,10 @@ def grid(N: int) -> float:
 
 
 if __name__ == "__main__":
-    for N in range(1, 1024):
+    N = 1
+    while True:
         grid(N)
+        N += 1
     # theoretical(N, case)
     # diff = []
     # for i in range(500):
