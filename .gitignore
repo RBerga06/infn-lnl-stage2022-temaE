@@ -13,6 +13,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Cython-generated C/C++ files
+*.c
+*.cpp
+
 # C extensions
 *.so
 
