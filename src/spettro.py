@@ -6,10 +6,12 @@ from pathlib import Path
 from typing import Literal, NamedTuple
 import matplotlib.pyplot as plt
 import root
-from log import task, taskLogger
+from log import getLogger, taskLogger
 
 
 # --- Costanti ---
+# Logger per questo programma
+L = getLogger(__name__)
 # Distanza temporale tra due samples
 T: float = 4  # µs
 # Numero di samples da prendere per calcolare la baseline
@@ -40,7 +42,7 @@ def mean(v: list[float] | list[int]) -> float:
 
 
 # Calcolo delle aree per ogni evento
-@task(f"Calculating {'BASELINES and ' if BASELINE_CALC_MODE == 1 else ''}areas")
+@L.task(f"Calculating {'BASELINES and ' if BASELINE_CALC_MODE == 1 else ''}areas")
 def aree(
     events: list[Event],
     BASELINE: float | None = None,
@@ -49,7 +51,7 @@ def aree(
     max_samples: int | None = None,
 ) -> list[float]:
     """Calcola l'area di ogni evento."""
-    logger = taskLogger()
+    logger = taskLogger(__name__)
     logger.debug(f"{max_area=}, samples range = [{min_samples}, {max_samples}]")
 
     aree_calcolate: list[float] = []
@@ -86,7 +88,7 @@ def main():
     # ------------------------ Calcolo della baseline -------------------------
     BASELINE = None
     if BASELINE_CALC_MODE == 0:
-        with task("Calculating baseline...") as calc:
+        with L.task("Calculating baseline...") as calc:
             medie = []
             for event in t:
                 # Calcola della media dei primi `BASELINE_CALC_N` samples richiamando la funzione "mean"
