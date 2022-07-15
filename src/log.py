@@ -35,7 +35,7 @@ __all__ = [
     # Defined here
     "TIMESTAMP", "DEFAULT_LEVEL", "ICONS", "STYLES",
     "ConsoleFormatter", "Logger",
-    "cli_configure", "getLogger", "moduleLogger",
+    "cli_configure", "getLogger",
     "debug", "info", "warning", "error", "critical", "exception", "task",
 ]
 
@@ -62,26 +62,25 @@ def sprint(*values, sep: str = " ", end: str = "\n", style: str = ""):
         print(*values, sep=sep, end=end, flush=True)
 
 
-def getLogger(name: str = "") -> Logger:
-    """Get the logger associated with this given name."""
+def getLogger(name: str | None = None, /, *, depth: int = 0) -> Logger:
+    """Get the logger associated with this given name.
+
+    If no name is specified, get the logger of the module
+    that called this function.
+    """
     if not name:
-        raise ValueError("You should not use the root logger!")
+        return getLogger(
+            inspect.stack()[1 + depth].frame.f_globals["__name__"]
+            if name is None else name
+        )
     if name == "root":
         name = "root_"
     return cast(Logger, logging.getLogger(name))
 
 
-def moduleLogger(name: str | None = None, /, *, depth: int = 0) -> Logger:
-    """Get the logger associated with the module that's calling this function."""
-    return getLogger(
-        inspect.stack()[1 + depth].frame.f_globals["__name__"]
-        if name is None else name
-    )
-
-
 def taskLogger(module: str | None = None, /, id: str = "", *, depth: int = 0) -> Logger:
     """Get the task logger for the module that's calling this function."""
-    tl = moduleLogger(module, depth=1 + depth).getChild("task")
+    tl = getLogger(module, depth=1 + depth).getChild("task")
     if id:
         return tl.getChild(id)
     return tl
@@ -130,8 +129,8 @@ class ConsoleFormatter(logging.Formatter):
 
     def __init__(self, lfmt: str, rfmt: str, *args, **kwargs) -> None:
         """Left and right formatter strings."""
-        lfmt, rfmt = lfmt.replace('\0', ''), rfmt.replace('\0', '')
-        super().__init__(f"{lfmt}\0{rfmt}", *args, **kwargs)
+        lfmt, rfmt = lfmt.replace("\0", ""), rfmt.replace("\0", "")
+        super().__init__(lfmt + "\0" + rfmt, *args, **kwargs)
 
     def format(self, record: logging.LogRecord) -> str:
         # Activate console markup
@@ -296,37 +295,37 @@ def cli_configure() -> None:
 
 def task(msg: str, level: int = INFO, id: str | None = "") -> _GeneratorContextManager[Logger]:
     """Start logging a task."""
-    return moduleLogger(depth=1).task(msg, level=level, id=id)
+    return getLogger(depth=1).task(msg, level=level, id=id)
 
 
 def debug(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
     """Log an debug message."""
-    moduleLogger(depth=1).debug(msg, *args, extra=extra, **kwargs)
+    getLogger(depth=1).debug(msg, *args, extra=extra, **kwargs)
 
 
 def info(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
     """Log an information."""
-    moduleLogger(depth=1).info(msg, *args, extra=extra, **kwargs)
+    getLogger(depth=1).info(msg, *args, extra=extra, **kwargs)
 
 
 def warning(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
     """Log a warning."""
-    moduleLogger(depth=1).warning(msg, *args, extra=extra, **kwargs)
+    getLogger(depth=1).warning(msg, *args, extra=extra, **kwargs)
 
 
 def error(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
     """Log an error."""
-    moduleLogger(depth=1).error(msg, *args, extra=extra, **kwargs)
+    getLogger(depth=1).error(msg, *args, extra=extra, **kwargs)
 
 
 def critical(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
     """Log an error that causes the program's termination."""
-    moduleLogger(depth=1).critical(msg, *args, extra=extra, **kwargs)
+    getLogger(depth=1).critical(msg, *args, extra=extra, **kwargs)
 
 
 def exception(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
     """Log an exception."""
-    moduleLogger(depth=1).exception(msg, *args, extra=extra, **kwargs)
+    getLogger(depth=1).exception(msg, *args, extra=extra, **kwargs)
 
 
 if not eval(os.environ.get("NO_AUTO_LOGGING_CONFIG", "0") or "0"):
@@ -335,7 +334,7 @@ if not eval(os.environ.get("NO_AUTO_LOGGING_CONFIG", "0") or "0"):
     getLogger("matplotlib").setLevel(WARNING)
 
 
-if __name__ == "__main__":
+def main():
     cli_configure()
     logger = getLogger(__name__)
     logger.critical("Critical")
@@ -356,21 +355,25 @@ if __name__ == "__main__":
     with logger.task("Sleep task #1 (1s)") as computation:
         time.sleep(1)
         computation.fail()
-    with logger.task("Sleep task #2 (10s, loop)") as computation:
-        for _ in range(10):
+    with logger.task("Sleep task #2 (3s, loop)") as computation:
+        for _ in range(3):
             time.sleep(1)
         computation.done()
-    with logger.task("Sleep task #3 (10s, loop, log at every iteration)") as computation:
-        for _ in range(10):
+    with logger.task("Sleep task #3 (3s, loop, log at every iteration)") as computation:
+        for _ in range(3):
             time.sleep(1)
             computation.info("Just slept 1s.")
         computation.done()
     logger.debug("About to define function `_foo` with `@task` decorator")
 
-    @task("Foo task")
+    @logger.task("Sleep task #4 (3s, via function)")
     def _foo(x: int) -> None:
         for __ in range(x):
             time.sleep(1)
 
     logger.debug("After defining function `_foo` with `@task` decorator")
-    _foo(2)
+    _foo(3)
+
+
+if __name__ == "__main__":
+    main()
