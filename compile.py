@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """Un programma di utility che compila in Cython i moduli richiesti.
 
     python compile.py [COMMAND] [ARGUMENTS]
