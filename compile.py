@@ -122,10 +122,15 @@ def run(*argv: str) -> int:
     build(target)
     os.chdir(SRC)
     index = args.index(target)
-    args[index] = f"import {target}; getattr({target}, 'main', getattr({target}, 'test', lambda: None))()"
+    args[index] = (
+        f"import {target}; "
+        f"func = getattr({target}, 'main', getattr({target}, 'test', lambda: None)); "
+        f"print('-->', 'Running', '{target}.' + func.__name__ + '()', 'from', {target}.__file__); "
+        f"func()"
+    )
     args.insert(index, "-c")
     args.insert(0, sys.executable)
-    print(f"--> Running {target} ({' '.join([repr(x) for x in args])})")
+    print(f"--> Running {target}")
     return subprocess.run(args, check=False).returncode
 
 
