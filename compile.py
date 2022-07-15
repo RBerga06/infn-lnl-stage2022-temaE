@@ -122,8 +122,9 @@ RUN = r"""\
 print(f'\n--> Importing $$')
 import $$
 func = getattr($$, 'main', getattr($$, 'test', None))
+print(f'\n--> $$ has been imported from {$$.__file__}')
 if func:
-    print(f'\n--> Running $$.{func.__name__}() from {$$.__file__}')
+    print(f'--> Running $$.{func.__name__}()')
     func()
 """
 
