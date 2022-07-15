@@ -117,6 +117,18 @@ def clean(*targets) -> None:
         )
 
 
+
+RUN = r"""\
+print(f'\n--> Importing $$')
+import $$
+func = getattr($$, 'main', getattr($$, 'test', None))
+if func:
+    print(f'\n--> Running $$.{func.__name__}() from {$$.__file__}')
+    func()
+"""
+
+
+
 def run(*argv: str) -> int:
     """Compila ed esegui il modulo dato con gli argomenti dati.
 
@@ -134,16 +146,9 @@ def run(*argv: str) -> int:
     build(target)
     os.chdir(SRC)
     index = args.index(target)
-    args[index] = (f"""\
-import {target}
-func = getattr({target}, 'main', getattr({target}, 'test', None))
-if func:
-    print('-->', 'Running', '{target}.' + func.__name__ + '()', 'from', {target}.__file__)
-    func()
-""")
+    args[index] = RUN.replace("$$", target)
     args.insert(index, "-c")
     args.insert(0, sys.executable)
-    print(f"--> Running {target}")
     return subprocess.run(args, check=False).returncode
 
 
