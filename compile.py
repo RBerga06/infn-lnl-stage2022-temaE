@@ -45,7 +45,7 @@ def list_targets() -> None:
 
     python compile.py list
     """
-    print(*TARGETS, sep=", ")
+    print("all", *TARGETS, sep=", ")
 
 
 def build(*targets: str) -> int:
@@ -55,7 +55,7 @@ def build(*targets: str) -> int:
     python compile.py build log root stagisti
     """
     if "all" in targets:
-        return build(*(f.stem for f in SRC.glob("*.py")))
+        return build(*TARGETS)
     for target in targets:
         if not target in TARGETS:
             continue
