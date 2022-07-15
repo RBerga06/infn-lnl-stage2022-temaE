@@ -336,42 +336,42 @@ if not eval(os.environ.get("NO_AUTO_LOGGING_CONFIG", "0") or "0"):
 
 def main():
     cli_configure()
-    logger = getLogger(__name__)
-    logger.critical("Critical")
-    logger.error("Error")
-    logger.warning("Warning")
-    logger.info("Info")
-    logger.debug("Debug")
-    with logger.task("Null task #1") as computation:
+    L = getLogger(__name__)
+    L.critical("Critical")
+    L.error("Error")
+    L.warning("Warning")
+    L.info("Info")
+    L.debug("Debug")
+    with L.task("Null task #1") as computation:
         pass
-    with logger.task("Null task #2") as computation:
+    with L.task("Null task #2") as computation:
         computation.done()
-    with logger.task("Null task #3") as computation:
+    with L.task("Null task #3") as computation:
         computation.done("explicit")
-    with logger.task("Null task #4") as computation:
+    with L.task("Null task #4") as computation:
         computation.fail("explicit")
-    with logger.task("Null task #5") as computation:
+    with L.task("Null task #5") as computation:
         computation.result = "custom result"
-    with logger.task("Sleep task #1 (1s)") as computation:
+    with L.task("Sleep task #1 (1s)") as computation:
         time.sleep(1)
         computation.fail()
-    with logger.task("Sleep task #2 (3s, loop)") as computation:
+    with L.task("Sleep task #2 (3s, loop)") as computation:
         for _ in range(3):
             time.sleep(1)
         computation.done()
-    with logger.task("Sleep task #3 (3s, loop, log at every iteration)") as computation:
+    with L.task("Sleep task #3 (3s, loop, log at every iteration)") as computation:
         for _ in range(3):
             time.sleep(1)
             computation.info("Just slept 1s.")
         computation.done()
-    logger.debug("About to define function `_foo` with `@task` decorator")
+    L.debug("About to define function `_foo` with `@task` decorator")
 
-    @logger.task("Sleep task #4 (3s, via function)")
+    @L.task("Sleep task #4 (3s, via function)")
     def _foo(x: int) -> None:
         for __ in range(x):
             time.sleep(1)
 
-    logger.debug("After defining function `_foo` with `@task` decorator")
+    L.debug("After defining function `_foo` with `@task` decorator")
     _foo(3)
 
 
