@@ -84,6 +84,7 @@ def main():
     t = root.read(SRC / "data.root", "Data_R", cls=Event)
 
     # ------------------------ Calcolo della baseline -------------------------
+    BASELINE = None
     if BASELINE_CALC_MODE == 0:
         with task("Calculating baseline...") as calc:
             medie = []
@@ -95,8 +96,6 @@ def main():
             BASELINE = mean(medie)
             # BASELINE = 13313.683338704632      # già calcolata, all'occorrenza
             calc.result = f"it's {BASELINE}"
-    else:
-        BASELINE = None
 
     # ---------------------- Calibrazione spettro in keV ----------------------
     X1 = 118900  # picco a 1436 keV
