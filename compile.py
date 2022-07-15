@@ -16,6 +16,7 @@ import shutil
 
 CYTHON_VERSION = "3.0.0a10"
 
+
 def _cython_dep_error() -> NoReturn:
     print(f"""\
 ERROR: No compatible Cython version found.
@@ -24,6 +25,7 @@ Please install this Cython version:
     pip install Cython={CYTHON_VERSION}
 """, file=sys.stderr)
     sys.exit(1)
+
 
 try:
     import cython
@@ -35,7 +37,7 @@ else:
         _cython_dep_error()
 
 
-SRC = Path(__file__).parent/"src"
+SRC = Path(__file__).parent / "src"
 TARGETS = [f.stem for f in SRC.glob("*.py")]
 PYTHON_FRAMES: bool = True
 
@@ -57,9 +59,9 @@ def build(*targets: str) -> int:
     if "all" in targets:
         return build(*TARGETS)
     for target in targets:
-        if not target in TARGETS:
+        if target not in TARGETS:
             continue
-        sources = [str(f.resolve()) for f in [SRC/f"{target}.py", SRC/f"{target}.pxd"] if f.exists()]
+        sources = [str(f.resolve()) for f in [SRC / f"{target}.py", SRC / f"{target}.pxd"] if f.exists()]
         print(f"--> Building {target} ({', '.join(sources)})")
         try:
             args = [
@@ -105,17 +107,16 @@ def clean(*targets) -> None:
             *SRC.glob("*.html"),
             *SRC.glob("*.so"),
             *SRC.glob("*.pyd"),
-            SRC/"build",
+            SRC / "build",
         )
         return
     for target in targets:
         rm(
-            SRC/f"{target}.c",
-            SRC/f"{target}.html",
+            SRC / f"{target}.c",
+            SRC / f"{target}.html",
             *SRC.glob(f"{target}.*.so"),
             *SRC.glob(f"build/lib.*/{target}.*.so"),
         )
-
 
 
 RUN = r"""\
@@ -127,7 +128,6 @@ if func:
     print(f'--> Running $$.{func.__name__}()')
     func()
 """
-
 
 
 def run(*argv: str) -> int:
