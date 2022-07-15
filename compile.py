@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Un programma di utility che compila in Cython i moduli richiesti."""
+"""Un programma di utility che compila in Cython i moduli richiesti.
+
+    python compile.py [COMMAND] [ARGUMENTS]
+    python compile.py help
+    python compile.py commands
+"""
 import os
 from pathlib import Path
 import sys
@@ -36,25 +41,32 @@ PYTHON_FRAMES: bool = True
 
 
 def list_targets() -> None:
+    """Ottieni una lista di tutti i moduli disponibili.
+
+    python compile.py list
+    """
     print(*TARGETS, sep=", ")
 
 
 def build(*targets: str) -> int:
+    """Compila con Cython i moduli specificati.
+
+    python compile.py build *[TARGETS]
+    python compile.py build log root stagisti
+    """
     if "all" in targets:
         return build(*(f.stem for f in SRC.glob("*.py")))
     for target in targets:
-        sources = [str(f.resolve()) for f in [SRC/f"{target}.py", SRC/f"{target}.pxd"] if f.exists()]
-        if not sources:
-            print(f"--> Skipping {target} (no sources found)")
+        if not target in TARGETS:
             continue
+        sources = [str(f.resolve()) for f in [SRC/f"{target}.py", SRC/f"{target}.pxd"] if f.exists()]
         print(f"--> Building {target} ({', '.join(sources)})")
         try:
             args = [
                 "-3ia",
                 "-j", str(os.cpu_count()),
-                "-X", f"linetrace={PYTHON_FRAMES}",
-                "-X", f"profile={PYTHON_FRAMES}",
-                # "-s", f"trace={PYTHON_FRAMES}",
+                # "-X", f"linetrace={PYTHON_FRAMES}",
+                # "-X", f"profile={PYTHON_FRAMES}",
                 "--lenient",
                 *sources,
             ]
@@ -66,6 +78,7 @@ def build(*targets: str) -> int:
 
 
 def rm(*paths: str | Path):
+    """Elimina i file e le cartelle in `paths`."""
     for path in paths:
         if not isinstance(path, Path):
             path = Path(path)
@@ -79,6 +92,10 @@ def rm(*paths: str | Path):
 
 
 def clean() -> None:
+    """Rimuovi gli elementi creati durante la `build`.
+
+    python compile.py clean
+    """
     rm(
         *SRC.glob("*.c"),
         *SRC.glob("*.html"),
@@ -89,6 +106,11 @@ def clean() -> None:
 
 
 def run(*argv: str) -> int:
+    """Compila ed esegui il modulo dato con gli argomenti dati.
+
+    python compile.py run *[OPZIONI PYTHON] [PROGRAMMA] *[ARGOMENTI/OPZIONI PROGRAMMA]
+    python compile.py run -O root -vv data.root
+    """
     args = list(argv)
     target = ""
     for arg in args:
@@ -107,18 +129,41 @@ def run(*argv: str) -> int:
     return subprocess.run(args, check=False).returncode
 
 
+def help(cmd: str | None = None, /) -> None:
+    """Get help for a given command.
+
+    python compile.py help [COMMAND]
+    python compile.py help commands
+    """
+    if cmd is None:
+        print(__doc__)
+        help("help")
+    else:
+        print(COMMANDS.get(cmd, help).__doc__)
+
+
+def list_commands() -> None:
+    """List the available commands.
+
+    python compile.py commands
+    """
+    print(*COMMANDS, sep=" ")
+
+
 COMMANDS = dict(
     run=run,
     build=build,
     clean=clean,
     list=list_targets,
+    help=help,
+    commands=list_commands,
 )
 
 
 def cli(argv: list[str]) -> int | None:
     """Interfaccia da riga di comando."""
     if len(argv) < 1:
-        raise ValueError("Please specify an argument.")
+        return help()
     first = argv.pop(0)
     if first in COMMANDS:
         cmd = COMMANDS[first]
