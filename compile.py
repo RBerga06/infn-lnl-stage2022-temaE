@@ -91,18 +91,30 @@ def rm(*paths: str | Path):
             os.unlink(path)
 
 
-def clean() -> None:
+def clean(*targets) -> None:
     """Rimuovi gli elementi creati durante la `build`.
 
+    python compile.py clean *[TARGETS]
+    python compile.py clean root log
+    python compile.py clean all
     python compile.py clean
     """
-    rm(
-        *SRC.glob("*.c"),
-        *SRC.glob("*.html"),
-        *SRC.glob("*.so"),
-        *SRC.glob("*.pyd"),
-        SRC/"build",
-    )
+    if not targets or "all" in targets:
+        rm(
+            *SRC.glob("*.c"),
+            *SRC.glob("*.html"),
+            *SRC.glob("*.so"),
+            *SRC.glob("*.pyd"),
+            SRC/"build",
+        )
+        return
+    for target in targets:
+        rm(
+            SRC/f"{target}.c",
+            SRC/f"{target}.html",
+            *SRC.glob(f"{target}.*.so"),
+            *SRC.glob(f"build/lib.*/{target}.*.so"),
+        )
 
 
 def run(*argv: str) -> int:
