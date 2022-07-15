@@ -31,16 +31,38 @@ else:
 
 
 SRC = Path(__file__).parent/"src"
+TARGETS = [f.stem for f in SRC.glob("*.py")]
+PYTHON_FRAMES: bool = True
 
 
-def build(*targets: str) -> None:
+def list_targets() -> None:
+    print(*TARGETS, sep=", ")
+
+
+def build(*targets: str) -> int:
+    if "all" in targets:
+        return build(*(f.stem for f in SRC.glob("*.py")))
     for target in targets:
         sources = [str(f.resolve()) for f in [SRC/f"{target}.py", SRC/f"{target}.pxd"] if f.exists()]
         if not sources:
             print(f"--> Skipping {target} (no sources found)")
             continue
         print(f"--> Building {target} ({', '.join(sources)})")
-        cythonize(["-3i", *sources])
+        try:
+            args = [
+                "-3ia",
+                "-j", str(os.cpu_count()),
+                "-X", f"linetrace={PYTHON_FRAMES}",
+                "-X", f"profile={PYTHON_FRAMES}",
+                # "-s", f"trace={PYTHON_FRAMES}",
+                "--lenient",
+                *sources,
+            ]
+            print(f"$ cythonize {' '.join(args)}")
+            cythonize(args)
+        except SystemExit as e:
+            return e.code
+    return 0
 
 
 def rm(*paths: str | Path):
@@ -57,11 +79,13 @@ def rm(*paths: str | Path):
 
 
 def clean() -> None:
-    rm(*SRC.glob("*.c"))
-    rm(*SRC.glob("*.html"))
-    rm(*SRC.glob("*.so"))
-    rm(*SRC.glob("*.pyd"))
-    rm(SRC/"build")
+    rm(
+        *SRC.glob("*.c"),
+        *SRC.glob("*.html"),
+        *SRC.glob("*.so"),
+        *SRC.glob("*.pyd"),
+        SRC/"build",
+    )
 
 
 def run(*argv: str) -> int:
@@ -76,17 +100,18 @@ def run(*argv: str) -> int:
     build(target)
     os.chdir(SRC)
     index = args.index(target)
-    args[index] = f"__import__('{target}').main()"
+    args[index] = f"import {target}; getattr({target}, 'main', getattr({target}, 'test', lambda: None))()"
     args.insert(index, "-c")
-    return subprocess.run(
-        [sys.executable, *args],
-    ).returncode
+    args.insert(0, sys.executable)
+    print(f"--> Running {target} ({' '.join([repr(x) for x in args])})")
+    return subprocess.run(args, check=False).returncode
 
 
 COMMANDS = dict(
     run=run,
     build=build,
-    clean=clean
+    clean=clean,
+    list=list_targets,
 )
 
 
@@ -100,7 +125,6 @@ def cli(argv: list[str]) -> int | None:
     else:
         cmd = build
         argv = [first] + argv
-    print(f"{cmd.__name__}({', '.join(argv)})")
     return cmd(*argv)
 
 
