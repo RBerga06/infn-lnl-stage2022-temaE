@@ -8,7 +8,10 @@ from collections import namedtuple
 from pathlib import Path
 import sys
 import os
-from log import critical, debug, info, task
+from log import getLogger
+
+
+L = getLogger(__name__)
 
 
 # ----- 1. Importa la libreria corretta ------ #
@@ -21,19 +24,19 @@ FORCE_UPROOT = eval(os.environ.get("FORCE_UPROOT", "0") or "0")
 #   Imposta la variabile `ROOT` di conseguenza.
 ROOT: bool
 try:
-    debug(f"Environment variable `FORCE_UPROOT` is {'' if FORCE_UPROOT else 'not '}set.")
+    L.debug(f"Environment variable `FORCE_UPROOT` is {'' if FORCE_UPROOT else 'not '}set.")
     if FORCE_UPROOT:
         raise ModuleNotFoundError
-    debug("Trying to import `PyROOT`")
+    L.debug("Trying to import `PyROOT`")
     import ROOT as PyROOT
 except ModuleNotFoundError:
     try:
         # Non c'è PyROOT: usiamo uproot
-        debug("Trying to import `uproot`")
+        L.debug("Trying to import `uproot`")
         import uproot
     except ModuleNotFoundError:
         # Non c'è né PyROOT né uproot:
-        critical("No ROOT backend available: please install either PyROOT (`root`) or `uproot`.")
+        L.critical("No ROOT backend available: please install either PyROOT (`root`) or `uproot`.")
         sys.exit(1)
     else:
         ROOT = False
@@ -42,7 +45,7 @@ else:
     ROOT = True
 
 
-info(f"ROOT backend: {'PyROOT' if ROOT else 'uproot'}")
+L.info(f"ROOT backend: {'PyROOT' if ROOT else 'uproot'}")
 
 # ----- 2. Definisci la funzione di lettura ------ #
 
@@ -137,7 +140,7 @@ def read(
     # In `vals` vengono salvati i parametri da passare alla classe nella costruzione dell'oggetto
     vals: dict[str, Any] = {}
 
-    with task(f"Reading tree {tree!r} from file {file!r}...") as reading:
+    with L.task(f"Reading tree {tree!r} from file {file!r}...") as reading:
 
         if ROOT:  # --- PyROOT ---
             # Termina il loop degli eventi di PyROOT, in modo che non interferisca con matplotlib
