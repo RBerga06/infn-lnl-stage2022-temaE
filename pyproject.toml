@@ -35,4 +35,5 @@ disable = [
 	"R0914",  # Too many local variables (*/15)
 	"R0915",  # Too many statements (*/50)
 	"R1704",  # Redefining argument with the local name '*'
+	"E0611",  # No name * in module *
 ]
