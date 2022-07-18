@@ -49,7 +49,80 @@ L.info(f"ROOT backend: {'PyROOT' if ROOT else 'uproot'}")
 
 # ----- 2. Definisci la funzione di lettura ------ #
 
+
 _T = TypeVar("_T", bound=NamedTuple)
+
+
+def _read(
+    file: str | Path,
+    cls: type[_T],
+    tree: str,
+    attributes: list[str],
+    list_conv: list[str],
+) -> list[_T]:
+    # Inizializzazione variabili
+    file = str(Path(file).expanduser().resolve())
+    data: list[_T] = []  # Questo sarà il risultato della funzione
+    # In `vals` vengono salvati i parametri da passare alla classe nella costruzione dell'oggetto
+    vals: dict[str, Any] = {}
+
+    with L.task(f"Reading tree {tree!r} from file {file!r}...") as reading:
+
+        if ROOT:  # --- PyROOT ---
+            # Termina il loop degli eventi di PyROOT, in modo che non interferisca con matplotlib
+            PyROOT.keeppolling = 0  # type: ignore
+            # Apri il file
+            f = PyROOT.TFile(file)  # type: ignore
+            # Leggi l'albero
+            t = f.Get(tree)
+            # Leggi e salva i dati di interesse
+            for x in t:
+                vals.clear()  # Svuota i parametri
+                for attr in attributes:
+                    # Converti l'attributo in lista ove necessario
+                    if attr in list_conv:
+                        vals[attr] = [*getattr(x, attr)]
+                    else:
+                        vals[attr] = getattr(x, attr)
+                # Crea l'oggetto e aggiungilo a `data`
+                data.append(cls(**vals))  # type: ignore
+            # Chiudi il file
+            f.Close()
+
+        else:  # --- uproot ---
+
+            # Mappa vuota per i dati grezzi
+            #   (associa al nome dell'attributo la lista dei valori, ancora da combinare negli oggetti)
+            raw_data: dict[str, Any] = {}
+            # Apri l'albero `tree` dal file `file`
+            with uproot.open(f"{file}:{tree}") as t:
+                # Salva i “rami” come mappa
+                branches = dict(t.iteritems())
+                for attr in attributes:
+                    # Converti l'attributo in lista ove necessario
+                    if attr in list_conv:
+                        raw_data[attr] = list(map(list, branches[attr].array()))
+                    else:
+                        raw_data[attr] = list(branches[attr].array())
+
+            # Converti i dati grezzi in lista di oggetti:
+            #   scorri gli indici e associa gli attributi corrispondenti, creando l'oggetto
+            #
+            # i:      0   1   2   3  ...
+            #         |   |   |   |
+            #         V   V   V   V
+            # attr0: x00 x01 x02 x03 ...  ¯|
+            # attr1: x10 x11 x12 x13 ...   |--> raw_data
+            # attr2: x20 x21 x22 x23 ...  _|
+            #         |   |   |   |
+            #         V   V   V   V
+            # data:  ### ### ### ### ...
+            #
+            for i in range(len(raw_data[attributes[0]])):
+                data.append(cls(**{name: val[i] for name, val in raw_data.items()}))  # type: ignore
+
+        reading.result = f"read {len(data)} items"
+    return data
 
 
 # O si specifica la classe tramite il parametro `cls`...
@@ -134,69 +207,7 @@ def read(
             if issubclass(get_origin(t) or t, list)
         ]
 
-    # Inizializzazione variabili
-    file = str(Path(file).expanduser().resolve())
-    data: list[_T] = []  # Questo sarà il risultato della funzione
-    # In `vals` vengono salvati i parametri da passare alla classe nella costruzione dell'oggetto
-    vals: dict[str, Any] = {}
-
-    with L.task(f"Reading tree {tree!r} from file {file!r}...") as reading:
-
-        if ROOT:  # --- PyROOT ---
-            # Termina il loop degli eventi di PyROOT, in modo che non interferisca con matplotlib
-            PyROOT.keeppolling = 0  # type: ignore
-            # Apri il file
-            f = PyROOT.TFile(file)  # type: ignore
-            # Leggi l'albero
-            t = f.Get(tree)
-            # Leggi e salva i dati di interesse
-            for x in t:
-                vals.clear()  # Svuota i parametri
-                for attr in attributes:
-                    # Converti l'attributo in lista ove necessario
-                    if attr in list_conv:
-                        vals[attr] = [*getattr(x, attr)]
-                    else:
-                        vals[attr] = getattr(x, attr)
-                # Crea l'oggetto e aggiungilo a `data`
-                data.append(cls(**vals))  # type: ignore
-            # Chiudi il file
-            f.Close()
-
-        else:  # --- uproot ---
-
-            # Mappa vuota per i dati grezzi
-            #   (associa al nome dell'attributo la lista dei valori, ancora da combinare negli oggetti)
-            raw_data: dict[str, Any] = {}
-            # Apri l'albero `tree` dal file `file`
-            with uproot.open(f"{file}:{tree}") as t:
-                # Salva i “rami” come mappa
-                branches = dict(t.iteritems())
-                for attr in attributes:
-                    # Converti l'attributo in lista ove necessario
-                    if attr in list_conv:
-                        raw_data[attr] = list(map(list, branches[attr].array()))
-                    else:
-                        raw_data[attr] = list(branches[attr].array())
-
-            # Converti i dati grezzi in lista di oggetti:
-            #   scorri gli indici e associa gli attributi corrispondenti, creando l'oggetto
-            #
-            # i:      0   1   2   3  ...
-            #         |   |   |   |
-            #         V   V   V   V
-            # attr0: x00 x01 x02 x03 ...  ¯|
-            # attr1: x10 x11 x12 x13 ...   |--> raw_data
-            # attr2: x20 x21 x22 x23 ...  _|
-            #         |   |   |   |
-            #         V   V   V   V
-            # data:  ### ### ### ### ...
-            #
-            for i in range(len(raw_data[attributes[0]])):
-                data.append(cls(**{name: val[i] for name, val in raw_data.items()}))  # type: ignore
-
-        reading.result = f"read {len(data)} items"
-    return data
+    return _read(file, cls, tree, list(attributes), list_conv)  # type: ignore
 
 
 # "Esporta" i simboli di interesse
