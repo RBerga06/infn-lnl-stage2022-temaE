@@ -5,11 +5,12 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Literal, NamedTuple, overload
 from enum import Flag, auto
-from log import task
+from log import getLogger
 import root
 
 # Determina la cartella dove si trova questo file
 SRC = Path(__file__).parent
+L = getLogger(__name__)  # Il logger associato a questo modulo
 
 
 class Event(NamedTuple):
@@ -85,7 +86,7 @@ class TrueRandomGenerator:
             )
 
         # --- 1. Calcolo delle differenze dei tempi tra coppie di tempi adiacenti ---
-        with task("Calculating time differences"):
+        with L.task("Calculating time differences"):
 
             self.delta_times = []
             for i in range(1, len(events)):
@@ -95,13 +96,13 @@ class TrueRandomGenerator:
                 self.delta_times.append(delta_time)
 
         # --- 2. Generazione dei bit casuali ---
-        with task("Generating random bits"):
+        with L.task("Generating random bits"):
             # Applicazione del metodo (statico) `self._rand(...)` alle
             #   differenze dei tempi e salvataggio nel vettore `self.bits`
             self.random_bits = list(map(self._rand, self.delta_times))
 
         # --- 3. Generazione dei numeri casuali (da 0 a 255) ---
-        with task("Generating random numbers"):
+        with L.task("Generating random numbers"):
 
             self.random_numbers = []
             random_numbers_b = []
@@ -239,7 +240,7 @@ def test():
     nums = gen.random_numbers
 
     if TO_PLOT:
-        with task("Plotting required items") as plotting:
+        with L.task("Plotting required items") as plotting:
             _plot_item_message: str = " * {}"
 
             # ------------------------ Differenze di tempo -------------------------
