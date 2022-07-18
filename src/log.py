@@ -75,11 +75,11 @@ def getLogger(name: str | None = None, /, *, depth: int = 0) -> Logger:
                 if name is None else name
             )
         except IndexError:
-            getLogger(__name__).error(
-                "Could not resolve `__name__` from an outer frame."
-                "There may be a problem with the interpreter frame stack,"
-                "most probably due to the caller module being Cython-compiled."
-                "Please either switch from `<method>(...)` to `getLogger(__name__).<method>(...)` syntax,"
+            getLogger(__name__).critical(
+                "Could not resolve `__name__` from an outer frame.\n"
+                "There may be a problem with the interpreter frame stack, "
+                "most probably due to the caller module being Cython-compiled. "
+                "Please either switch from `<method>(...)` to `getLogger(__name__).<method>(...)` syntax, "
                 "or avoid Cython-compiling that module."
             )
             sys.exit(1)
