@@ -65,7 +65,7 @@ def build(*targets: str) -> int:
         print(f"--> Building {target} ({', '.join(sources)})")
         try:
             args = [
-                "-3ia",
+                "-3i", "--annotate-fullc",
                 "-j", str(os.cpu_count()),
                 # "-X", f"linetrace={PYTHON_FRAMES}",
                 # "-X", f"profile={PYTHON_FRAMES}",
