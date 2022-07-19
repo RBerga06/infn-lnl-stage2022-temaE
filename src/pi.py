@@ -69,7 +69,7 @@ def mode() -> int:
  [3] Use pseudo-random (x, y) points.\
 """)
     # Richiede all'utente l'algoritmo da utilizzare (il valore di "_mode")
-    _mode: int
+    _mode: int = 0
     while True:
         try:
             _mode = int(eval(input("> ")))
@@ -254,7 +254,7 @@ def main():
     DR = "┘" if UNICODE_BOX else "'"
     H = "─" if UNICODE_BOX else "-"
     V = "│" if UNICODE_BOX else "|"
-    sprint(f"""\
+    sprint(f"""
 {UL}{H*(l+7)}{UR}
 {V} π ≈ {style_pi(spi, i, OK_STYLE, K0_STYLE, KO_STYLE)} {V}
 {V} π = {style_pi(sPI, i, PI_STYLE, OK_STYLE, PI_STYLE)} {V}
@@ -267,7 +267,7 @@ def main():
 }{
     style('~', KO_STYLE)*(l-i-1)
 } {V}
-{DL}{H*(l+7)}{DR}\
+{DL}{H*(l+7)}{DR}
 """)
 
 
