@@ -1,4 +1,3 @@
-from libc.limits cimport ULLONG_MAX
 import cython
 
 
