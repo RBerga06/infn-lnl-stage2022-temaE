@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """Ciò che succederebbe con un dataset ideale."""
+from __future__ import annotations
+import sys
 # from math import pi as PI
 # import matplotlib.pyplot as plt
 
 
-def grid(N: int) -> float:
+def grid(N):
     """Calcola π sia per eccesso e per difetto su una griglia di lato `N`."""
     TOT = N**2
     squares = [x**2 for x in range(N)]
@@ -41,11 +43,15 @@ def grid(N: int) -> float:
 #     return N_in
 
 
-if __name__ == "__main__":
+def main():
+    """Main program."""
     N = 1
     while True:
-        grid(N)
-        N += 1
+        try:
+            grid(N)
+            N += 1
+        except KeyboardInterrupt:
+            sys.exit(0)
     # theoretical(N, case)
     # diff = []
     # for i in range(500):
@@ -54,3 +60,7 @@ if __name__ == "__main__":
     # print(diff)
     # plt.plot(diff)
     # plt.show()
+
+
+if __name__ == "__main__":
+    main()

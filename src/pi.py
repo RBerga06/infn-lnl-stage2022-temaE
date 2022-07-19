@@ -8,12 +8,13 @@ from math import pi as PI
 from pathlib import Path
 import matplotlib.pyplot as plt
 from rand import TrueRandomGenerator
-from log import info, style, warning, sprint
+from log import getLogger, style, sprint
 
 
 # Costanti
 K = 255**2
 SRC = Path(__file__).parent  # Cartella di questo file
+L = getLogger(__name__)  # Logger per questo file
 
 # Se l'output è formattato male, imposta questa flag a `False`
 UNICODE_BOX: bool = True  # False
@@ -28,7 +29,8 @@ def bug(default: bool, /) -> bool:
     # $ python pi.py --bug --no-bug  # --> disattivato (--no-bug sovrascrive --bug)
     if "--bug" in sys.argv:
         if "--no-bug" in sys.argv:
-            BUG = sys.argv[::-1].index("--bug") < sys.argv[::-1].index("--no-bug")
+            rargv = sys.argv[::-1]  # Crea una copia invertita di `sys.argv`
+            BUG = rargv.index("--bug") < rargv.index("--no-bug")
             sys.argv = [x for x in sys.argv if x not in ("--no-bug", "--bug")]
             return BUG
         sys.argv = [x for x in sys.argv if x != "--bug"]
@@ -40,7 +42,7 @@ def bug(default: bool, /) -> bool:
 
 
 def mode() -> int:
-    """Determina l'algoritmo da utilizzare"""
+    """Determina l'algoritmo da utilizzare."""
     # Controlla se l'algoritmo è stato selezionato da riga di comando.
     #   Struttura del vettore "sys.argv":
     #     $ python /path/to/script.py a1 a2 a3
@@ -68,7 +70,7 @@ def mode() -> int:
  [3] Use pseudo-random (x, y) points.\
 """)
     # Richiede all'utente l'algoritmo da utilizzare (il valore di "_mode")
-    _mode: int
+    _mode: int = 0
     while True:
         try:
             _mode = int(eval(input("> ")))
@@ -77,13 +79,13 @@ def mode() -> int:
             sys.exit(0)
         # Gestione errori: input non intero (chiede nuovamente)
         except:
-            warning("Algorithm index has to be an integer (0|1|2|3)!")
+            L.warning("Algorithm index has to be an integer (0|1|2|3)!")
             continue
         # Numero intero: ok
         else:
             # Troppo grande o troppo piccolo (chiede nuovamente)
             if _mode > 3 or _mode < 0:
-                warning(f"Invalid integer `{_mode}` (has to be in [0, 3])!")
+                L.warning(f"Invalid integer `{_mode}` (has to be in [0, 3])!")
                 continue
             # Tutto ok: "_mode" è impostato e si continua col programma
             return _mode  # questo 'return' interrompe il ciclo 'while' e ritorna il valore di '_mode'
@@ -101,11 +103,11 @@ def main():
     BUG = bug(True)  # Di default è attivo
 
     # Comunica se BUG è attivo (per sicurezza)
-    info(f"BUG is {'en' if BUG else 'dis'}abled.")
+    L.info(f"BUG is {'en' if BUG else 'dis'}abled.")
 
     # Determina l'algoritmo da utilizzare
     MODE: int = mode()  # Usa la funzione sopra definita
-    info(f"Using algorithm [{MODE}].")  # Stampa l'algoritmo, per sicurezza
+    L.info(f"Using algorithm [{MODE}].")  # Stampa l'algoritmo, per sicurezza
 
     # Inizializzazione
     TRG = TrueRandomGenerator(bug=BUG)  # Il nostro generatore
@@ -232,10 +234,10 @@ def main():
 
     # --- Stampa la stima finale di π ---
     # Per velocizzare i calcoli
-    L = len(str(PI)) - 1  # -1 perché ignoriamo il `.`
+    l = len(str(PI)) - 1  # -1 perché ignoriamo il `.`
     #
-    spi = f"{pi:01.{L-1}f}"
-    sPI = f"{PI:01.{L-1}f}"
+    spi = f"{pi:01.{l-1}f}"
+    sPI = f"{PI:01.{l-1}f}"
     # Conta quante cifre sono corrette
     i = 0
     for i, (digit, DIGIT) in enumerate(zip(spi.replace(".", ""), sPI.replace(".", ""))):
@@ -253,8 +255,8 @@ def main():
     DR = "┘" if UNICODE_BOX else "'"
     H = "─" if UNICODE_BOX else "-"
     V = "│" if UNICODE_BOX else "|"
-    sprint(f"""\
-{UL}{H*(L+7)}{UR}
+    sprint(f"""
+{UL}{H*(l+7)}{UR}
 {V} π ≈ {style_pi(spi, i, OK_STYLE, K0_STYLE, KO_STYLE)} {V}
 {V} π = {style_pi(sPI, i, PI_STYLE, OK_STYLE, PI_STYLE)} {V}
 {V}     {
@@ -264,9 +266,9 @@ def main():
 }{
     style('^', K0_STYLE) if i else ''
 }{
-    style('~', KO_STYLE)*(L-i-1)
+    style('~', KO_STYLE)*(l-i-1)
 } {V}
-{DL}{H*(L+7)}{DR}\
+{DL}{H*(l+7)}{DR}
 """)
 
 

@@ -35,7 +35,7 @@ __all__ = [
     # Defined here
     "TIMESTAMP", "DEFAULT_LEVEL", "ICONS", "STYLES",
     "ConsoleFormatter", "Logger",
-    "cli_configure", "getLogger", "moduleLogger",
+    "cli_configure", "getLogger",
     "debug", "info", "warning", "error", "critical", "exception", "task",
 ]
 
@@ -62,26 +62,35 @@ def sprint(*values, sep: str = " ", end: str = "\n", style: str = ""):
         print(*values, sep=sep, end=end, flush=True)
 
 
-def getLogger(name: str = "") -> Logger:
-    """Get the logger associated with this given name."""
+def getLogger(name: str | None = None, /, *, depth: int = 0) -> Logger:
+    """Get the logger associated with this given name.
+
+    If no name is specified, get the logger of the module
+    that called this function.
+    """
     if not name:
-        raise ValueError("You should not use the root logger!")
+        try:
+            return getLogger(
+                inspect.stack()[1 + depth].frame.f_globals["__name__"]
+                if name is None else name
+            )
+        except IndexError:
+            getLogger(__name__).critical(
+                "Could not resolve `__name__` from an outer frame.\n"
+                "There may be a problem with the interpreter frame stack, "
+                "most probably due to the caller module being Cython-compiled. "
+                "Please either switch from `<method>(...)` to `getLogger(__name__).<method>(...)` syntax, "
+                "or avoid Cython-compiling that module."
+            )
+            sys.exit(1)
     if name == "root":
         name = "root_"
     return cast(Logger, logging.getLogger(name))
 
 
-def moduleLogger(name: str | None = None, /, *, depth: int = 0) -> Logger:
-    """Get the logger associated with the module that's calling this function."""
-    return getLogger(
-        inspect.stack()[1 + depth].frame.f_globals["__name__"]
-        if name is None else name
-    )
-
-
 def taskLogger(module: str | None = None, /, id: str = "", *, depth: int = 0) -> Logger:
     """Get the task logger for the module that's calling this function."""
-    tl = moduleLogger(module, depth=1 + depth).getChild("task")
+    tl = getLogger(module, depth=1 + depth).getChild("task")
     if id:
         return tl.getChild(id)
     return tl
@@ -130,10 +139,11 @@ class ConsoleFormatter(logging.Formatter):
 
     def __init__(self, lfmt: str, rfmt: str, *args, **kwargs) -> None:
         """Left and right formatter strings."""
-        lfmt, rfmt = lfmt.replace('\0', ''), rfmt.replace('\0', '')
-        super().__init__(f"{lfmt}\0{rfmt}", *args, **kwargs)
+        lfmt, rfmt = lfmt.replace("\0", ""), rfmt.replace("\0", "")
+        super().__init__(lfmt + "\0" + rfmt, *args, **kwargs)
 
     def format(self, record: logging.LogRecord) -> str:
+        """Correctly format `record`."""
         # Activate console markup
         if RICH:
             setattr(record, "markup", True)
@@ -169,6 +179,7 @@ class ConsoleFormatter(logging.Formatter):
 
 class Logger(logging.Logger):
     """An enhanced logger."""
+
     __slots__ = ("_indent", "result", "_result_logged", "_timestamp")
     _indent: int
     result: str
@@ -187,6 +198,7 @@ class Logger(logging.Logger):
         self._timestamp = None
 
     def makeRecord(self, *args, **kwargs) -> logging.LogRecord:
+        """Create a `logging.LogRecord` instance."""
         record = super().makeRecord(*args, **kwargs)
         setattr(record, "indent", self._indent + getattr(record, "indent", 0))
         return record
@@ -262,7 +274,7 @@ def get_levels() -> list[int]:
 
 
 def cli_configure() -> None:
-    """Setup `logging` based on command-line flags."""
+    """Set up `logging` based on command-line flags."""
     global _setup_done  # pylint: disable=global-statement
     if _setup_done:
         return
@@ -296,37 +308,37 @@ def cli_configure() -> None:
 
 def task(msg: str, level: int = INFO, id: str | None = "") -> _GeneratorContextManager[Logger]:
     """Start logging a task."""
-    return moduleLogger(depth=1).task(msg, level=level, id=id)
+    return getLogger(depth=1).task(msg, level=level, id=id)
 
 
 def debug(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
     """Log an debug message."""
-    moduleLogger(depth=1).debug(msg, *args, extra=extra, **kwargs)
+    getLogger(depth=1).debug(msg, *args, extra=extra, **kwargs)
 
 
 def info(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
     """Log an information."""
-    moduleLogger(depth=1).info(msg, *args, extra=extra, **kwargs)
+    getLogger(depth=1).info(msg, *args, extra=extra, **kwargs)
 
 
 def warning(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
     """Log a warning."""
-    moduleLogger(depth=1).warning(msg, *args, extra=extra, **kwargs)
+    getLogger(depth=1).warning(msg, *args, extra=extra, **kwargs)
 
 
 def error(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
     """Log an error."""
-    moduleLogger(depth=1).error(msg, *args, extra=extra, **kwargs)
+    getLogger(depth=1).error(msg, *args, extra=extra, **kwargs)
 
 
 def critical(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
     """Log an error that causes the program's termination."""
-    moduleLogger(depth=1).critical(msg, *args, extra=extra, **kwargs)
+    getLogger(depth=1).critical(msg, *args, extra=extra, **kwargs)
 
 
 def exception(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
     """Log an exception."""
-    moduleLogger(depth=1).exception(msg, *args, extra=extra, **kwargs)
+    getLogger(depth=1).exception(msg, *args, extra=extra, **kwargs)
 
 
 if not eval(os.environ.get("NO_AUTO_LOGGING_CONFIG", "0") or "0"):
@@ -335,42 +347,46 @@ if not eval(os.environ.get("NO_AUTO_LOGGING_CONFIG", "0") or "0"):
     getLogger("matplotlib").setLevel(WARNING)
 
 
-if __name__ == "__main__":
+def main():
     cli_configure()
-    logger = getLogger(__name__)
-    logger.critical("Critical")
-    logger.error("Error")
-    logger.warning("Warning")
-    logger.info("Info")
-    logger.debug("Debug")
-    with logger.task("Null task #1") as computation:
+    L = getLogger(__name__)
+    L.critical("Critical")
+    L.error("Error")
+    L.warning("Warning")
+    L.info("Info")
+    L.debug("Debug")
+    with L.task("Null task #1") as computation:
         pass
-    with logger.task("Null task #2") as computation:
+    with L.task("Null task #2") as computation:
         computation.done()
-    with logger.task("Null task #3") as computation:
+    with L.task("Null task #3") as computation:
         computation.done("explicit")
-    with logger.task("Null task #4") as computation:
+    with L.task("Null task #4") as computation:
         computation.fail("explicit")
-    with logger.task("Null task #5") as computation:
+    with L.task("Null task #5") as computation:
         computation.result = "custom result"
-    with logger.task("Sleep task #1 (1s)") as computation:
+    with L.task("Sleep task #1 (1s)") as computation:
         time.sleep(1)
         computation.fail()
-    with logger.task("Sleep task #2 (10s, loop)") as computation:
-        for _ in range(10):
+    with L.task("Sleep task #2 (3s, loop)") as computation:
+        for _ in range(3):
             time.sleep(1)
         computation.done()
-    with logger.task("Sleep task #3 (10s, loop, log at every iteration)") as computation:
-        for _ in range(10):
+    with L.task("Sleep task #3 (3s, loop, log at every iteration)") as computation:
+        for _ in range(3):
             time.sleep(1)
             computation.info("Just slept 1s.")
         computation.done()
-    logger.debug("About to define function `_foo` with `@task` decorator")
+    L.debug("About to define function `_foo` with `@task` decorator")
 
-    @task("Foo task")
+    @L.task("Sleep task #4 (3s, via function)")
     def _foo(x: int) -> None:
         for __ in range(x):
             time.sleep(1)
 
-    logger.debug("After defining function `_foo` with `@task` decorator")
-    _foo(2)
+    L.debug("After defining function `_foo` with `@task` decorator")
+    _foo(3)
+
+
+if __name__ == "__main__":
+    main()
