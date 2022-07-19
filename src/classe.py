@@ -7,7 +7,8 @@ from __future__ import annotations
 
 
 class Rettangolo:
-    """Rappresenta un rettangolo."""
+    """Classe che “simula” un rettangolo."""
+
     a: float
     b: float
 
@@ -26,11 +27,13 @@ class Rettangolo:
         return (self.a + self.b) * 2
 
     def __mul__(self, i: int | float) -> Rettangolo:
+        """Operazione di moltiplicazione."""
         if not isinstance(i, (int, float)):
             return NotImplemented
         return Rettangolo(self.a * i, self.b * i)
 
     def __repr__(self) -> str:
+        """Rappresentazione dell'oggetto come stringa."""
         return f"<Rettangolo {self.a} x {self.b}>"
 
 
@@ -42,9 +45,11 @@ class Quadrato(Rettangolo):
         super().__init__(lato, lato)
 
     def __repr__(self) -> str:
+        """Rappresentazione dell'oggetto come stringa."""
         return f"<Quadrato di lato {self.lato}>"
 
     def __mul__(self, i: int | float) -> Quadrato:
+        """Operazione di moltiplicazione."""
         # Va ridefinito perché deve ritornare un `Quadrato`, non un `Rettangolo`.
         return Quadrato(self.lato * i)
 
@@ -56,6 +61,7 @@ class Quadrato(Rettangolo):
 
 class Account:
     """Una classe per dimostrare l'utilizzo di `@property` e le variabili “private”."""
+
     __money: float
 
     def __init__(self) -> None:
@@ -74,6 +80,7 @@ class Account:
         self.__money -= abs(price)
 
     def __repr__(self) -> str:
+        """Rappresentazione dell'oggetto come stringa."""
         return f"<Account bancario con €{self.money:.2f} di credito residuo>"
 
 
