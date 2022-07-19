@@ -143,6 +143,7 @@ class ConsoleFormatter(logging.Formatter):
         super().__init__(lfmt + "\0" + rfmt, *args, **kwargs)
 
     def format(self, record: logging.LogRecord) -> str:
+        """Correctly format `record`."""
         # Activate console markup
         if RICH:
             setattr(record, "markup", True)
@@ -178,6 +179,7 @@ class ConsoleFormatter(logging.Formatter):
 
 class Logger(logging.Logger):
     """An enhanced logger."""
+
     __slots__ = ("_indent", "result", "_result_logged", "_timestamp")
     _indent: int
     result: str
@@ -196,6 +198,7 @@ class Logger(logging.Logger):
         self._timestamp = None
 
     def makeRecord(self, *args, **kwargs) -> logging.LogRecord:
+        """Create a `logging.LogRecord` instance."""
         record = super().makeRecord(*args, **kwargs)
         setattr(record, "indent", self._indent + getattr(record, "indent", 0))
         return record
@@ -271,7 +274,7 @@ def get_levels() -> list[int]:
 
 
 def cli_configure() -> None:
-    """Setup `logging` based on command-line flags."""
+    """Set up `logging` based on command-line flags."""
     global _setup_done  # pylint: disable=global-statement
     if _setup_done:
         return
