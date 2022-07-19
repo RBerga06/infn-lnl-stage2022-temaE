@@ -7,11 +7,16 @@ cdef:
     bint UNICODE_BOX
 
 
-@cython.locals(BUG=bint)
+@cython.locals(
+    BUG=bint,
+    rargv=list,
+)
 cdef bint bug(bint default)
+
 
 @cython.locals(_mode=int)
 cdef int mode()
+
 
 @cython.locals(
     s=str,
@@ -19,6 +24,7 @@ cdef int mode()
     c=str
 )
 cdef str style_pi(str pi, int i, str OK, str K0, str KO)
+
 
 @cython.locals(
     width=int,

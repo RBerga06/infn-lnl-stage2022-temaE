@@ -14,7 +14,7 @@ from log import getLogger, style, sprint
 # Costanti
 K = 255**2
 SRC = Path(__file__).parent  # Cartella di questo file
-L = getLogger(__name__)  # Logger per questo file
+L = getLogger(__name__)  # Logger per questo file
 
 # Se l'output è formattato male, imposta questa flag a `False`
 UNICODE_BOX: bool = True  # False
@@ -29,7 +29,8 @@ def bug(default: bool, /) -> bool:
     # $ python pi.py --bug --no-bug  # --> disattivato (--no-bug sovrascrive --bug)
     if "--bug" in sys.argv:
         if "--no-bug" in sys.argv:
-            BUG = sys.argv[::-1].index("--bug") < sys.argv[::-1].index("--no-bug")
+            rargv = sys.argv[::-1]  # Crea una copia invertita di `sys.argv`
+            BUG = rargv.index("--bug") < rargv.index("--no-bug")
             sys.argv = [x for x in sys.argv if x not in ("--no-bug", "--bug")]
             return BUG
         sys.argv = [x for x in sys.argv if x != "--bug"]
@@ -41,7 +42,7 @@ def bug(default: bool, /) -> bool:
 
 
 def mode() -> int:
-    """Determina l'algoritmo da utilizzare"""
+    """Determina l'algoritmo da utilizzare."""
     # Controlla se l'algoritmo è stato selezionato da riga di comando.
     #   Struttura del vettore "sys.argv":
     #     $ python /path/to/script.py a1 a2 a3
