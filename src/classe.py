@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """Per comprendere il funzionamento delle classi."""
+# pylint: disable=protected-access,no-member
 
 from __future__ import annotations
 
 
 class Rettangolo:
+    """Classe che “simula” un rettangolo."""
+
     a: float
     b: float
 
@@ -15,18 +18,22 @@ class Rettangolo:
 
     @property
     def area(self) -> float:
+        """Calcola l'area del rettangolo."""
         return self.a * self.b
 
     @property
     def perimetro(self) -> float:
+        """Calcola il perimetro del rettangolo."""
         return (self.a + self.b) * 2
 
     def __mul__(self, i: int | float) -> Rettangolo:
+        """Operazione di moltiplicazione."""
         if not isinstance(i, (int, float)):
             return NotImplemented
         return Rettangolo(self.a * i, self.b * i)
 
     def __repr__(self) -> str:
+        """Rappresentazione dell'oggetto come stringa."""
         return f"<Rettangolo {self.a} x {self.b}>"
 
 
@@ -38,19 +45,23 @@ class Quadrato(Rettangolo):
         super().__init__(lato, lato)
 
     def __repr__(self) -> str:
+        """Rappresentazione dell'oggetto come stringa."""
         return f"<Quadrato di lato {self.lato}>"
 
     def __mul__(self, i: int | float) -> Quadrato:
+        """Operazione di moltiplicazione."""
         # Va ridefinito perché deve ritornare un `Quadrato`, non un `Rettangolo`.
         return Quadrato(self.lato * i)
 
     @property
     def lato(self):
+        """Il lato di questo quadrato."""
         return self.a  # o `self.b`, in realtà è indifferente
 
 
 class Account:
     """Una classe per dimostrare l'utilizzo di `@property` e le variabili “private”."""
+
     __money: float
 
     def __init__(self) -> None:
@@ -64,32 +75,34 @@ class Account:
 
     def pay(self, price: float) -> None:
         """Paga (= rimuovi dal conto) €`price`."""
-        # Senza `abs(...)` un prezzo negativo aumenterebbe i soldi sul conto. Così, il segno viene semplicemente ignorato.
+        # Senza `abs(...)` un prezzo negativo aumenterebbe i soldi sul conto.
+        #   Così, il segno viene semplicemente ignorato.
         self.__money -= abs(price)
 
     def __repr__(self) -> str:
+        """Rappresentazione dell'oggetto come stringa."""
         return f"<Account bancario con €{self.money:.2f} di credito residuo>"
 
 
-
-def privatevar_example():
+def private_var_example():
     """Dimostrazione delle variabili private in Python."""
+    # type: ignore
     # print(f"{x:.2f}") -> stampa a schermo `x` con 2 cifre decimali
     a = Account()
     print(f"€{a.money:.2f}")  # €200.00
     a.pay(3.14)
     print(f"€{a.money:.2f}")  # €196.86
-    #print(a.__money)         # AttributeError!
-    #a.__money += 100         # AttributeError!
+    # print(a.__money)          # AttributeError!
+    # a.__money += 100          # AttributeError!
     # Purtroppo, però, in Python le variabili “private” non sono veramente private...
     #  per accedervi, utilizzare <oggetto>._<nome classe>__<nome privato>:
-    print(f"€{a._Account__money:.2f}") # €196.86
+    print(f"€{a._Account__money:.2f}")  # €196.86
     a._Account__money += 100  # Modifico la variabile “privata”
-    print(f"€{a.money:.2f}")           # €296.86
-
+    print(f"€{a.money:.2f}")            # €296.86
 
 
 def inheritance_example():
+    """Dimostrazione dell'«albero» delle classi."""
     a = Quadrato(3)
     print(f"{a.lato=}")
     print(f"{a.perimetro=}")
@@ -102,15 +115,16 @@ def inheritance_example():
 
     print(f"{Quadrato(10).area=}")
 
-    print(Quadrato(10))               # Scrive la stringa ritornata da `Quadrato.__repr__(...)`
-    print(Quadrato(10)*2)             # Equivale a `Quadrato(10).__mul__(2)`
-    print(Quadrato(10)*Quadrato(10))  # TypeError! (`__mul__(...)`, ovvero l'operazione `*`, è definito solo per interi o decimali, non altri quadrati)
+    print(Quadrato(10))                 # Scrive la stringa ritornata da `Quadrato.__repr__(...)`
+    print(Quadrato(10) * 2)             # Equivale a `Quadrato(10).__mul__(2)`
+    print(Quadrato(10) * Quadrato(10))  # TypeError!
+    # (`__mul__(...)`, ovvero l'operazione `*`, è definito solo per interi o decimali, non altri quadrati)
 
 
 if __name__ == "__main__":
     print("~~~ classe.py ~~~")
-    # # # # # # # # # # # # # # # # # # # # # # #
+    # # # # # # # # # # # # # # # # # # # # # # #
     # Decommenta la riga di interesse qua sotto #
-    # # # # # # # # # # # # # # # # # # # # # # #
-    #privatevar_example()
-    #inheritance_example()
+    # # # # # # # # # # # # # # # # # # # # # # #
+    # privatevar_example()
+    # inheritance_example()

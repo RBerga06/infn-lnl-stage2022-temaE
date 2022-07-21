@@ -145,18 +145,39 @@ python -O src/nome-del-file.py
 ```
 
 Di default, la libreria per leggere i dati è `PyROOT` (quando installata); altrimenti, viene utilizzata `uproot`.
-Per forzare l'utilizzo di `uproot` anche quando `PyROOT` è installata, impostare la variabile d'ambiente `FORCE_UPROOT`.
+Per forzare l'utilizzo di `uproot` anche quando `PyROOT` è installata, impostare la variabile d'ambiente `FORCE_UPROOT` (il valore assegnato non è importante, basta che in Python si auto-converta in `True` – per esempio, `1`, `42`, `__import__("math").pi` \[sconsigliato], o `True` stesso).
+Per disabilitare `FORCE_UPROOT`, assegnare un valore che in Python si auto-converta in `False`, come `0`, `list()` \[sconsigliato] o `False` stesso. Alternativamente, rimuovere la variabile d'ambiente (assegnandole un valore nullo, `FORCE_UPROOT=`).
+
 Su UNIX:
 
 ```bash
-export FORCE_UPROOT=1  # Anche '=True' va bene
+# Imposta la variabile d'ambiente per tutta la sessione
+export FORCE_UPROOT=1
+# Esegui normalmente i programmi
 python src/file.py
+# Più avanti, per disattivarla, si dovrà rimuoverla...
+export FORCE_UPROOT=""
+# ... o impostarla a `False`
+export FORCE_UPROOT=0
+
+# --- oppure ----
+
+# Imposta la variabile d'ambiente solo per questo comando
+FORCE_UPROOT=1 python src/file.py
+# Dopo che il comando è stato eseguito, la variabile d'ambiente *non* è più impostata.
 ```
 
-O, per evitare di usare `export`:
+Su Windows:
 
-```bash
-FORCE_UPROOT=1 python src/file.py
+```powershell
+# Imposta la variabile d'ambiente
+set FORCE_UPROOT=1
+# Esegui normalmente i programmi
+python src/file.py
+# Più avanti, la si dovrà rimuovere...
+set FORCE_UPROOT=
+# ... o impostare a `False`
+set FORCE_UPROOT=0
 ```
 
 ### Stagisti
