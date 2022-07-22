@@ -6,12 +6,16 @@
     python compile.py help
     python compile.py commands
 """
-import os
+from __future__ import annotations
+
+from typing import NoReturn, Sequence
+from functools import reduce
 from pathlib import Path
-import sys
-from typing import NoReturn
+import operator as op
 import subprocess
 import shutil
+import sys
+import os
 
 
 CYTHON_VERSION = "3.0.0a10"
@@ -40,6 +44,9 @@ else:
 SRC = Path(__file__).parent / "src"
 TARGETS = [f.stem for f in SRC.glob("*.py")]
 PYTHON_FRAMES: bool = True
+
+# Set this to `False` if running in Spyder's IPython console
+RUN_IN_SUBPROCESS: bool = True  # False
 
 
 def list_targets() -> None:
@@ -119,6 +126,39 @@ def clean(*targets) -> None:
         )
 
 
+_SYS_FLAGS = dict(
+    debug="d",
+    inspect="i",
+    interactive="i",
+    isolated="I",
+    optimize="O",
+    dont_write_bytecode="B",
+    no_user_site="s",
+    no_site="S",
+    ignore_environment="E",
+    verbose="v",
+    bytes_warning="b",
+    quiet="q",
+    hash_randomization="R",
+    dev_mode="X dev",
+    utf8_mode="X utf8",
+)
+
+
+def _sys_flags() -> list[str]:
+    """Get CLI arguments for `sys.flags` and `sys.warnoptions`."""
+    return [
+        *reduce(
+            op.add,
+            (
+                f"-{opt*val}".split(" ") for flag, opt in _SYS_FLAGS.items()
+                if (val := getattr(sys.flags, flag))
+            )
+        ),
+        *(f"-W{opt}" for opt in sys.warnoptions)
+    ]
+
+
 RUN = r"""\
 print(f'\n--> Importing $$')
 import $$
@@ -130,11 +170,29 @@ if func:
 """
 
 
+def _run(code: str, args: Sequence[str], additional_sys_flags: Sequence[str] = ()) -> int:
+    # Run in subprocess
+    if RUN_IN_SUBPROCESS:
+        argv = [
+            sys.executable,
+            *{*_sys_flags(), *additional_sys_flags},
+            "-c", code,
+            *args,
+        ]
+        return subprocess.run(argv, check=False).returncode
+    # Run in the same process
+    sys.argv = args.copy()
+    try:
+        exec(code, {}, {})
+    except SystemExit as e:
+        return e.code
+
+
 def run(*argv: str) -> int:
     """Compila ed esegui il modulo dato con gli argomenti dati.
 
-    python compile.py run *[OPZIONI PYTHON] [PROGRAMMA] *[ARGOMENTI/OPZIONI PROGRAMMA]
-    python compile.py run -O root -vv data.root
+    python *[OPZIONI PYTHON] compile.py run [PROGRAMMA] *[ARGOMENTI/OPZIONI PROGRAMMA]
+    python -O compile.py run root -vv data.root
     """
     args = list(argv)
     target = ""
@@ -148,9 +206,11 @@ def run(*argv: str) -> int:
     os.chdir(SRC)
     index = args.index(target)
     args[index] = RUN.replace("$$", target)
-    args.insert(index, "-c")
-    args.insert(0, sys.executable)
-    return subprocess.run(args, check=False).returncode
+    return _run(
+        RUN.replace("$$", target),
+        args[index + 1:],
+        additional_sys_flags=args[:index],
+    )
 
 
 def help(cmd: str | None = None, /) -> None:
