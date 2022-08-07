@@ -8,7 +8,7 @@
 """
 from __future__ import annotations
 
-from typing import NoReturn, Sequence
+from typing import Any, Callable, NoReturn, Sequence
 from functools import reduce
 from pathlib import Path
 import operator as op
@@ -18,15 +18,25 @@ import sys
 import os
 
 
-CYTHON_VERSION = "3.0.0a10"
+_version: Callable[[str], Any] | None
+try:
+    from packaging.version import parse as _version
+except ModuleNotFoundError:
+    try:
+        from setuptools._vendor.packaging.version import parse as _version
+    except ModuleNotFoundError:
+        _version = None
 
 
-def _cython_dep_error() -> NoReturn:
+MINIMUM_CYTHON_VERSION = "3.0.0a10"
+
+
+def _cython_dep_error(msg: str) -> NoReturn:
     print(f"""\
-ERROR: No compatible Cython version found.
+ERROR: {msg}
 
-Please install this Cython version:
-    pip install Cython={CYTHON_VERSION}
+Please install Cython via:
+    pip install "Cython>={MINIMUM_CYTHON_VERSION}"
 """, file=sys.stderr)
     sys.exit(1)
 
@@ -35,10 +45,10 @@ try:
     import cython
     from Cython.Build.Cythonize import main as cythonize
 except ModuleNotFoundError:
-    _cython_dep_error()
+    _cython_dep_error("Cython not found.")
 else:
-    if cython.__version__ != CYTHON_VERSION:
-        _cython_dep_error()
+    if _version and _version(cython.__version__) < _version(MINIMUM_CYTHON_VERSION):  # type: ignore
+        _cython_dep_error("No compatible Cython version found.")
 
 
 SRC = Path(__file__).parent / "src"
@@ -127,21 +137,21 @@ def clean(*targets) -> None:
 
 
 _SYS_FLAGS = dict(
-    debug="d",
-    inspect="i",
-    interactive="i",
-    isolated="I",
-    optimize="O",
-    dont_write_bytecode="B",
-    no_user_site="s",
-    no_site="S",
-    ignore_environment="E",
-    verbose="v",
-    bytes_warning="b",
-    quiet="q",
-    hash_randomization="R",
-    dev_mode="X dev",
-    utf8_mode="X utf8",
+    debug               = "d",
+    inspect             = "i",
+    interactive         = "i",
+    isolated            = "I",
+    optimize            = "O",
+    dont_write_bytecode = "B",
+    no_user_site        = "s",
+    no_site             = "S",
+    ignore_environment  = "E",
+    verbose             = "v",
+    bytes_warning       = "b",
+    quiet               = "q",
+    hash_randomization  = "R",
+    dev_mode            = "X dev",
+    utf8_mode           = "X utf8",
 )
 
 
@@ -170,7 +180,7 @@ if func:
 """
 
 
-def _run(code: str, args: Sequence[str], additional_sys_flags: Sequence[str] = ()) -> int:
+def _run(code: str, args: list[str], additional_sys_flags: Sequence[str] = ()) -> int:
     # Run in subprocess
     if RUN_IN_SUBPROCESS:
         argv = [
@@ -183,9 +193,10 @@ def _run(code: str, args: Sequence[str], additional_sys_flags: Sequence[str] = (
     # Run in the same process
     sys.argv = args.copy()
     try:
-        exec(code, {}, {})
+        exec(code, {}, {})  # pylint: disable=exec-used
     except SystemExit as e:
         return e.code
+    return 0
 
 
 def run(*argv: str) -> int:
