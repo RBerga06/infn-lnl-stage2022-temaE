@@ -3,7 +3,7 @@ from hashlib import sha256
 from pathlib import Path
 
 
-DIR = Path(__file__).parent/"src"
+DIR = Path(__file__).parent.parent/"src"
 
 
 def test_data_root():
