@@ -45,7 +45,7 @@ cdef int mode()
     x=int,
     y=int,
     pi=object,
-    l=int,
+    ls=int,
     spi=str,
     sPI=str,
     digit=str,

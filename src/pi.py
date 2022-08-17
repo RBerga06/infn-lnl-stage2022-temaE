@@ -234,10 +234,10 @@ def main():
 
     # --- Stampa la stima finale di π ---
     # Per velocizzare i calcoli
-    l = len(str(PI)) - 1  # -1 perché ignoriamo il `.`
+    ls = len(str(PI)) - 1  # -1 perché ignoriamo il `.`
     #
-    spi = f"{pi:01.{l-1}f}"
-    sPI = f"{PI:01.{l-1}f}"
+    spi = f"{pi:01.{ls-1}f}"
+    sPI = f"{PI:01.{ls-1}f}"
     # Conta quante cifre sono corrette
     i = 0
     for i, (digit, DIGIT) in enumerate(zip(spi.replace(".", ""), sPI.replace(".", ""))):
@@ -256,7 +256,7 @@ def main():
     H = "─" if UNICODE_BOX else "-"
     V = "│" if UNICODE_BOX else "|"
     sprint(f"""
-{UL}{H*(l+7)}{UR}
+{UL}{H*(ls+7)}{UR}
 {V} π ≈ {style_pi(spi, i, OK_STYLE, K0_STYLE, KO_STYLE)} {V}
 {V} π = {style_pi(sPI, i, PI_STYLE, OK_STYLE, PI_STYLE)} {V}
 {V}     {
@@ -266,9 +266,9 @@ def main():
 }{
     style('^', K0_STYLE) if i else ''
 }{
-    style('~', KO_STYLE)*(l-i-1)
+    style('~', KO_STYLE)*(ls-i-1)
 } {V}
-{DL}{H*(l+7)}{DR}
+{DL}{H*(ls+7)}{DR}
 """)
 
 
