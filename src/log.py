@@ -134,6 +134,13 @@ TASK_MESSAGE = style("--> {}", "bold")
 _setup_done: bool = False
 
 
+def _terminal_columns(*, default: int = 80) -> int:
+    try:
+        return os.get_terminal_size().columns
+    except OSError:
+        return default
+
+
 class ConsoleFormatter(logging.Formatter):
     """A customized logging formatter."""
 
@@ -167,7 +174,7 @@ class ConsoleFormatter(logging.Formatter):
         left, right = text.split("\0")
         if right:
             # Right-align text only if needed
-            width = os.get_terminal_size().columns  # Terminal width
+            width = _terminal_columns()  # Terminal width
             rows = left.split("\n")
             first = rows[0]
             if len(first) + 1 + len(right) - styles_len <= width:
