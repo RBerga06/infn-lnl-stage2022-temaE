@@ -6,10 +6,13 @@ from pathlib import Path
 import sys
 
 
-def pytest_sessionstart():
-    """Initialize tests."""
-    print("test_init()")
+def fix_sys_path():
+    """Fix `sys.path`."""
     path = str(Path(__file__).parent.parent/"src")
-    print(path)
     if path not in sys.path:
         sys.path.append(path)
+
+
+def pytest_sessionstart():
+    """Initialize tests."""
+    fix_sys_path()

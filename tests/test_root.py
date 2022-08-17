@@ -6,6 +6,9 @@ from subprocess import check_output
 import sys
 from typing import Any
 
+from conftest import fix_sys_path
+
+fix_sys_path()  # Necessary for call from subprocess
 from root import ROOT
 
 
@@ -17,7 +20,7 @@ def _backend(**vars: Any) -> str:
     return check_output(
         [sys.executable, __file__, "-q"],
         env={key: str(val) for key, val in vars.items()},
-    ).decode("utf-8")
+    ).decode("utf-8").strip()
 
 
 class TestEnvVars:
