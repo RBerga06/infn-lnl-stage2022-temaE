@@ -8,7 +8,7 @@
 """
 from __future__ import annotations
 
-from typing import NoReturn, Sequence
+from typing import Any, Callable, NoReturn, Sequence
 from functools import reduce
 from pathlib import Path
 import operator as op
