@@ -9,7 +9,7 @@ from typing import Any
 from conftest import fix_sys_path
 
 fix_sys_path()  # Necessary for call from subprocess
-from root import ROOT
+from root import ROOT, test as _test
 
 
 def _print_backend():
@@ -34,6 +34,10 @@ class TestEnvVars:
         """FORCE_UPROOT=1"""
         assert _backend(FORCE_UPROOT=1) == "uproot"
 
+
+def test_root_read():
+    """`root.test()`"""
+    _test()
 
 
 if __name__ == "__main__":
