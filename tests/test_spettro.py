@@ -4,7 +4,7 @@
 """Test `spettro.py`."""
 from __future__ import annotations
 
-from spettro import Event, aree, main as _test
+from spettro import main as _test
 
 
 def test_ui():
