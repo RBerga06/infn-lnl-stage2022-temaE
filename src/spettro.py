@@ -16,7 +16,7 @@ L = getLogger(__name__)
 T: float = 4  # µs
 # Numero di samples da prendere per calcolare la baseline
 BASELINE_CALC_N: int = 60  # 17 per il file 'fondo.root'
-# Metodo di calcola della baseline:
+# Metodo di calcolo della baseline:
 #   0: media delle medie
 #   1: evento per evento
 BASELINE_CALC_MODE: Literal[0, 1] = 0
