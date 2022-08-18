@@ -3,6 +3,7 @@
 """Analisi dello spettro del segnale."""
 from __future__ import annotations
 from pathlib import Path
+import sys
 from typing import Literal, NamedTuple
 import matplotlib.pyplot as plt
 import root
@@ -82,8 +83,13 @@ def main():
     """Funzione principale."""
 
     # ----------------------------- Apertura file -----------------------------
-    SRC = Path(__file__).parent
-    t = root.read(SRC / "data.root", "Data_R", cls=Event)
+    if len(sys.argv) > 1:
+        file = Path(sys.argv[1])
+    else:
+        file = None
+    if not (file and file.exists() and file.suffix == ".root"):
+        file = Path(__file__).parent / "data.root"
+    t = root.read(file, "Data_R", cls=Event)
 
     # ------------------------ Calcolo della baseline -------------------------
     BASELINE = None
