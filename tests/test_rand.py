@@ -48,7 +48,7 @@ class TestTRNG:
         last10  = [191, 241,  96, 193, 229, 8,  31, 110, 5, 193]
         assert trng.n_random_numbers == 354
         assert trng.random_numbers[:10] == first10
-        assert trng.random_numbers[10:] == last10
+        assert trng.random_numbers[-10:] == last10
 
 
 
