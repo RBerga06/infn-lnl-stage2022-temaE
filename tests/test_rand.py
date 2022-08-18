@@ -3,7 +3,7 @@
 # pylint: disable=import-error
 """Test `rand.py`"""
 from __future__ import annotations
-from rand import cyclic_local_means
+from rand import cyclic_local_means, test as _test
 
 
 def test_clm():
@@ -18,3 +18,8 @@ def test_clm():
     ]
     for i, result in enumerate(expected_results):
         assert cyclic_local_means(list(range(6)), spread=i+1) == result
+
+
+def test_ui():
+    """Controlla se l'interfaccia grafica funziona oppure no."""
+    _test()
