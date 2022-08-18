@@ -21,5 +21,5 @@ def test_clm():
 
 
 def test_ui():
-    """Controlla se l'interfaccia grafica funziona oppure no."""
+    """Test whether the graphical user interface shows up."""
     _test()
