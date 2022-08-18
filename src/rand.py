@@ -206,7 +206,7 @@ TO_PLOT: PLOT = (
 
 
 # Funzione per calcolare le medie locali (ciclicamente)
-def cyclic_local_means(data: list[int], spread: int = 5) -> list[float]:
+def cyclic_local_means(data: list[int] | list[float], spread: int = 5) -> list[float]:
     """Calcola ciclicamente le medie locali del vettore `data`, con lo `spread` specificato.
 
     Esempio
