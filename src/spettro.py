@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# pylint: disable=global-statement
 """Analisi dello spettro del segnale."""
 from __future__ import annotations
 from pathlib import Path
@@ -10,13 +11,18 @@ import root
 from log import getLogger, taskLogger
 
 
+class _Constants(NamedTuple):
+    # Numero di samples da prendere per calcolare la baseline
+    BASELINE_CALC_N: int = 60  # <-- valore di default
+
+
 # --- Costanti ---
+# Cartella dei file
+SRC = Path(__file__).parent
 # Logger per questo programma
 L = getLogger(__name__)
 # Distanza temporale tra due samples
 T: float = 4  # µs
-# Numero di samples da prendere per calcolare la baseline
-BASELINE_CALC_N: int = 60  # 17 per il file 'fondo.root'
 # Metodo di calcolo della baseline:
 #   0: media delle medie
 #   1: evento per evento
@@ -25,6 +31,22 @@ BASELINE_CALC_MODE: Literal[0, 1] = 0
 #   0: Origine e picco a 1436 keV
 #   1: Picco a 1436 keV e picco a 2600 keV
 CALIBRATION_MODE: Literal[0, 1] = 0
+# Costanti condizionali: cambiano in base al file aperto
+CONDITIONAL_CONSTANTS: dict[Path, _Constants] = {
+    SRC/"data.root": _Constants(
+        BASELINE_CALC_N = 60,
+    ),
+    SRC/"fondo.root": _Constants(
+        BASELINE_CALC_N = 17,
+    ),
+}
+# File attualmente caricato
+FILE: Path
+
+
+def CC() -> _Constants:
+    """Ritorna le costanti condizionali in base al file attualmente aperto."""
+    return CONDITIONAL_CONSTANTS.get(FILE, _Constants())
 
 
 # --- Modelli ----
@@ -59,7 +81,7 @@ def aree(
     for event in events:
         # Se necessario, calcola la BASELINE per questo evento
         if BASELINE_CALC_MODE == 1:
-            BASELINE = mean(event.Samples[:BASELINE_CALC_N])
+            BASELINE = mean(event.Samples[:CC().BASELINE_CALC_N])
         assert BASELINE is not None
 
         # Estrazione dei samples dell'evento tra `min_samples` e `max_samples`
@@ -83,13 +105,16 @@ def main():
     """Funzione principale."""
 
     # ----------------------------- Apertura file -----------------------------
+    global FILE
     if len(sys.argv) > 1:
         file = Path(sys.argv[1])
     else:
         file = None
-    if not (file and file.exists() and file.suffix == ".root"):
-        file = Path(__file__).parent / "data.root"
-    t = root.read(file, "Data_R", cls=Event)
+    if file is None or not (file.exists() and file.suffix == ".root"):
+        FILE = Path(__file__).parent / "data.root"
+    else:
+        FILE = file
+    t = root.read(FILE, "Data_R", cls=Event)
 
     # ------------------------ Calcolo della baseline -------------------------
     BASELINE = None
@@ -99,7 +124,7 @@ def main():
             for event in t:
                 # Calcola della media dei primi `BASELINE_CALC_N` samples richiamando la funzione "mean"
                 # Salva la media nel vettore "medie"
-                medie.append(mean(event.Samples[:BASELINE_CALC_N]))
+                medie.append(mean(event.Samples[:CC().BASELINE_CALC_N]))
             # Salva la media del vettore "medie" come "BASELINE"
             BASELINE = mean(medie)
             # BASELINE = 13313.683338704632      # già calcolata, all'occorrenza
@@ -134,7 +159,7 @@ def main():
     # plt.show
 
     # Spettro calibrato in keV, aree calcolate con samples nell'intervallo [BASELINE_CALC_N, 150]
-    plt.hist(list(map(calibrate, aree(t, BASELINE=BASELINE, min_samples=BASELINE_CALC_N, max_samples=150))), bins=2500)
+    plt.hist(list(map(calibrate, aree(t, BASELINE=BASELINE, min_samples=CC().BASELINE_CALC_N, max_samples=150))), bins=2500)
     plt.yscale("log")
     plt.xlabel("Energy [keV]")
     plt.ylabel("Counts")
