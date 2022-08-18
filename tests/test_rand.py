@@ -3,7 +3,7 @@
 # pylint: disable=import-error
 """Test `rand.py`"""
 from __future__ import annotations
-from rand import cyclic_local_means, test as _test
+from rand import SRC, TrueRandomGenerator as TRNG, cyclic_local_means, test as _test
 
 
 def test_clm():
@@ -18,6 +18,38 @@ def test_clm():
     ]
     for i, result in enumerate(expected_results):
         assert cyclic_local_means(list(range(6)), spread=i+1) == result
+
+
+class TestTRNG:
+    """Test the `TrueRandomGenerator` class."""
+
+    def test_datafile_fondo(self):
+        """Make sure the data from `fondo.root` is loaded correctly."""
+        trng = TRNG(file=SRC/"fondo.root")
+        first10 = [246, 108, 238, 243, 190, 5, 219, 82, 98, 57]
+        assert trng.n_random_numbers == 177
+        assert trng.random_numbers[:10] == first10
+        for n in first10:
+            assert trng.random_number() == n
+
+    def test_datafile_data(self):
+        """Make sure the data from `data.root` is loaded correctly."""
+        trng = TRNG(file=SRC/"data.root")
+        first10 = [87, 223, 176, 76, 234, 41, 75, 124, 232, 251]
+        assert trng.n_random_numbers == 15513
+        assert trng.random_numbers[:10] == first10
+        for n in first10:
+            assert trng.random_number() == n
+
+    def test_bug(self):
+        """Make sure the `bug=` flag works correctly."""
+        trng = TRNG(file=SRC/"fondo.root", bug=True)
+        first10 = [246, 108, 238, 243, 190, 5, 219, 82, 98,  57]
+        last10  = [191, 241,  96, 193, 229, 8,  31, 110, 5, 193]
+        assert trng.n_random_numbers == 354
+        assert trng.random_numbers[:10] == first10
+        assert trng.random_numbers[10:] == last10
+
 
 
 def test_ui():
