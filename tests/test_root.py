@@ -28,7 +28,7 @@ class TestEnvVars:
 
     def test_FORCE_UPROOT_0(self):
         """FORCE_UPROOT=0"""
-        assert _backend(FORCE_UPROOT=0) == "PyROOT"
+        assert _backend(FORCE_UPROOT=0) in {"uproot", "PyROOT"}
 
     def test_FORCE_UPROOT_1(self):
         """FORCE_UPROOT=1"""
