@@ -52,9 +52,13 @@ class TestTRNG:
         assert trng.random_numbers[-10:] == last10
 
 
-def test_plots():
-    """Test plots."""
+class TestPlots:
     MPL = MPLTest()
-    MPL.collects()(_test)()
+
+    @MPL.collects()
+    def test_plots(self):
+        """Create plots."""
+        _test()
+
     for i, name in enumerate(["deltas", "bits", "bytes"]):
-        MPL.test(i, f"rand_{name}")
+        MPL.test(i, f"rand_{name}", auto_def=True)
