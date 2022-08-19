@@ -195,7 +195,7 @@ def _run(code: str, args: List[str], additional_sys_flags: Sequence[str] = ()) -
             "-c", code,
             *args,
         ]
-        return subprocess.run(argv, check=False).returncode
+        return subprocess.run(argv, check=False, env=os.environ.copy()).returncode
     # Run in the same process
     sys.argv = args.copy()
     try:

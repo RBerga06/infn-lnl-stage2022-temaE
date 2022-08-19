@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Testa `root.py`"""
 from __future__ import annotations
+import os
 from subprocess import check_output
 import sys
 from typing import Any
@@ -19,7 +20,7 @@ def _print_backend():
 def _backend(**vars: Any) -> str:
     return check_output(
         [sys.executable, __file__, "-q"],
-        env={key: str(val) for key, val in vars.items()},
+        env={**os.environ, **{key: str(val) for key, val in vars.items()}},
     ).decode("utf-8").strip()
 
 

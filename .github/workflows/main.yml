@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  test:
     strategy:
       matrix:
         python: ["3.10", "3.9", "3.8"]
