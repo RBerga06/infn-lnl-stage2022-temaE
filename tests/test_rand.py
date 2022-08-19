@@ -7,9 +7,6 @@ from rand import SRC, TrueRandomGenerator as TRNG, cyclic_local_means, test as _
 from conftest import MPLTest
 
 
-MPL = MPLTest()
-
-
 def test_clm():
     """Test the cyclic local means."""
     expected_results = [
@@ -55,8 +52,9 @@ class TestTRNG:
         assert trng.random_numbers[-10:] == last10
 
 
-@MPL.tests(0, "rand.png")
-@MPL.collects()
-def test_ui():
-    """Test whether the graphical user interface shows up."""
-    _test()
+def test_plots():
+    """Test plots."""
+    MPL = MPLTest()
+    MPL.collects()(_test)()
+    for i, name in enumerate(["deltas", "bits", "bytes"]):
+        MPL.test(i, f"rand_{name}")
