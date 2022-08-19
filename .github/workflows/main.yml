@@ -23,6 +23,6 @@ jobs:
       - name: Install dependencies
         run: python -m pip install uproot awkward matplotlib
       - name: Install pytest
-        run: python -m pip install pytest
+        run: python -m pip install pytest pytest-mpl
       - name: Run pytest
         run: pytest
