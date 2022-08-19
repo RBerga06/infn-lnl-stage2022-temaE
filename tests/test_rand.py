@@ -4,6 +4,10 @@
 """Test `rand.py`"""
 from __future__ import annotations
 from rand import SRC, TrueRandomGenerator as TRNG, cyclic_local_means, test as _test
+from conftest import MPLTest
+
+
+MPL = MPLTest()
 
 
 def test_clm():
@@ -51,7 +55,8 @@ class TestTRNG:
         assert trng.random_numbers[-10:] == last10
 
 
-
+@MPL.tests(0, "rand.png")
+@MPL.collect()
 def test_ui():
     """Test whether the graphical user interface shows up."""
     _test()
