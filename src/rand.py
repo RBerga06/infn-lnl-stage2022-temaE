@@ -264,7 +264,7 @@ def test():
                 plt.hist(bits, bins=2)  # istogramma per confrontare 0 e 1 (i bit)
                 plt.xlabel("Bit")
                 plt.ylabel("Counts")
-                plt.ylim(bottom=0)
+                plt.ylim(bottom=.7)
                 plt.title("Bits distribution")
                 plt.show()
 
@@ -293,7 +293,7 @@ def test():
             if PLOT.BYTES_DISTRIBUTION in TO_PLOT or PLOT.BYTES_DISTRIBUTION_LOCAL_MEANS in TO_PLOT:
                 plt.xlabel("Bytes")
                 plt.ylabel("Counts")
-                plt.ylim(0, 85)
+                plt.ylim(.7, 85)
                 plt.title("Bytes distribution")
                 plt.show()
 
