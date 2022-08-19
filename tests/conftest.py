@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any, Callable, Iterator, TypeVar, cast
 import matplotlib.pyplot as plt
 from matplotlib.testing.decorators import image_comparison
-from pytest import MonkeyPatch
+import pytest
 
 
 def fix_sys_path():
@@ -46,23 +46,32 @@ def chdir(path: Path) -> Iterator[Path]:
 _F = TypeVar("_F", bound=Callable[..., Any])
 
 
-def mpl_test(stem: str) -> Callable[[_F], _F]:
+class _mpl_mocked_show:
+    def __init__(self):
+        self.figure = None
+
+    def __call__(self):
+        self.figure = plt.gcf()
+
+
+def mpl_test(filename: str | None = None) -> Callable[[_F], _F]:
+    figure = None
+
     def mocked_show():
-        plt.savefig(f"result_images/{stem}.png")
+        nonlocal figure
+        figure = plt.gcf()
 
     def decorator(f: _F) -> _F:
         @wraps(f)
-        @chdir(Path(__file__).parent)
-        @image_comparison(
-            baseline_images=[stem],
-            extensions=["png"],
-        )
+        @pytest.mark.mpl_image_compare(baseline_dir="images/baseline", filename=filename)
         @wraps(f)
         def func(*args, **kwargs):
-            with MonkeyPatch.context() as monkeypatch:
-                monkeypatch.setattr(plt, "show", mocked_show)
-                return f(*args, **kwargs)
+            with pytest.MonkeyPatch.context() as mp:
+                mp.setattr(plt, "show", mocked_show)
+                f(*args, **kwargs)
+                return figure
         return cast(_F, func)
+
     return decorator
 
 
