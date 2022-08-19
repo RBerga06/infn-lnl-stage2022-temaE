@@ -6,6 +6,7 @@ import sys
 import random
 from math import pi as PI
 from pathlib import Path
+from typing import List
 import matplotlib.pyplot as plt
 from rand import TrueRandomGenerator
 from log import getLogger, style, sprint
@@ -113,11 +114,11 @@ def main():
     TRG = TrueRandomGenerator(bug=BUG)  # Il nostro generatore
     LEN = TRG.n_random_numbers  # Numero di valori casuali disponibili
     N_in:     int         = 0   # Numero di coordinate casuali all'interno del cerchio  # noqa
-    x_in:     list[int]   = []  # Lista delle coordinate x all'interno del cerchio      # noqa
-    y_in:     list[int]   = []  # Lista delle coordinate y all'interno del cerchio      # noqa
-    x_out:    list[int]   = []  # Lista delle coordinate x all'esterno del cerchio      # noqa
-    y_out:    list[int]   = []  # Lista delle coordinate y all'esterno del cerchio      # noqa
-    pi_array: list[float] = []  # Lista delle stime di π nel tempo
+    x_in:     List[int]   = []  # Lista delle coordinate x all'interno del cerchio      # noqa
+    y_in:     List[int]   = []  # Lista delle coordinate y all'interno del cerchio      # noqa
+    x_out:    List[int]   = []  # Lista delle coordinate x all'esterno del cerchio      # noqa
+    y_out:    List[int]   = []  # Lista delle coordinate y all'esterno del cerchio      # noqa
+    pi_array: List[float] = []  # Lista delle stime di π nel tempo
     pi: float = 0  # Stima di π, ricalcolata ad ogni iterazione
 
     # Pre-calcolo dei quadrati, per ottimizzazione
@@ -234,10 +235,10 @@ def main():
 
     # --- Stampa la stima finale di π ---
     # Per velocizzare i calcoli
-    l = len(str(PI)) - 1  # -1 perché ignoriamo il `.`
+    ls = len(str(PI)) - 1  # -1 perché ignoriamo il `.`
     #
-    spi = f"{pi:01.{l-1}f}"
-    sPI = f"{PI:01.{l-1}f}"
+    spi = f"{pi:01.{ls-1}f}"
+    sPI = f"{PI:01.{ls-1}f}"
     # Conta quante cifre sono corrette
     i = 0
     for i, (digit, DIGIT) in enumerate(zip(spi.replace(".", ""), sPI.replace(".", ""))):
@@ -256,7 +257,7 @@ def main():
     H = "─" if UNICODE_BOX else "-"
     V = "│" if UNICODE_BOX else "|"
     sprint(f"""
-{UL}{H*(l+7)}{UR}
+{UL}{H*(ls+7)}{UR}
 {V} π ≈ {style_pi(spi, i, OK_STYLE, K0_STYLE, KO_STYLE)} {V}
 {V} π = {style_pi(sPI, i, PI_STYLE, OK_STYLE, PI_STYLE)} {V}
 {V}     {
@@ -266,13 +267,13 @@ def main():
 }{
     style('^', K0_STYLE) if i else ''
 }{
-    style('~', KO_STYLE)*(l-i-1)
+    style('~', KO_STYLE)*(ls-i-1)
 } {V}
-{DL}{H*(l+7)}{DR}
+{DL}{H*(ls+7)}{DR}
 """)
 
 
-def style_pi(pi: str, i: int, OK: str, K0: str, KO: str) -> str:
+def style_pi(pi: str, i: int, OK: str, K0: str, KO: str, /) -> str:
     """Colora `pi` in base al numero di cifre corrette (`i`) e agli stili specificati."""
     s = ""
     for j, c in enumerate(pi.replace(".", "")):

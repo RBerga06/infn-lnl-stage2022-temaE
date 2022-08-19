@@ -5,10 +5,10 @@ from manim import *  # type: ignore
 
 
 @overload
-def data(file: str, i: None = ...) -> list[list[int]]: ...
+def data(file: str, i: None = ...) -> List[List[int]]: ...
 @overload
-def data(file: str, i: int) -> list[int]: ...
-def data(file: str, i: int | None = None) -> list[list[int]] | list[int]:
+def data(file: str, i: int) -> List[int]: ...
+def data(file: str, i: int | None = None) -> List[List[int]] | List[int]:
     f = TFile(file)
     t = f.Get("Data_R")
     if i is None:

@@ -2,7 +2,7 @@
 # -*- coding : utf-8 -*-
 """Utility module: logging support."""
 from __future__ import annotations
-from typing import Any, Iterator, cast
+from typing import Any, Dict, List, Iterator, cast
 from logging import NOTSET, DEBUG, INFO, WARNING, ERROR, CRITICAL
 from contextlib import contextmanager, _GeneratorContextManager
 from io import StringIO
@@ -134,6 +134,13 @@ TASK_MESSAGE = style("--> {}", "bold")
 _setup_done: bool = False
 
 
+def _terminal_columns(*, default: int = 80) -> int:
+    try:
+        return os.get_terminal_size().columns
+    except OSError:
+        return default
+
+
 class ConsoleFormatter(logging.Formatter):
     """A customized logging formatter."""
 
@@ -167,7 +174,7 @@ class ConsoleFormatter(logging.Formatter):
         left, right = text.split("\0")
         if right:
             # Right-align text only if needed
-            width = os.get_terminal_size().columns  # Terminal width
+            width = _terminal_columns()  # Terminal width
             rows = left.split("\n")
             first = rows[0]
             if len(first) + 1 + len(right) - styles_len <= width:
@@ -260,9 +267,9 @@ class Logger(logging.Logger):
         self._result_logged = True
 
 
-def get_levels() -> list[int]:
+def get_levels() -> List[int]:
     """Get the installed levels, as a list, in severity ascending order."""
-    name2level: dict[str, int] | None
+    name2level: Dict[str, int] | None
     if sys.version_info >= (3, 11):
         name2level = logging.getLevelNamesMapping()  # pylint: disable=no-member
     else:
@@ -311,32 +318,32 @@ def task(msg: str, level: int = INFO, id: str | None = "") -> _GeneratorContextM
     return getLogger(depth=1).task(msg, level=level, id=id)
 
 
-def debug(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
+def debug(msg: Any, *args: Any, extra: Dict[str, Any] | None = None, **kwargs) -> None:
     """Log an debug message."""
     getLogger(depth=1).debug(msg, *args, extra=extra, **kwargs)
 
 
-def info(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
+def info(msg: Any, *args: Any, extra: Dict[str, Any] | None = None, **kwargs) -> None:
     """Log an information."""
     getLogger(depth=1).info(msg, *args, extra=extra, **kwargs)
 
 
-def warning(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
+def warning(msg: Any, *args: Any, extra: Dict[str, Any] | None = None, **kwargs) -> None:
     """Log a warning."""
     getLogger(depth=1).warning(msg, *args, extra=extra, **kwargs)
 
 
-def error(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
+def error(msg: Any, *args: Any, extra: Dict[str, Any] | None = None, **kwargs) -> None:
     """Log an error."""
     getLogger(depth=1).error(msg, *args, extra=extra, **kwargs)
 
 
-def critical(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
+def critical(msg: Any, *args: Any, extra: Dict[str, Any] | None = None, **kwargs) -> None:
     """Log an error that causes the program's termination."""
     getLogger(depth=1).critical(msg, *args, extra=extra, **kwargs)
 
 
-def exception(msg: Any, *args: Any, extra: dict[str, Any] | None = None, **kwargs) -> None:
+def exception(msg: Any, *args: Any, extra: Dict[str, Any] | None = None, **kwargs) -> None:
     """Log an exception."""
     getLogger(depth=1).exception(msg, *args, extra=extra, **kwargs)
 

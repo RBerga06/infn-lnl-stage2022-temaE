@@ -3,7 +3,7 @@
 """Questo modulo contiene un generatore di numeri veramente casuali (TRNG)."""
 from __future__ import annotations
 from pathlib import Path
-from typing import Literal, NamedTuple, overload
+from typing import List, Literal, NamedTuple, overload
 from enum import Flag, auto
 from log import getLogger
 import root
@@ -33,9 +33,9 @@ class TrueRandomGenerator:
 
     # --- Variabili d'istanza ---
     # pubbliche
-    delta_times:      list[int]  # Differenze dei tempi
-    random_bits:      list[int]  # Bit (0|1) casuali
-    random_numbers:   list[int]  # Numeri casuali (da 0 a 255)
+    delta_times:      List[int]  # Differenze dei tempi
+    random_bits:      List[int]  # Bit (0|1) casuali
+    random_numbers:   List[int]  # Numeri casuali (da 0 a 255)
     n_random_numbers: int        # Numero di numeri casuali
     # protette
     _i:               int        # Indice per il metodo `random_number()`
@@ -45,13 +45,13 @@ class TrueRandomGenerator:
     # O si specifica il parametro `file=`...
     @overload
     def __init__(
-        self, /, *, events: list[Event] | None = ..., file: Path | str | None = ..., bug: bool = False
+        self, /, *, events: List[Event] | None = ..., file: Path | str | None = ..., bug: bool = False
     ) -> None: ...
 
     # ... oppure `files=`...
     @overload
     def __init__(
-        self, /, *, events: list[Event] | None = ..., files: list[Path | str] | None = ..., bug: bool = False
+        self, /, *, events: List[Event] | None = ..., files: List[Path | str] | None = ..., bug: bool = False
     ) -> None: ...
     # ... ma non entrambi.
 
@@ -60,9 +60,9 @@ class TrueRandomGenerator:
     def __init__(
         self, *,
         # Fonti di dati
-        events: list[Event] | None = None,  # Eventi passati direttamente
+        events: List[Event] | None = None,  # Eventi passati direttamente
         file: Path | str | None = None,  # Apri un file
-        files: list[Path | str] | None = None,  # Apri uno o più file
+        files: List[Path | str] | None = None,  # Apri uno o più file
         # Comportamento
         bug: bool = False,
     ) -> None:
@@ -80,6 +80,7 @@ class TrueRandomGenerator:
         for file in files:
             events += root.read(file, "Data_R", cls=Event)
         # Se non ci sono abbastanza eventi, riporta un errore e termina il programma
+        assert events is not None
         if len(events) < 9:
             raise ValueError(
                 f"Not enough data to generate a random byte: only {len(events)} events!"
@@ -152,7 +153,7 @@ class TrueRandomGenerator:
 
     # Metodo statico: converte il vettore di bit `byte` in numero decimale
     @staticmethod
-    def _conv(byte: list[int]) -> int:
+    def _conv(byte: List[int]) -> int:
         # indici di `byte` (`7-i`):  [ 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 ]
         # esponenti di 2    (`i`) :  [ 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 ]
         num = 0
@@ -162,7 +163,7 @@ class TrueRandomGenerator:
 
     # Metodo statico: converte in modo errato il vettore di bit `byte` in numero decimale
     @staticmethod
-    def _conv2(byte: list[int]) -> int:
+    def _conv2(byte: List[int]) -> int:
         # indici di `byte` (`i`):  [ 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 ]
         # esponenti di 2   (`i`):  [ 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 ]
         num = 0
@@ -206,7 +207,7 @@ TO_PLOT: PLOT = (
 
 
 # Funzione per calcolare le medie locali (ciclicamente)
-def cyclic_local_means(data: list[int], spread: int = 5) -> list[float]:
+def cyclic_local_means(data: List[int] | List[float], spread: int = 5) -> List[float]:
     """Calcola ciclicamente le medie locali del vettore `data`, con lo `spread` specificato.
 
     Esempio
@@ -264,7 +265,7 @@ def test():
                 plt.hist(bits, bins=2)  # istogramma per confrontare 0 e 1 (i bit)
                 plt.xlabel("Bit")
                 plt.ylabel("Counts")
-                plt.ylim(bottom=0)
+                plt.ylim(bottom=.7)
                 plt.title("Bits distribution")
                 plt.show()
 
@@ -293,7 +294,7 @@ def test():
             if PLOT.BYTES_DISTRIBUTION in TO_PLOT or PLOT.BYTES_DISTRIBUTION_LOCAL_MEANS in TO_PLOT:
                 plt.xlabel("Bytes")
                 plt.ylabel("Counts")
-                plt.ylim(0, 85)
+                plt.ylim(.7, 85)
                 plt.title("Bytes distribution")
                 plt.show()
 

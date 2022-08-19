@@ -4,7 +4,7 @@
 class E:
 	Timestamp: float
 
-t: list[E] = []
+t: List[E] = []
 
 
 

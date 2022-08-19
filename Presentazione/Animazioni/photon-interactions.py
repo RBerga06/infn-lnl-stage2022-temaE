@@ -20,7 +20,7 @@ def photon(A: float = .2, λ: float = .5, min: float = 0, max: float = 4, stroke
     )
 
 
-def orbitals(center: list[float], *radii: float, color: str = BLUE_E) -> VGroup:
+def orbitals(center: List[float], *radii: float, color: str = BLUE_E) -> VGroup:
     g = VGroup()
     for r in radii:
         g += Circle(r, color=color).move_to(center, aligned_edge=ORIGIN)

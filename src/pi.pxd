@@ -18,12 +18,13 @@ cdef bint bug(bint default)
 cdef int mode()
 
 
-@cython.locals(
-    s=str,
-    j=int,
-    c=str
-)
-cdef str style_pi(str pi, int i, str OK, str K0, str KO)
+# --- This does not compile in Cython 3.0.0a11 ---
+# @cython.locals(
+#     s=str,
+#     j=int,
+#     c=str
+# )
+# cdef str style_pi(str pi, int i, str OK, str K0, str KO)
 
 
 @cython.locals(
@@ -44,7 +45,7 @@ cdef str style_pi(str pi, int i, str OK, str K0, str KO)
     x=int,
     y=int,
     pi=object,
-    l=int,
+    ls=int,
     spi=str,
     sPI=str,
     digit=str,

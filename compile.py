@@ -8,7 +8,7 @@
 """
 from __future__ import annotations
 
-from typing import Any, Callable, NoReturn, Sequence
+from typing import List, NoReturn, Sequence
 from functools import reduce
 from pathlib import Path
 import operator as op
@@ -18,27 +18,30 @@ import sys
 import os
 
 
-_version: Callable[[str], Any] | None
-try:
-    from packaging.version import parse as _version
-except ModuleNotFoundError:
-    try:
-        from setuptools._vendor.packaging.version import parse as _version
-    except ModuleNotFoundError:
-        _version = None
-
-
-MINIMUM_CYTHON_VERSION = "3.0.0a10"
-
-
-def _cython_dep_error(msg: str) -> NoReturn:
+def _dep_error(pkg: str, req: str, msg: str) -> NoReturn:
     print(f"""\
 ERROR: {msg}
 
-Please install Cython via:
-    pip install "Cython>={MINIMUM_CYTHON_VERSION}"
+Please install {pkg} via:
+    pip install "{pkg}{req}"
 """, file=sys.stderr)
     sys.exit(1)
+
+
+try:
+    from packaging.version import Version as V
+except ModuleNotFoundError:
+    try:
+        from setuptools._vendor.packaging.version import Version as V
+    except ModuleNotFoundError:
+        _dep_error("setuptools", "", "setuptools not found.")
+
+
+CYTHON_MIN_V = V("3.0.0a7")
+
+
+def _cython_dep_error(msg: str) -> NoReturn:
+    _dep_error("Cython", f">={CYTHON_MIN_V}", msg)
 
 
 try:
@@ -47,7 +50,8 @@ try:
 except ModuleNotFoundError:
     _cython_dep_error("Cython not found.")
 else:
-    if _version and _version(cython.__version__) < _version(MINIMUM_CYTHON_VERSION):  # type: ignore
+    CYTHON_VERSION = V(cython.__version__)
+    if CYTHON_VERSION < CYTHON_MIN_V:  # type: ignore
         _cython_dep_error("No compatible Cython version found.")
 
 
@@ -82,7 +86,9 @@ def build(*targets: str) -> int:
         print(f"--> Building {target} ({', '.join(sources)})")
         try:
             args = [
-                "-3i", "--annotate-fullc",
+                "-3",
+                "-i",
+                "--annotate-fullc",
                 "-j", str(os.cpu_count()),
                 # "-X", f"linetrace={PYTHON_FRAMES}",
                 # "-X", f"profile={PYTHON_FRAMES}",
@@ -155,7 +161,7 @@ _SYS_FLAGS = dict(
 )
 
 
-def _sys_flags() -> list[str]:
+def _sys_flags() -> List[str]:
     """Get CLI arguments for `sys.flags` and `sys.warnoptions`."""
     return [
         *reduce(
@@ -180,7 +186,7 @@ if func:
 """
 
 
-def _run(code: str, args: list[str], additional_sys_flags: Sequence[str] = ()) -> int:
+def _run(code: str, args: List[str], additional_sys_flags: Sequence[str] = ()) -> int:
     # Run in subprocess
     if RUN_IN_SUBPROCESS:
         argv = [
@@ -189,7 +195,7 @@ def _run(code: str, args: list[str], additional_sys_flags: Sequence[str] = ()) -
             "-c", code,
             *args,
         ]
-        return subprocess.run(argv, check=False).returncode
+        return subprocess.run(argv, check=False, env=os.environ.copy()).returncode
     # Run in the same process
     sys.argv = args.copy()
     try:
@@ -255,7 +261,7 @@ COMMANDS = dict(
 )
 
 
-def cli(argv: list[str]) -> int | None:
+def cli(argv: List[str]) -> int | None:
     """Interfaccia da riga di comando."""
     if len(argv) < 1:
         return help()

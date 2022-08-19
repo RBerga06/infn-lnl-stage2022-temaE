@@ -7,6 +7,7 @@ pycodestyle:
     ignore:
         - E221  # multiple spaces before operator
         - E241  # multiple spaces after ':'
+        - E251  # unexpected spaces around keyword / parameter equals
         - E704  # multiple statements on one line (def)
         - W503  # line break before binary operator
         - E722  # do not use bare 'except'

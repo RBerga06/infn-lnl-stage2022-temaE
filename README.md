@@ -1,5 +1,7 @@
 # Stage 2022 ai Laboratori Nazionali di Legnaro (LNL) dell'Istituto Nazionale di Fisica Nucleare (INFN) – Elaborato del Tema E
 
+[![CI](https://github.com/RBerga06/infn-lnl-stage2022-temaE/actions/workflows/main.yml/badge.svg)](https://github.com/RBerga06/infn-lnl-stage2022-temaE/actions/workflows/main.yml)
+
 True Random Number Generator basato su fenomeni fisici.
 
 Autori (ed ex-stagisti): **Riccardo Bergamaschi**, **Jacopo Di Nardo**, **Rosalinda Permunian** e **Giacomo Simonetto**
@@ -7,6 +9,16 @@ Autori (ed ex-stagisti): **Riccardo Bergamaschi**, **Jacopo Di Nardo**, **Rosali
 ## Installazione
 
 Non essendo una vera e propria libreria, questo progetto non necessita di essere installato; tuttavia, per poter eseguire i programmi localmente è necessario installare alcune dipendenze.
+
+### Ambienti supportati
+
+|                | macOS | Windows | Linux |
+|----------------|-------|---------|-------|
+| Python 3.10    |   ✔️  |    ✔️    |   ✔️  |
+| Python 3.9     |   ✔️  |    ✔️    |   ✔️  |
+| Python 3.8     |   ✔️  |    ✔️    |   ✔️  |
+| Python 3.7     |   ✔️  |    ✔️    |   ✔️  |
+| Python <= 3.6  |   ❌  |    ❌    |   ❌  |
 
 ### Dipendenze
 
