@@ -93,12 +93,12 @@ class MPLTest:
     def test(self, index: int, filename: str | None = None, auto_def: bool = False) -> Callable[[], None]:
         """Create a test function for figure `index`."""
         @self.tests(index=index, filename=filename)
-        def test():
+        def test(*_):
             pass
         test.__name__ = f"test_mpl_figure_{index}"
         if auto_def:
             inspect.stack()[1].frame.f_locals[test.__name__] = test
-        return staticmethod(test)
+        return test
 
 
 def pytest_sessionstart():
