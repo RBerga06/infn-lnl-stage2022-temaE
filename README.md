@@ -18,7 +18,7 @@ Non essendo una vera e propria libreria, questo progetto non necessita di essere
 | Python 3.9     |   ✔️  |    ✔️    |   ✔️  |
 | Python 3.8     |   ✔️  |    ✔️    |   ✔️  |
 | Python 3.7     |   ✔️  |    ✔️    |   ✔️  |
-| Python <= 3.6  |   ✔️  |    ✔️    |   ✔️  |
+| Python <= 3.6  |   ❌  |    ❌    |   ❌  |
 
 ### Dipendenze
 
