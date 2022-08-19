@@ -60,7 +60,6 @@ class TestPlots:
     def test_plots(self):
         """Create plots."""
         _test()
-        assert print(self.MPL.figures)
 
     for i, name in enumerate(["deltas", "bits", "bytes"]):
         MPL.test(i, f"rand_{name}.png", auto_def=True)
