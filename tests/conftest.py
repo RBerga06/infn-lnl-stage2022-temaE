@@ -58,6 +58,7 @@ class MPLTest:
         """Collect figures from function."""
         def mocked_show():
             self.figures.append(plt.gcf())
+            plt.close()
         def decorator(f: _F) -> _F:
             @wraps(f)
             def func(*args, **kwargs):
