@@ -3,15 +3,15 @@
 # pylint: disable=import-error
 """Test `spettro.py`."""
 from __future__ import annotations
-from pathlib import Path
 import sys
-
+from pathlib import Path
+import matplotlib.pyplot as plt
+from conftest import sys_argv, mpl_test
 from spettro import main as _test
 
 
+@mpl_test("background_energy_spectrum")
 def test_ui():
     """Test `main(...)`"""
-    argv = sys.argv.copy()
-    sys.argv.insert(1, str((Path(__file__).parent.parent/"src"/"fondo.root").resolve()))
-    _test()
-    sys.argv = argv.copy()
+    with sys_argv([sys.argv[0], str((Path(__file__).parent.parent/"src"/"fondo.root").resolve()), *sys.argv[1:]]):
+        _test()
