@@ -13,12 +13,20 @@ from log import getLogger, taskLogger
 
 class _Constants(NamedTuple):
     # Numero di samples da prendere per calcolare la baseline
-    BASELINE_CALC_N: int = 60  # <-- valore di default
+    BASELINE_CALC_N: int   = 60
+    # Valori di calibrazione
+    PICCO_1436keV:   int   = 118900  # picco a 1436 keV
+    PICCO_2600keV:   int   = 211400  # picco a 2600 keV
+    # Parametri del grafico
+    HIST_N_BINS:     int   = 2500    # numero di colonne dell'istogramma
+    X_RIGHT_LIMIT:   int   = 221400  # limite destro dell'asse x
+    Y_TOP_LIMIT:     float = 10000   # limite superiore dell'asse y
+    Y_BOTTOM_LIMIT:  float = 0.7     # limite inferiore dell'asse y
 
 
 # --- Costanti ---
 # Cartella dei file
-SRC = Path(__file__).parent
+SRC = Path(__file__).parent.resolve()
 # Logger per questo programma
 L = getLogger(__name__)
 # Distanza temporale tra due samples
@@ -35,9 +43,21 @@ CALIBRATION_MODE: Literal[0, 1] = 0
 CONDITIONAL_CONSTANTS: dict[Path, _Constants] = {
     SRC/"data.root": _Constants(
         BASELINE_CALC_N = 60,
+        PICCO_1436keV   = 118_900,
+        PICCO_2600keV   = 211_400,
+        HIST_N_BINS     = 2_500,
+        X_RIGHT_LIMIT   = 221400,
+        Y_TOP_LIMIT     = 10000,
+        Y_BOTTOM_LIMIT  = 0.7,
     ),
     SRC/"fondo.root": _Constants(
         BASELINE_CALC_N = 17,
+        PICCO_1436keV   = 1_436,
+        PICCO_2600keV   = 2_600,
+        HIST_N_BINS     = 10_000,
+        X_RIGHT_LIMIT   = 30_300,
+        Y_TOP_LIMIT     = 100,
+        Y_BOTTOM_LIMIT  = 0.7,
     ),
 }
 # File attualmente caricato
@@ -75,7 +95,7 @@ def aree(
 ) -> list[float]:
     """Calcola l'area di ogni evento."""
     logger = taskLogger(__name__)
-    logger.debug(f"{max_area=}, samples range = [{min_samples}, {max_samples}]")
+    logger.debug(f"{max_area = }, samples range = [{min_samples}, {max_samples}], {BASELINE = }")
 
     aree_calcolate: list[float] = []
     for event in events:
@@ -114,6 +134,7 @@ def main():
         FILE = Path(__file__).parent / "data.root"
     else:
         FILE = file
+    FILE = FILE.resolve()
     t = root.read(FILE, "Data_R", cls=Event)
 
     # ------------------------ Calcolo della baseline -------------------------
@@ -131,8 +152,8 @@ def main():
             calc.result = f"it's {BASELINE}"
 
     # ---------------------- Calibrazione spettro in keV ----------------------
-    X1 = 118900  # picco a 1436 keV
-    X2 = 211400  # picco a 2600 keV
+    X1 = CC().PICCO_1436keV
+    X2 = CC().PICCO_2600keV
     Y1 = 1436    # keV del decadimento 138La -> 138Ba (picco centrale)
     Y2 = 2600    # keV del decadimento 227Ac (primo picco)
     if CALIBRATION_MODE == 0:
@@ -159,12 +180,12 @@ def main():
     # plt.show
 
     # Spettro calibrato in keV, aree calcolate con samples nell'intervallo [BASELINE_CALC_N, 150]
-    plt.hist(list(map(calibrate, aree(t, BASELINE=BASELINE, min_samples=CC().BASELINE_CALC_N, max_samples=150))), bins=2500)
+    plt.hist(list(map(calibrate, aree(t, BASELINE=BASELINE, min_samples=CC().BASELINE_CALC_N, max_samples=150))), bins=CC().HIST_N_BINS)
     plt.yscale("log")
     plt.xlabel("Energy [keV]")
     plt.ylabel("Counts")
-    plt.xlim(left=0, right=calibrate(221400))
-    plt.ylim(top=2500 * T, bottom=0.175 * T)
+    plt.xlim(left=0, right=calibrate(CC().X_RIGHT_LIMIT))
+    plt.ylim(top=CC().Y_TOP_LIMIT, bottom=CC().Y_BOTTOM_LIMIT)
     plt.title("Background energy spectrum")
     plt.show()
 
