@@ -14,7 +14,7 @@ mpl = MPLTest()
 
 @mpl.tests(0, "spettro.png")
 @mpl.collects(reset=True)
-def test_ui():
+def test_plots():
     """Test `main(...)`"""
     with sys_argv([sys.argv[0], str((Path(__file__).parent.parent/"src"/"fondo.root").resolve()), *sys.argv[1:]]):
         _test()
