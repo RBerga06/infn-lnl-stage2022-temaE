@@ -48,7 +48,13 @@ def chdir(path: Path) -> Iterator[Path]:
 _F = TypeVar("_F", bound=Callable[..., Any])
 
 
-@dataclass(slots=True)
+if sys.version_info >= (3, 10):
+    dc = dataclass(slots=True)
+else:
+    dc = dataclass
+
+
+@dc
 class MPLTest:
     """Test matplotlib output."""
 
