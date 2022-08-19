@@ -4,6 +4,7 @@
 from __future__ import annotations
 from dataclasses import dataclass, field
 from functools import wraps
+import inspect
 
 import os
 import sys
@@ -84,12 +85,16 @@ class MPLTest:
             return cast(_F, func)
         return decorator
 
-    def test(self, index: int, filename: str | None = None) -> None:
-        """Test figure `index`."""
+    def test(self, index: int, filename: str | None = None, auto_def: bool = False) -> Callable[[], None]:
+        """Create a test function for figure `index`."""
+        @staticmethod
         @self.tests(index=index, filename=filename)
-        def f():
+        def test_mpl_figure_():
             pass
-        return f()
+        test_mpl_figure_.__name__ = f"{test_mpl_figure_.__name__}{index}"
+        if auto_def:
+            inspect.stack()[1].frame.f_locals[test_mpl_figure_.__name__] = test_mpl_figure_
+        return test_mpl_figure_
 
 
 def pytest_sessionstart():
