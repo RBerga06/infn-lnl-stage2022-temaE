@@ -49,12 +49,10 @@ _F = TypeVar("_F", bound=Callable[..., Any])
 
 
 if sys.version_info >= (3, 10):
-    dc = dataclass(slots=True)
-else:
-    dc = dataclass
+    dataclass = dataclass(slots=True)
 
 
-@dc
+@dataclass
 class MPLTest:
     """Test matplotlib output."""
 
