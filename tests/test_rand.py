@@ -56,7 +56,7 @@ class TestTRNG:
 
 
 @MPL.tests(0, "rand.png")
-@MPL.collect()
+@MPL.collects()
 def test_ui():
     """Test whether the graphical user interface shows up."""
     _test()
