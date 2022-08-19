@@ -10,6 +10,16 @@ Autori (ed ex-stagisti): **Riccardo Bergamaschi**, **Jacopo Di Nardo**, **Rosali
 
 Non essendo una vera e propria libreria, questo progetto non necessita di essere installato; tuttavia, per poter eseguire i programmi localmente è necessario installare alcune dipendenze.
 
+### Ambienti supportati
+
+|                | macOS | Windows | Linux |
+|----------------|-------|---------|-------|
+| Python 3.10    |       |         |        |
+| Python 3.9     |         |         |         |
+| Python 3.8     |         |         |         |
+| Python 3.7     |         |         |         |
+| Python <= 3.6  |         |         |         |
+
 ### Dipendenze
 
 Di seguito sono elencate le dipendenze:
