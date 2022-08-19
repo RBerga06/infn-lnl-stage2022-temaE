@@ -5,11 +5,15 @@
 from __future__ import annotations
 import sys
 from pathlib import Path
-from conftest import sys_argv, mpl_test
+from conftest import sys_argv, MPLTest
 from spettro import main as _test
 
 
-@mpl_test(filename="spettro.png")
+mpl = MPLTest()
+
+
+@mpl.tests(0, "spettro.png")
+@mpl.collect(reset=True)
 def test_ui():
     """Test `main(...)`"""
     with sys_argv([sys.argv[0], str((Path(__file__).parent.parent/"src"/"fondo.root").resolve()), *sys.argv[1:]]):
