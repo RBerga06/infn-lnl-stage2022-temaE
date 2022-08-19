@@ -6,6 +6,7 @@ import sys
 import random
 from math import pi as PI
 from pathlib import Path
+from typing import List
 import matplotlib.pyplot as plt
 from rand import TrueRandomGenerator
 from log import getLogger, style, sprint
@@ -113,11 +114,11 @@ def main():
     TRG = TrueRandomGenerator(bug=BUG)  # Il nostro generatore
     LEN = TRG.n_random_numbers  # Numero di valori casuali disponibili
     N_in:     int         = 0   # Numero di coordinate casuali all'interno del cerchio  # noqa
-    x_in:     list[int]   = []  # Lista delle coordinate x all'interno del cerchio      # noqa
-    y_in:     list[int]   = []  # Lista delle coordinate y all'interno del cerchio      # noqa
-    x_out:    list[int]   = []  # Lista delle coordinate x all'esterno del cerchio      # noqa
-    y_out:    list[int]   = []  # Lista delle coordinate y all'esterno del cerchio      # noqa
-    pi_array: list[float] = []  # Lista delle stime di π nel tempo
+    x_in:     List[int]   = []  # Lista delle coordinate x all'interno del cerchio      # noqa
+    y_in:     List[int]   = []  # Lista delle coordinate y all'interno del cerchio      # noqa
+    x_out:    List[int]   = []  # Lista delle coordinate x all'esterno del cerchio      # noqa
+    y_out:    List[int]   = []  # Lista delle coordinate y all'esterno del cerchio      # noqa
+    pi_array: List[float] = []  # Lista delle stime di π nel tempo
     pi: float = 0  # Stima di π, ricalcolata ad ogni iterazione
 
     # Pre-calcolo dei quadrati, per ottimizzazione

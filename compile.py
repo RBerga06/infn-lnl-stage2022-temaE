@@ -8,7 +8,7 @@
 """
 from __future__ import annotations
 
-from typing import Any, Callable, NoReturn, Sequence
+from typing import List, NoReturn, Sequence
 from functools import reduce
 from pathlib import Path
 import operator as op
@@ -161,7 +161,7 @@ _SYS_FLAGS = dict(
 )
 
 
-def _sys_flags() -> list[str]:
+def _sys_flags() -> List[str]:
     """Get CLI arguments for `sys.flags` and `sys.warnoptions`."""
     return [
         *reduce(
@@ -186,7 +186,7 @@ if func:
 """
 
 
-def _run(code: str, args: list[str], additional_sys_flags: Sequence[str] = ()) -> int:
+def _run(code: str, args: List[str], additional_sys_flags: Sequence[str] = ()) -> int:
     # Run in subprocess
     if RUN_IN_SUBPROCESS:
         argv = [
@@ -261,7 +261,7 @@ COMMANDS = dict(
 )
 
 
-def cli(argv: list[str]) -> int | None:
+def cli(argv: List[str]) -> int | None:
     """Interfaccia da riga di comando."""
     if len(argv) < 1:
         return help()

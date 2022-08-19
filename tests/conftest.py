@@ -10,7 +10,7 @@ import os
 import sys
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Callable, Iterator, TypeVar, cast
+from typing import Any, Callable, Iterator, List, TypeVar, cast
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import pytest
@@ -24,7 +24,7 @@ def fix_sys_path():
 
 
 @contextmanager
-def sys_argv(argv: list[str]) -> Iterator[list[str]]:
+def sys_argv(argv: List[str]) -> Iterator[List[str]]:
     """Patch sys.argv."""
     orig = sys.argv.copy()
     sys.argv = argv.copy()
@@ -56,7 +56,7 @@ if sys.version_info >= (3, 10):
 class MPLTest:
     """Test matplotlib output."""
 
-    figures: list[Figure] = field(init=False, default_factory=list)
+    figures: List[Figure] = field(init=False, default_factory=list)
 
     def collects(self, reset: bool = True) -> Callable[[_F], _F]:
         """Collect figures from function."""

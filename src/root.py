@@ -3,7 +3,7 @@
 # pylint: disable=no-member,used-before-assignment
 """Modulo che utilizza PyROOT (se installato), o uproot come backend."""
 from __future__ import annotations
-from typing import Any, NamedTuple, Sequence, Type, TypeVar, get_origin, get_type_hints, overload
+from typing import Any, Dict, List, NamedTuple, Sequence, Type, TypeVar, get_origin, get_type_hints, overload
 from collections import namedtuple
 from pathlib import Path
 import sys
@@ -57,14 +57,14 @@ def _read(
     file: str | Path,
     cls: Type[_T],
     tree: str,
-    attributes: list[str],
-    list_conv: list[str],
-) -> list[_T]:
+    attributes: List[str],
+    list_conv: List[str],
+) -> List[_T]:
     # Inizializzazione variabili
     file = str(Path(file).expanduser().resolve())
-    data: list[_T] = []  # Questo sarà il risultato della funzione
+    data: List[_T] = []  # Questo sarà il risultato della funzione
     # In `vals` vengono salvati i parametri da passare alla classe nella costruzione dell'oggetto
-    vals: dict[str, Any] = {}
+    vals: Dict[str, Any] = {}
 
     with L.task(f"Reading tree {tree!r} from file {file!r}...") as reading:
 
@@ -93,7 +93,7 @@ def _read(
 
             # Mappa vuota per i dati grezzi
             #   (associa al nome dell'attributo la lista dei valori, ancora da combinare negli oggetti)
-            raw_data: dict[str, Any] = {}
+            raw_data: Dict[str, Any] = {}
             # Apri l'albero `tree` dal file `file`
             with uproot.open(f"{file}:{tree}") as t:
                 # Salva i “rami” come mappa
@@ -127,7 +127,7 @@ def _read(
 
 # O si specifica la classe tramite il parametro `cls`...
 @overload
-def read(file: Path | str, tree: str, /, *, cls: Type[_T]) -> list[_T]:
+def read(file: Path | str, tree: str, /, *, cls: Type[_T]) -> List[_T]:
     ...
 
 
@@ -139,7 +139,7 @@ def read(
     *attributes: str,
     list_conv: Sequence[str] | None = None,
     cls_name: str = "Data",
-) -> list[Any]:
+) -> List[Any]:
     ...
 
 
@@ -154,7 +154,7 @@ def read(
     # Classe dove salvare i dati
     cls: Type[_T] | None = None,
     cls_name: str = "Data",
-) -> list[_T]:
+) -> List[_T]:
     """Legge la tabella `table` dal file ROOT `file` e ritorna i valori come lista di oggetti.
 
     Parametri
@@ -166,7 +166,7 @@ def read(
     *attributes : tuple[str, ...], default ().
         I set di dati da leggere e da salvare come attributi.
         Vengono dedotti dalla classe (:param:`cls`), quando specificata.
-    list_conv : Optional[list[str]], default None.
+    list_conv : Optional[List[str]], default None.
         I set di dati da convertire in liste.
         Vengono dedotti dalla classe (:param:`cls`), quando specificata.
     cls : Optional[Type[NamedTuple]], default None.
@@ -185,7 +185,7 @@ def read(
     >>> from typing import NamedTuple
     >>> class Event(NamedTuple):
     ...     Timestamp: int
-    ...     Samples: list[int]  # va convertito in lista
+    ...     Samples: List[int]  # va convertito in lista
     >>> root.read("file.root", "Data_R", cls=Event)
     >>> # Per concatenare due file (o due alberi), basta utilizzare l'operatore `+` sui risultati:
     >>> root.read("file.root",  "Data_1", cls=Event) + root.read("file.root",  "Data_2", cls=Event)
@@ -222,7 +222,7 @@ def test():
 
         # Cosa leggere
         Timestamp: int
-        Samples: list[int]
+        Samples: List[int]
 
     SRC = Path(__file__).parent
     DEFAULT = SRC / "fondo.root"

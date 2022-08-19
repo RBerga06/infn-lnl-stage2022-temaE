@@ -5,7 +5,7 @@
 from __future__ import annotations
 from pathlib import Path
 import sys
-from typing import Literal, NamedTuple
+from typing import Dict, List, Literal, NamedTuple
 import matplotlib.pyplot as plt
 import root
 from log import getLogger, taskLogger
@@ -40,7 +40,7 @@ BASELINE_CALC_MODE: Literal[0, 1] = 0
 #   1: Picco a 1436 keV e picco a 2600 keV
 CALIBRATION_MODE: Literal[0, 1] = 0
 # Costanti condizionali: cambiano in base al file aperto
-CONDITIONAL_CONSTANTS: dict[Path, _Constants] = {
+CONDITIONAL_CONSTANTS: Dict[Path, _Constants] = {
     SRC/"data.root": _Constants(
         BASELINE_CALC_N = 60,
         PICCO_1436keV   = 118_900,
@@ -74,12 +74,12 @@ def CC() -> _Constants:
 class Event(NamedTuple):
     """Questa classe rappresenta un evento."""
     # Sono specificati soltanto gli attributi che ci interessano
-    Samples: list[int]
+    Samples: List[int]
 
 
 # --- Utility ----
 
-def mean(v: list[float] | list[int]) -> float:
+def mean(v: List[float] | List[int]) -> float:
     """Calcola la media degli elementi nel vettore `v`"""
     return sum(v) / len(v)
 
@@ -87,17 +87,17 @@ def mean(v: list[float] | list[int]) -> float:
 # Calcolo delle aree per ogni evento
 @L.task(f"Calculating {'BASELINES and ' if BASELINE_CALC_MODE == 1 else ''}areas")
 def aree(
-    events: list[Event],
+    events: List[Event],
     BASELINE: float | None = None,
     max_area: float | None = None,
     min_samples: int = 0,
     max_samples: int | None = None,
-) -> list[float]:
+) -> List[float]:
     """Calcola l'area di ogni evento."""
     logger = taskLogger(__name__)
     logger.debug(f"{max_area = }, samples range = [{min_samples}, {max_samples}], {BASELINE = }")
 
-    aree_calcolate: list[float] = []
+    aree_calcolate: List[float] = []
     for event in events:
         # Se necessario, calcola la BASELINE per questo evento
         if BASELINE_CALC_MODE == 1:
