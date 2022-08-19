@@ -3,7 +3,7 @@
 # pylint: disable=no-member,used-before-assignment
 """Modulo che utilizza PyROOT (se installato), o uproot come backend."""
 from __future__ import annotations
-from typing import Any, NamedTuple, Sequence, TypeVar, get_origin, get_type_hints, overload
+from typing import Any, NamedTuple, Sequence, Type, TypeVar, get_origin, get_type_hints, overload
 from collections import namedtuple
 from pathlib import Path
 import sys
@@ -55,7 +55,7 @@ _T = TypeVar("_T", bound=NamedTuple)
 
 def _read(
     file: str | Path,
-    cls: type[_T],
+    cls: Type[_T],
     tree: str,
     attributes: list[str],
     list_conv: list[str],
@@ -127,7 +127,7 @@ def _read(
 
 # O si specifica la classe tramite il parametro `cls`...
 @overload
-def read(file: Path | str, tree: str, /, *, cls: type[_T]) -> list[_T]:
+def read(file: Path | str, tree: str, /, *, cls: Type[_T]) -> list[_T]:
     ...
 
 
@@ -152,7 +152,7 @@ def read(
     *attributes: str,
     list_conv: Sequence[str] | None = None,
     # Classe dove salvare i dati
-    cls: type[_T] | None = None,
+    cls: Type[_T] | None = None,
     cls_name: str = "Data",
 ) -> list[_T]:
     """Legge la tabella `table` dal file ROOT `file` e ritorna i valori come lista di oggetti.
@@ -169,7 +169,7 @@ def read(
     list_conv : Optional[list[str]], default None.
         I set di dati da convertire in liste.
         Vengono dedotti dalla classe (:param:`cls`), quando specificata.
-    cls : Optional[type[NamedTuple]], default None.
+    cls : Optional[Type[NamedTuple]], default None.
         La classe degli oggetti dove salvare i dati.
         Deve essere una :func:`namedtuple(...)` (o una sottoclasse di `NamedTuple`).
         Viene generata automaticamente a partire dagli altri parametri, se necessario.
