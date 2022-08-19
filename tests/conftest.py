@@ -10,7 +10,6 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Callable, Iterator, TypeVar, cast
 import matplotlib.pyplot as plt
-from matplotlib.testing.decorators import image_comparison
 import pytest
 
 
