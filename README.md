@@ -1,5 +1,7 @@
 # Stage 2022 ai Laboratori Nazionali di Legnaro (LNL) dell'Istituto Nazionale di Fisica Nucleare (INFN) – Elaborato del Tema E
 
+[![CI](https://github.com/RBerga06/infn-lnl-stage2022-temaE/actions/workflows/main.yml/badge.svg)](https://github.com/RBerga06/infn-lnl-stage2022-temaE/actions/workflows/main.yml)
+
 True Random Number Generator basato su fenomeni fisici.
 
 Autori (ed ex-stagisti): **Riccardo Bergamaschi**, **Jacopo Di Nardo**, **Rosalinda Permunian** e **Giacomo Simonetto**
