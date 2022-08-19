@@ -71,20 +71,20 @@ class MPLTest:
             return cast(_F, func)
         return decorator
 
-    def tests(self, index: int = -1, filename: str | None = None) -> Callable[[_F], _F]:
+    def tests(self, index: int, filename: str | None = None) -> Callable[[_F], _F]:
         """Test figure `index` after the given function."""
         def decorator(f: _F) -> _F:
             @pytest.mark.mpl_image_compare(baseline_dir="images/baseline", filename=filename)
             @wraps(f)
             def func(*args, **kwargs):
                 out = f(*args, **kwargs)
-                if index and not isinstance(out, Figure):
-                    out = self.figures.pop(index)
+                if not isinstance(out, Figure):
+                    out = self.figures[index]
                 return out
             return cast(_F, func)
         return decorator
 
-    def test(self, index: int = -1, filename: str | None = None) -> None:
+    def test(self, index: int, filename: str | None = None) -> None:
         """Test figure `index`."""
         @self.tests(index=index, filename=filename)
         def f():
