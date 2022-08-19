@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Tests configuration."""
 from __future__ import annotations
+from dataclasses import dataclass, field
 from functools import wraps
 
 import os
@@ -9,6 +10,7 @@ import sys
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Callable, Iterator, TypeVar, cast
+from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import pytest
 
@@ -45,33 +47,49 @@ def chdir(path: Path) -> Iterator[Path]:
 _F = TypeVar("_F", bound=Callable[..., Any])
 
 
-class _mpl_mocked_show:
-    def __init__(self):
-        self.figure = None
+@dataclass(slots=True)
+class MPLTest:
+    """Test matplotlib output."""
 
-    def __call__(self):
-        self.figure = plt.gcf()
+    figures: list[Figure] = field(init=False, default_factory=list)
 
+    def collect(self, reset: bool = True) -> Callable[[_F], _F]:
+        """Collect figures from function."""
+        def mocked_show():
+            self.figures.append(plt.gcf())
+        def decorator(f: _F) -> _F:
+            @wraps(f)
+            def func(*args, **kwargs):
+                with pytest.MonkeyPatch.context() as mp:
+                    mp.setattr(plt, "show", mocked_show)
+                    if reset:
+                        self.figures.clear()
+                    out = f(*args, **kwargs)
+                    if isinstance(out, Figure):
+                        self.figures.append(out)
+                    return out
+            return cast(_F, func)
+        return decorator
 
-def mpl_test(filename: str | None = None) -> Callable[[_F], _F]:
-    figure = None
+    def tests(self, index: int | None = None, filename: str | None = None) -> Callable[[_F], _F]:
+        """Test figure `index` after the given function."""
+        def decorator(f: _F) -> _F:
+            @pytest.mark.mpl_image_compare(baseline_dir="images/baseline", filename=filename)
+            @wraps(f)
+            def func(*args, **kwargs):
+                out = f(*args, **kwargs)
+                if index and not isinstance(out, Figure):
+                    out = self.figures[index]
+                return out
+            return cast(_F, func)
+        return decorator
 
-    def mocked_show():
-        nonlocal figure
-        figure = plt.gcf()
-
-    def decorator(f: _F) -> _F:
-        @wraps(f)
-        @pytest.mark.mpl_image_compare(baseline_dir="images/baseline", filename=filename)
-        @wraps(f)
-        def func(*args, **kwargs):
-            with pytest.MonkeyPatch.context() as mp:
-                mp.setattr(plt, "show", mocked_show)
-                f(*args, **kwargs)
-                return figure
-        return cast(_F, func)
-
-    return decorator
+    def test(self, index: int | None = None, filename: str | None = None) -> None:
+        """Test figure `index`."""
+        @self.tests(index=index, filename=filename)
+        def f():
+            pass
+        return f()
 
 
 def pytest_sessionstart():
